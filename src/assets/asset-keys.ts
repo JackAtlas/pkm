@@ -1,0 +1,35 @@
+export const BATTLE_BACKGROUND_ASSET_KEYS = Object.freeze({
+  FOREST: 'FOREST',
+  FOREST_BASE: 'FOREST_BASE',
+  FOREST_BASE_FOE: 'FOREST_BASE_FOE'
+})
+
+export const PKM_NAME_KEYS = Object.freeze({
+  HERACROSS: 'Heracross',
+  CHANDELURE: 'Charmander'
+})
+
+export const BATTLE_ASSET_KEYS = Object.freeze({
+  HEALTH_BAR_BACKGROUND: 'HEALTH_BAR_BACKGROUND'
+})
+
+export const DATABOX_ASSET_KEYS = Object.freeze({
+  DATABOX_NORMAL: 'DATABOX_NORMAL',
+  DATABOX_NORMAL_FOE: 'DATABOX_NORMAL_FOE',
+  OVERLAY_HP: 'OVERLAY_HP',
+  OVERLAY_EXP: 'OVERLAY_EXP'
+})
+
+export const POKEMON_FRONT_ASSET_KEYS = Object.freeze({
+  HERACROSS: 'HERACROSS'
+})
+
+export const POKEMON_BACK_ASSET_KEYS = Object.freeze({
+  CHANDELURE: 'CHANDELURE'
+})
+
+export const POKEMON_SHADOW_ASSET_KEYS = Object.freeze({
+  SHADOW_SMALL: 'SHADOW_SMALL',
+  SHADOW_MEDIUM: 'SHADOW_MEDIUM',
+  SHADOW_LARGE: 'SHADOW_LARGE'
+})
