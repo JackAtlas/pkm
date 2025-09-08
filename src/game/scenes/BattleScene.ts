@@ -8,8 +8,11 @@ import {
   PKM_NAME_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
 } from '../../assets/asset-keys'
+import { BattleMenu } from '../../battle/ui/menu/battle-menu'
 
 export class BattleScene extends Scene {
+  #battleMenu: BattleMenu
+
   constructor() {
     super({
       key: SCENE_KEYS.BATTLE_SCENE
@@ -101,13 +104,31 @@ export class BattleScene extends Scene {
     battleSceneContainer.add(dataBoxFoeContainerObj)
     dataBoxFoeContainerObj.setY(20)
 
-    // 设置场景居中
-    battleSceneContainer.setX(
-      (this.scale.width - battleSceneContainer.width) / 2
-    )
-    battleSceneContainer.setY(
+    const midTopContainer = this.add.container(0, 0)
+    const midBottomContainer = this.add.container(0, 0)
+    midTopContainer.width = midBottomContainer.width =
+      battleSceneContainer.width
+    midTopContainer.height = midBottomContainer.height =
       (this.scale.height - battleSceneContainer.height) / 2
+
+    const midContainer = this.add.container(0, 0, [
+      midTopContainer,
+      battleSceneContainer,
+      midBottomContainer
+    ])
+    midContainer.width = battleSceneContainer.width
+    midContainer.height = this.scale.height
+    battleSceneContainer.setY(midTopContainer.height)
+    midBottomContainer.setY(
+      midTopContainer.height + battleSceneContainer.height
     )
+
+    // 战斗菜单
+    this.#battleMenu = new BattleMenu(this, midBottomContainer)
+    this.#battleMenu.showMainBattleMenu()
+
+    // 设置场景居中
+    midContainer.setX((this.scale.width - midContainer.width) / 2)
   }
 
   #createDataBox(options: {
