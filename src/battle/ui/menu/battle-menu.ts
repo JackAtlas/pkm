@@ -106,14 +106,14 @@ export class BattleMenu {
       this._container.width / 2 + 20,
       20,
       'What should',
-      { ...BATTLE_UI_TEXT_STYLE, color: '_a9b4b8' }
+      { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
     )
     // TODO: update to use pkm data that is passed into this class instance
     this._battleTextGameObjectLine2 = this._scene.add.text(
       this._container.width / 2 + 20,
       76,
       `${PKM_NAME_KEYS.CHANDELURE} do next?`,
-      { ...BATTLE_UI_TEXT_STYLE, color: '_a9b4b8' }
+      { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
     )
     this._container.add(this._battleTextGameObjectLine1)
     this._container.add(this._battleTextGameObjectLine2)
