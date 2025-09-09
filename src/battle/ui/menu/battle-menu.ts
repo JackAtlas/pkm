@@ -1,6 +1,6 @@
-import { PKM_NAME_KEYS } from '../../../assets/asset-keys'
-import { DIRECTION } from '../../../common/direction'
-import { exhaustiveGuard } from '../../../utils/guard'
+import { PKM_NAME_KEYS } from '@/assets/asset-keys'
+import { DIRECTION } from '@/common/direction'
+import { exhaustiveGuard } from '@/utils/guard'
 import { BATTLE_UI_TEXT_STYLE } from './battle-menu-config'
 import {
   ACTIVE_BATTLE_MENU,
