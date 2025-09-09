@@ -9,9 +9,11 @@ import {
   POKEMON_SHADOW_ASSET_KEYS
 } from '../../assets/asset-keys'
 import { BattleMenu } from '../../battle/ui/menu/battle-menu'
+import { DIRECTION } from '../../common/direction'
 
 export class BattleScene extends Scene {
-  #battleMenu: BattleMenu
+  _battleMenu: BattleMenu
+  _cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys
 
   constructor() {
     super({
@@ -80,7 +82,7 @@ export class BattleScene extends Scene {
     pkmImageObj.setY(battleSceneContainer.height - pkmImageObj.height)
 
     // 我方数据栏
-    const dataBoxContainerObj = this.#createDataBox({
+    const dataBoxContainerObj = this._createDataBox({
       player: {
         box: DATABOX_ASSET_KEYS.DATABOX_NORMAL,
         pkm: PKM_NAME_KEYS.CHANDELURE
@@ -95,7 +97,7 @@ export class BattleScene extends Scene {
     )
 
     // 敌方数据栏
-    const dataBoxFoeContainerObj = this.#createDataBox({
+    const dataBoxFoeContainerObj = this._createDataBox({
       foe: {
         box: DATABOX_ASSET_KEYS.DATABOX_NORMAL_FOE,
         pkm: PKM_NAME_KEYS.HERACROSS
@@ -124,14 +126,50 @@ export class BattleScene extends Scene {
     )
 
     // 战斗菜单
-    this.#battleMenu = new BattleMenu(this, midBottomContainer)
-    this.#battleMenu.showMainBattleMenu()
+    this._battleMenu = new BattleMenu(this, midBottomContainer)
+    this._battleMenu.showMainBattleMenu()
 
     // 设置场景居中
     midContainer.setX((this.scale.width - midContainer.width) / 2)
+
+    this._cursorKeys = this.input.keyboard!.createCursorKeys()
   }
 
-  #createDataBox(options: {
+  update() {
+    const wasSpaceKeyPressed = Phaser.Input.Keyboard.JustDown(
+      this._cursorKeys.space
+    )
+    if (wasSpaceKeyPressed) {
+      this._battleMenu.handlePlayerInput('OK')
+      return
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.shift)) {
+      this._battleMenu.handlePlayerInput('CANCEL')
+      return
+    }
+
+    let selectedDirection: DIRECTION = DIRECTION.NONE
+    if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.left)) {
+      selectedDirection = DIRECTION.LEFT
+    } else if (
+      Phaser.Input.Keyboard.JustDown(this._cursorKeys.right)
+    ) {
+      selectedDirection = DIRECTION.RIGHT
+    } else if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.up)) {
+      selectedDirection = DIRECTION.UP
+    } else if (
+      Phaser.Input.Keyboard.JustDown(this._cursorKeys.down)
+    ) {
+      selectedDirection = DIRECTION.DOWN
+    }
+
+    if (selectedDirection !== DIRECTION.NONE) {
+      this._battleMenu.handlePlayerInput(selectedDirection)
+    }
+  }
+
+  _createDataBox(options: {
     foe?: { box: string; pkm: string }
     player?: { box: string; pkm: string }
   }) {
