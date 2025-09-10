@@ -22,7 +22,16 @@ export class BattleMenu {
   _moveSelectMenuCursorPhaserGameObject: Phaser.GameObjects.Arc
   _selectedBattleMenuOption: BATTLE_MENU_OPTIONS
   _selectedMoveMenuOption: ATTACK_MOVE_OPTIONS
+  _queuedInfoPaneMessages: string[]
+  _queuedInfoPaneCallback: (() => void) | undefined
+  _waitingForPlayerInput: boolean
+  _selectedAttackIndex: number | undefined
 
+  /**
+   *
+   * @param {Phaser.Scene} scene Battle Menu 所在的 Scene 对象
+   * @param {Phaser.GameObjects.Container} container Battle Menu 所在的 Container 对象
+   */
   constructor(
     scene: Phaser.Scene,
     container: Phaser.GameObjects.Container
@@ -33,12 +42,26 @@ export class BattleMenu {
     this._selectedBattleMenuOption = BATTLE_MENU_OPTIONS.FIGHT
     this._selectedMoveMenuOption = ATTACK_MOVE_OPTIONS.MOVE_1
 
+    this._queuedInfoPaneMessages = []
+    this._queuedInfoPaneCallback = () => undefined
+    this._waitingForPlayerInput = false
+    this._selectedAttackIndex = undefined
+
     this._createBackground()
     this._createMainBattleMenu()
     this._createPkmAttackSubMenu()
 
     container.add(this._mainBattleMenuPhaserContainerGameObject)
     container.add(this._moveSelectionSubBattleMenuPhaserGameObject)
+  }
+
+  get selectedAttack(): number | undefined {
+    if (
+      this._activeBattleMenu === ACTIVE_BATTLE_MENU.BATTLE_MOVE_SELECT
+    ) {
+      return this._selectedAttackIndex
+    }
+    return undefined
   }
 
   showMainBattleMenu() {
@@ -53,6 +76,7 @@ export class BattleMenu {
         2 +
         infoPaneBorderWidth
     )
+    this._selectedAttackIndex = undefined
   }
 
   hideMainBattleMenu() {
@@ -70,8 +94,32 @@ export class BattleMenu {
     this._moveSelectionSubBattleMenuPhaserGameObject.setVisible(false)
   }
 
+  _switchToMainBattleMenu() {
+    this.showMainBattleMenu()
+    this.hidePkmAttackSubMenu()
+  }
+
   handlePlayerInput(input: DIRECTION | 'OK' | 'CANCEL') {
+    if (
+      this._waitingForPlayerInput &&
+      (input === 'OK' || input === 'CANCEL')
+    ) {
+      this._updateInfoPaneWithMessage()
+      return
+    }
+
     if (input === 'OK') {
+      if (this._activeBattleMenu === ACTIVE_BATTLE_MENU.BATTLE_MAIN) {
+        this._handlePlayerChooseMainBattleOption()
+        return
+      }
+      if (
+        this._activeBattleMenu ===
+        ACTIVE_BATTLE_MENU.BATTLE_MOVE_SELECT
+      ) {
+        this._handlePlayerChooseAttack()
+        return
+      }
       this.hideMainBattleMenu()
       this.showPkmAttackSubMenu()
       return
@@ -85,6 +133,36 @@ export class BattleMenu {
     this._moveMainBattleMenuCursor()
     this._updateSelectedMoveMenuOptionFromInput(input)
     this._moveMoveSelectMenuCursor()
+  }
+
+  updateInfoPaneMessagesAndWaitForInput(
+    messages: string[],
+    callback?: () => void
+  ) {
+    this._queuedInfoPaneMessages = messages
+    this._queuedInfoPaneCallback = callback
+
+    this._updateInfoPaneWithMessage()
+  }
+
+  _updateInfoPaneWithMessage() {
+    this._waitingForPlayerInput = false
+    this._battleTextGameObjectLine1.setText('').setVisible(true)
+
+    // check if all messages have been displayed from the queue and call the callback
+    if (this._queuedInfoPaneMessages.length === 0) {
+      if (this._queuedInfoPaneCallback) {
+        this._queuedInfoPaneCallback()
+      }
+      return
+    } else {
+      // get first message from queue and animate message
+      const messageToDisplay = this._queuedInfoPaneMessages.shift()
+      if (messageToDisplay) {
+        this._battleTextGameObjectLine1.setText(messageToDisplay)
+        this._waitingForPlayerInput = true
+      }
+    }
   }
 
   _createBackground() {
@@ -512,5 +590,65 @@ export class BattleMenu {
       default:
         exhaustiveGuard(this._selectedMoveMenuOption)
     }
+  }
+
+  _handlePlayerChooseMainBattleOption() {
+    this.hideMainBattleMenu()
+    if (
+      this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.FIGHT
+    ) {
+      this.showPkmAttackSubMenu()
+      return
+    } else if (
+      this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.POKEMON
+    ) {
+      this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_POKEMON
+      this.updateInfoPaneMessagesAndWaitForInput(
+        ['没有后备宝可梦了'],
+        () => this._switchToMainBattleMenu()
+      )
+      return
+    } else if (
+      this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.BAG
+    ) {
+      this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_BAG
+      this.updateInfoPaneMessagesAndWaitForInput(
+        ['背包空', 'test', '123'],
+        () => this._switchToMainBattleMenu()
+      )
+      return
+    } else if (
+      this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.RUN
+    ) {
+      this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_RUN
+      this.updateInfoPaneMessagesAndWaitForInput(['不能逃跑'], () =>
+        this._switchToMainBattleMenu()
+      )
+      return
+    } else {
+      exhaustiveGuard(this._selectedBattleMenuOption)
+    }
+  }
+
+  _handlePlayerChooseAttack() {
+    let selectedMoveIndex = 0
+    switch (this._selectedMoveMenuOption) {
+      case ATTACK_MOVE_OPTIONS.MOVE_1:
+        selectedMoveIndex = 0
+        break
+      case ATTACK_MOVE_OPTIONS.MOVE_2:
+        selectedMoveIndex = 1
+        break
+      case ATTACK_MOVE_OPTIONS.MOVE_3:
+        selectedMoveIndex = 2
+        break
+      case ATTACK_MOVE_OPTIONS.MOVE_4:
+        selectedMoveIndex = 3
+        break
+      default:
+        exhaustiveGuard(this._selectedMoveMenuOption)
+    }
+
+    this._selectedAttackIndex = selectedMoveIndex
   }
 }
