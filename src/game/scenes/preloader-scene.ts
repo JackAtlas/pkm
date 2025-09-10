@@ -57,9 +57,13 @@ export class PreloaderScene extends Scene {
       DATABOX_ASSET_KEYS.DATABOX_NORMAL_FOE,
       'Graphics/UI/Battle/databox_normal_foe@2x.png'
     )
-    this.load.image(
+    this.load.spritesheet(
       DATABOX_ASSET_KEYS.OVERLAY_HP,
-      'Graphics/UI/Battle/overlay_hp@2x.png'
+      'Graphics/UI/Battle/overlay_hp@2x.png',
+      {
+        frameWidth: 192,
+        frameHeight: 12
+      }
     )
     this.load.image(
       DATABOX_ASSET_KEYS.OVERLAY_EXP,
