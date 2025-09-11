@@ -25,7 +25,7 @@ export class BattleMenu {
   _queuedInfoPaneMessages: string[]
   _queuedInfoPaneCallback: (() => void) | undefined
   _waitingForPlayerInput: boolean
-  _selectedAttackIndex: number | undefined
+  _selectedMoveIndex: number | undefined
 
   /**
    *
@@ -45,21 +45,21 @@ export class BattleMenu {
     this._queuedInfoPaneMessages = []
     this._queuedInfoPaneCallback = () => undefined
     this._waitingForPlayerInput = false
-    this._selectedAttackIndex = undefined
+    this._selectedMoveIndex = undefined
 
     this._createBackground()
     this._createMainBattleMenu()
-    this._createPkmAttackSubMenu()
+    this._createPkmMoveSubMenu()
 
     container.add(this._mainBattleMenuPhaserContainerGameObject)
     container.add(this._moveSelectionSubBattleMenuPhaserGameObject)
   }
 
-  get selectedAttack(): number | undefined {
+  get selectedMove(): number | undefined {
     if (
       this._activeBattleMenu === ACTIVE_BATTLE_MENU.BATTLE_MOVE_SELECT
     ) {
-      return this._selectedAttackIndex
+      return this._selectedMoveIndex
     }
     return undefined
   }
@@ -76,7 +76,7 @@ export class BattleMenu {
         2 +
         infoPaneBorderWidth
     )
-    this._selectedAttackIndex = undefined
+    this._selectedMoveIndex = undefined
   }
 
   hideMainBattleMenu() {
@@ -85,18 +85,19 @@ export class BattleMenu {
     this._battleTextGameObjectLine2.setVisible(false)
   }
 
-  showPkmAttackSubMenu() {
+  showPkmMoveSubMenu() {
     this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MOVE_SELECT
     this._moveSelectionSubBattleMenuPhaserGameObject.setVisible(true)
   }
 
-  hidePkmAttackSubMenu() {
+  hidePkmMoveSubMenu() {
+    this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MAIN
     this._moveSelectionSubBattleMenuPhaserGameObject.setVisible(false)
   }
 
   _switchToMainBattleMenu() {
     this.showMainBattleMenu()
-    this.hidePkmAttackSubMenu()
+    this.hidePkmMoveSubMenu()
   }
 
   handlePlayerInput(input: DIRECTION | 'OK' | 'CANCEL') {
@@ -121,10 +122,10 @@ export class BattleMenu {
         return
       }
       this.hideMainBattleMenu()
-      this.showPkmAttackSubMenu()
+      this.showPkmMoveSubMenu()
       return
     } else if (input === 'CANCEL') {
-      this.hidePkmAttackSubMenu()
+      this.hidePkmMoveSubMenu()
       this.showMainBattleMenu()
       return
     }
@@ -258,7 +259,7 @@ export class BattleMenu {
     this.hideMainBattleMenu()
   }
 
-  _createPkmAttackSubMenu() {
+  _createPkmMoveSubMenu() {
     this._moveSelectionSubBattleMenuPhaserGameObject =
       this._scene.add.container(this._container.width / 2, 0)
     this._moveSelectionSubBattleMenuPhaserGameObject.width =
@@ -321,7 +322,7 @@ export class BattleMenu {
       this._moveSelectMenuCursorPhaserGameObject
     )
 
-    this.hidePkmAttackSubMenu()
+    this.hidePkmMoveSubMenu()
   }
 
   _createInfoPane(
@@ -597,7 +598,7 @@ export class BattleMenu {
     if (
       this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.FIGHT
     ) {
-      this.showPkmAttackSubMenu()
+      this.showPkmMoveSubMenu()
       return
     } else if (
       this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.POKEMON
@@ -649,6 +650,6 @@ export class BattleMenu {
         exhaustiveGuard(this._selectedMoveMenuOption)
     }
 
-    this._selectedAttackIndex = selectedMoveIndex
+    this._selectedMoveIndex = selectedMoveIndex
   }
 }

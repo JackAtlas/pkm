@@ -6,7 +6,7 @@ export interface Pokemon {
   maxHp: number
   currentHp: number
   baseAttack: number
-  attackIds: number[]
+  moveIds: number[]
 }
 
 export interface Shadow {
@@ -34,7 +34,7 @@ export interface Coordinate {
   y: number
 }
 
-export interface Attack {
+export interface MOVE {
   id: number
   name: string
   animationName: string

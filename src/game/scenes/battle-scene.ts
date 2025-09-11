@@ -56,7 +56,7 @@ export class BattleScene extends Scene {
         maxHp: 100,
         currentHp: 100,
         baseAttack: 10,
-        attackIds: []
+        moveIds: []
       }
     })
 
@@ -82,7 +82,7 @@ export class BattleScene extends Scene {
         maxHp: 100,
         currentHp: 100,
         baseAttack: 10,
-        attackIds: []
+        moveIds: []
       }
     })
 
@@ -122,14 +122,14 @@ export class BattleScene extends Scene {
     if (wasSpaceKeyPressed) {
       this._battleMenu.handlePlayerInput('OK')
 
-      // check if the player selected an attack, and update display text
-      if (this._battleMenu.selectedAttack === undefined) {
+      // check if the player selected a move, and update display text
+      if (this._battleMenu.selectedMove === undefined) {
         return
       }
       console.log(
         `Player selected the following move: ${this._battleMenu.selectedAttack}`
       )
-      this._battleMenu.hidePkmAttackSubMenu()
+      this._battleMenu.hidePkmMoveSubMenu()
       this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
         ['Your pokemon attacks the foe'],
         () => {

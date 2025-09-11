@@ -3,6 +3,7 @@ import {
   Base,
   BattlePKMConfig,
   Coordinate,
+  MOVE,
   Pokemon,
   Shadow
 } from '@/types/typedef'
@@ -16,7 +17,7 @@ export class BattlePKM {
   protected _phaserGameObject: Phaser.GameObjects.Image
   protected _currentHp: number
   protected _maxHp: number
-  protected _pkmAttacks: Attack[]
+  protected _pkmMoves: MOVE[]
   protected _base: Base
   protected _shadow: Shadow | undefined
 
@@ -26,7 +27,7 @@ export class BattlePKM {
     this._pkm = config.pkm
     this._currentHp = this._pkm.currentHp
     this._maxHp = this._pkm.maxHp
-    this._pkmAttacks = []
+    this._pkmMoves = []
 
     this._base = config.base
     this._shadow = config.shadow
@@ -48,8 +49,8 @@ export class BattlePKM {
     return this._pkm.currentLevel
   }
 
-  get attacks(): Attack[] {
-    return [...this._pkmAttacks]
+  get moves(): MOVE[] {
+    return [...this._pkmMoves]
   }
 
   get baseAttack(): number {
