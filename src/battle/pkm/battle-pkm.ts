@@ -34,7 +34,6 @@ export class BattlePKM {
     this._paintBase()
     this._paintShadow()
     this._paintPkm(position.x, position.y)
-    this._createDataBox()
   }
 
   get isFainted(): boolean {

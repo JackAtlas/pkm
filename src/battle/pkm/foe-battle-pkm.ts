@@ -11,6 +11,7 @@ const FOE_POSITION = Object.freeze({
 export class FoeBattlePKM extends BattlePKM {
   constructor(config: BattlePKMConfig) {
     super(config, FOE_POSITION)
+    this._createDataBox()
   }
 
   _paintBase(): void {

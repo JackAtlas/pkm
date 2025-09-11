@@ -9,8 +9,11 @@ const PLAYER_POSITION = Object.freeze({
 })
 
 export class PlayerBattlePKM extends BattlePKM {
+  protected _hpTextObj: Phaser.GameObjects.Text
+
   constructor(config: BattlePKMConfig) {
     super(config, PLAYER_POSITION)
+    this._createDataBox()
   }
 
   _paintBase(): void {
@@ -83,13 +86,15 @@ export class PlayerBattlePKM extends BattlePKM {
         .image(80, 148, DATABOX_ASSET_KEYS.OVERLAY_EXP)
         .setOrigin(0)
     )
-    objArr.push(
-      this._scene.add.text(280, 106, '25 / 25', {
+
+    this._hpTextObj = this._scene.add
+      .text(280, 106, `${this._currentHp} / ${this._maxHp}`, {
         color: '#484848',
         fontSize: '32px',
         fontStyle: 'bold'
       })
-    )
+      .setOrigin(0)
+    objArr.push(this._hpTextObj)
 
     const container = this._scene.add.container(0, 0, objArr)
     container.width = dataBoxImageObj.width
@@ -101,5 +106,33 @@ export class PlayerBattlePKM extends BattlePKM {
     )
 
     this._container.add(container)
+  }
+
+  _setHpText() {
+    this._hpTextObj.setText(`${this._currentHp} / ${this._maxHp}`)
+  }
+
+  _setAnimatedHpText(formerHp: number) {
+    const hpObj = { value: formerHp }
+
+    this._scene.tweens.add({
+      targets: hpObj,
+      value: this._currentHp,
+      duration: 1000,
+      onUpdate: () => {
+        this._hpTextObj.setText(
+          `${Math.floor(hpObj.value)} / ${this._maxHp}`
+        )
+      },
+      onComplete: () => {
+        this._setHpText()
+      }
+    })
+  }
+
+  takeDamage(damage: number, callback: () => void): void {
+    const formerHp = this._currentHp
+    super.takeDamage(damage, callback)
+    this._setAnimatedHpText(formerHp)
   }
 }
