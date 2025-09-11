@@ -31,12 +31,7 @@ export class PlayerBattlePKM extends BattlePKM {
 
   _paintPkm(x: number, y: number) {
     this._phaserGameObject = this._scene.add
-      .image(
-        x,
-        y,
-        this._details.assetKey,
-        this._details.assetFrame || 0
-      )
+      .image(x, y, this._pkm.assetKey, this._pkm.assetFrame || 0)
       .setOrigin(0)
 
     this._container.add(this._phaserGameObject)
@@ -53,7 +48,7 @@ export class PlayerBattlePKM extends BattlePKM {
     const pkmNameTextObj = this._scene.add.text(
       80,
       22,
-      this._details.name,
+      this._pkm.name,
       {
         color: '#484848',
         fontSize: '36px',

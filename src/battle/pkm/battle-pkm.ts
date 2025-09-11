@@ -11,7 +11,7 @@ import { HealthBar } from '@/battle/ui/health-bar'
 export class BattlePKM {
   protected _scene: Phaser.Scene
   protected _container: Phaser.GameObjects.Container
-  protected _details: Pokemon
+  protected _pkm: Pokemon
   protected _healthBar: HealthBar
   protected _phaserGameObject: Phaser.GameObjects.Image
   protected _currentHp: number
@@ -23,9 +23,9 @@ export class BattlePKM {
   constructor(config: BattlePKMConfig, position: Coordinate) {
     this._scene = config.scene
     this._container = config.container
-    this._details = config.pkm
-    this._currentHp = this._details.currentHp
-    this._maxHp = this._details.maxHp
+    this._pkm = config.pkm
+    this._currentHp = this._pkm.currentHp
+    this._maxHp = this._pkm.maxHp
     this._pkmAttacks = []
 
     this._base = config.base
@@ -42,11 +42,11 @@ export class BattlePKM {
   }
 
   get name(): string {
-    return this._details.name
+    return this._pkm.name
   }
 
   get level(): number {
-    return this._details.currentLevel
+    return this._pkm.currentLevel
   }
 
   get attacks(): Attack[] {
@@ -54,7 +54,7 @@ export class BattlePKM {
   }
 
   get baseAttack(): number {
-    return this._details.baseAttack
+    return this._pkm.baseAttack
   }
 
   set healthBar(value: HealthBar) {
@@ -67,12 +67,7 @@ export class BattlePKM {
 
   _paintPkm(x: number, y: number) {
     this._phaserGameObject = this._scene.add
-      .image(
-        x,
-        y,
-        this._details.assetKey,
-        this._details.assetFrame || 0
-      )
+      .image(x, y, this._pkm.assetKey, this._pkm.assetFrame || 0)
       .setOrigin(0)
 
     this._container.add(this._phaserGameObject)

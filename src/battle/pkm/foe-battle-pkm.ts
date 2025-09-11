@@ -39,7 +39,7 @@ export class FoeBattlePKM extends BattlePKM {
     const pkmNameTextObj = this._scene.add.text(
       20,
       22,
-      this._details.name,
+      this._pkm.name,
       {
         color: '#484848',
         fontSize: '36px',
