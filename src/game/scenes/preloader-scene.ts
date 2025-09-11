@@ -2,11 +2,12 @@ import { Scene } from 'phaser'
 import { SCENE_KEYS } from './scene-keys'
 import {
   BATTLE_BACKGROUND_ASSET_KEYS,
+  DATA_ASSET_KEYS,
   DATABOX_ASSET_KEYS,
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
-} from '../../assets/asset-keys'
+} from '@/assets/asset-keys'
 
 export class PreloaderScene extends Scene {
   constructor() {
@@ -89,6 +90,8 @@ export class PreloaderScene extends Scene {
       POKEMON_SHADOW_ASSET_KEYS.SHADOW_LARGE,
       'Graphics/Pokemon/Shadow/3@2x.png'
     )
+
+    this.load.json(DATA_ASSET_KEYS.MOVES, 'data/moves.json')
   }
 
   create() {

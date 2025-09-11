@@ -10,20 +10,29 @@ import {
 import { BattleMenu } from '@/battle/ui/menu/battle-menu'
 import { DIRECTION } from '@/common/direction'
 import { Background } from '@/battle/background'
-import { BattlePKM } from '@/battle/pkm/battle-pkm'
 import { FoeBattlePKM } from '@/battle/pkm/foe-battle-pkm'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 
 export class BattleScene extends Scene {
   _battleMenu: BattleMenu
   _cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys
-  _activePlayerPkm: BattlePKM
+
+  /** 我方精灵 */
+  _activePlayerPkm: PlayerBattlePKM
+  /** 我方精灵出招下标 */
+  _activePlayerMoveIndex: number
+
+  /** 敌方精灵 */
   _activeFoePkm: FoeBattlePKM
 
   constructor() {
     super({
       key: SCENE_KEYS.BATTLE_SCENE
     })
+  }
+
+  init() {
+    this._activePlayerMoveIndex = -1
   }
 
   create() {
@@ -56,7 +65,7 @@ export class BattleScene extends Scene {
         maxHp: 100,
         currentHp: 100,
         baseAttack: 10,
-        moveIds: []
+        moveIds: [1]
       }
     })
 
@@ -82,7 +91,7 @@ export class BattleScene extends Scene {
         maxHp: 100,
         currentHp: 100,
         baseAttack: 10,
-        moveIds: []
+        moveIds: [2]
       }
     })
 
@@ -106,7 +115,11 @@ export class BattleScene extends Scene {
     )
 
     // 战斗菜单
-    this._battleMenu = new BattleMenu(this, midBottomContainer)
+    this._battleMenu = new BattleMenu(
+      this,
+      midBottomContainer,
+      this._activePlayerPkm
+    )
     this._battleMenu.showMainBattleMenu()
 
     // 设置场景居中
@@ -126,16 +139,13 @@ export class BattleScene extends Scene {
       if (this._battleMenu.selectedMove === undefined) {
         return
       }
-      console.log(
-        `Player selected the following move: ${this._battleMenu.selectedAttack}`
-      )
+      this._activePlayerMoveIndex = this._battleMenu.selectedMove
+
+      if (!this._activePlayerPkm.moves[this._activePlayerMoveIndex])
+        return
+
       this._battleMenu.hidePkmMoveSubMenu()
-      this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-        ['Your pokemon attacks the foe'],
-        () => {
-          this._battleMenu.showMainBattleMenu()
-        }
-      )
+      this._handleBattleSequence()
     }
 
     if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.shift)) {
@@ -161,5 +171,98 @@ export class BattleScene extends Scene {
     if (selectedDirection !== DIRECTION.NONE) {
       this._battleMenu.handlePlayerInput(selectedDirection)
     }
+  }
+
+  _handleBattleSequence() {
+    this._playerAttack()
+  }
+
+  _playerAttack() {
+    if (this._activePlayerPkm.isFainted) {
+      this._postBattleSequenceCheck()
+      return
+    }
+
+    this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+      [
+        `${this._activePlayerPkm.name} used ${
+          this._activePlayerPkm.moves[this._activePlayerMoveIndex]
+            .name
+        }`
+      ],
+      () => {
+        this.time.delayedCall(500, () => {
+          this._activeFoePkm.takeDamage(
+            this._activePlayerPkm.baseAttack,
+            () => {
+              this._foeAttack()
+            }
+          )
+        })
+      }
+    )
+  }
+
+  _foeAttack() {
+    if (this._activeFoePkm.isFainted) {
+      this._postBattleSequenceCheck()
+      return
+    }
+
+    this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+      [
+        `foe ${this._activeFoePkm.name} used ${this._activeFoePkm.moves[0].name}`
+      ],
+      () => {
+        this.time.delayedCall(500, () => {
+          this._activePlayerPkm.takeDamage(
+            this._activeFoePkm.baseAttack,
+            () => {
+              this._postBattleSequenceCheck()
+            }
+          )
+        })
+      }
+    )
+  }
+
+  _postBattleSequenceCheck() {
+    if (this._activeFoePkm.isFainted) {
+      this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+        [
+          `Wild ${this._activeFoePkm.name} fainted`,
+          `You have gained some experience`
+        ],
+        () => {
+          this._transitionToNextScene()
+        }
+      )
+      return
+    }
+
+    if (this._activePlayerPkm.isFainted) {
+      this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+        [
+          `${this._activePlayerPkm.name} fainted`,
+          `You have no more pokemons, escaping to safty...`
+        ],
+        () => {
+          this._transitionToNextScene()
+        }
+      )
+      return
+    }
+
+    this._battleMenu.showMainBattleMenu()
+  }
+
+  _transitionToNextScene() {
+    this.cameras.main.fadeOut(600, 0, 0, 0)
+    this.cameras.main.once(
+      Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+      () => {
+        this.scene.start(SCENE_KEYS.BATTLE_SCENE)
+      }
+    )
   }
 }

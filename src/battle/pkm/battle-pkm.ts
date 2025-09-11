@@ -1,5 +1,4 @@
 import {
-  Attack,
   Base,
   BattlePKMConfig,
   Coordinate,
@@ -8,6 +7,7 @@ import {
   Shadow
 } from '@/types/typedef'
 import { HealthBar } from '@/battle/ui/health-bar'
+import { DataUtils } from '@/utils/data-utils'
 
 export class BattlePKM {
   protected _scene: Phaser.Scene
@@ -35,6 +35,13 @@ export class BattlePKM {
     this._paintBase()
     this._paintShadow()
     this._paintPkm(position.x, position.y)
+
+    this._pkm.moveIds.forEach((moveId) => {
+      const pkmMove = DataUtils.getPkmMove(this._scene, moveId)
+      if (pkmMove !== undefined) {
+        this._pkmMoves.push(pkmMove)
+      }
+    })
   }
 
   get isFainted(): boolean {

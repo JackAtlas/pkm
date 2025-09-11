@@ -1,4 +1,3 @@
-import { PKM_NAME_KEYS } from '@/assets/asset-keys'
 import { DIRECTION } from '@/common/direction'
 import { exhaustiveGuard } from '@/utils/guard'
 import { BATTLE_UI_TEXT_STYLE } from './battle-menu-config'
@@ -7,6 +6,7 @@ import {
   ATTACK_MOVE_OPTIONS,
   BATTLE_MENU_OPTIONS
 } from './battle-menu-options'
+import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 
 const infoPaneBorderWidth = 4
 
@@ -27,18 +27,24 @@ export class BattleMenu {
   _waitingForPlayerInput: boolean
   _selectedMoveIndex: number | undefined
 
+  /** 玩家精灵 */
+  _activePlayerPkm: PlayerBattlePKM
+
   /**
    *
    * @param {Phaser.Scene} scene Battle Menu 所在的 Scene 对象
    * @param {Phaser.GameObjects.Container} container Battle Menu 所在的 Container 对象
+   * @param {BattlePKM} activePlayerPkm 玩家精灵
    */
   constructor(
     scene: Phaser.Scene,
-    container: Phaser.GameObjects.Container
+    container: Phaser.GameObjects.Container,
+    activePlayerPkm: PlayerBattlePKM
   ) {
     this._scene = scene
     this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MAIN
     this._container = container
+    this._activePlayerPkm = activePlayerPkm
     this._selectedBattleMenuOption = BATTLE_MENU_OPTIONS.FIGHT
     this._selectedMoveMenuOption = ATTACK_MOVE_OPTIONS.MOVE_1
 
@@ -191,7 +197,7 @@ export class BattleMenu {
     this._battleTextGameObjectLine2 = this._scene.add.text(
       this._container.width / 2 + 20,
       76,
-      `${PKM_NAME_KEYS.CHANDELURE} do next?`,
+      `${this._activePlayerPkm.name} do next?`,
       { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
     )
     this._container.add(this._battleTextGameObjectLine1)
@@ -276,38 +282,24 @@ export class BattleMenu {
     this._moveSelectionSubBattleMenuPhaserGameObject.add(
       mainInfoSubPane
     )
-    this._moveSelectionSubBattleMenuPhaserGameObject.add(
-      this._scene.add.text(
-        50,
-        mainInfoSubPane.height / 8 - 18 + infoPaneBorderWidth,
-        'slash',
-        BATTLE_UI_TEXT_STYLE
+
+    /** 招式名称 */
+    const moveNames: string[] = []
+    for (let i = 0; i < 4; i++) {
+      moveNames.push(this._activePlayerPkm.moves[i]?.name || '-')
+    }
+    moveNames.forEach((move, idx) => {
+      this._moveSelectionSubBattleMenuPhaserGameObject.add(
+        this._scene.add.text(
+          50,
+          (mainInfoSubPane.height / 8) * (idx * 2 + 1) -
+            18 +
+            infoPaneBorderWidth,
+          move,
+          BATTLE_UI_TEXT_STYLE
+        )
       )
-    )
-    this._moveSelectionSubBattleMenuPhaserGameObject.add(
-      this._scene.add.text(
-        50,
-        (mainInfoSubPane.height / 8) * 3 - 18 + infoPaneBorderWidth,
-        'growl',
-        BATTLE_UI_TEXT_STYLE
-      )
-    )
-    this._moveSelectionSubBattleMenuPhaserGameObject.add(
-      this._scene.add.text(
-        50,
-        (mainInfoSubPane.height / 8) * 5 - 18 + infoPaneBorderWidth,
-        '-',
-        BATTLE_UI_TEXT_STYLE
-      )
-    )
-    this._moveSelectionSubBattleMenuPhaserGameObject.add(
-      this._scene.add.text(
-        50,
-        (mainInfoSubPane.height / 8) * 7 - 18 + infoPaneBorderWidth,
-        '-',
-        BATTLE_UI_TEXT_STYLE
-      )
-    )
+    })
 
     // 光标
     this._moveSelectMenuCursorPhaserGameObject = this._scene.add

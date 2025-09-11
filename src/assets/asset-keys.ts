@@ -33,3 +33,7 @@ export const POKEMON_SHADOW_ASSET_KEYS = Object.freeze({
   SHADOW_MEDIUM: 'SHADOW_MEDIUM',
   SHADOW_LARGE: 'SHADOW_LARGE'
 })
+
+export const DATA_ASSET_KEYS = Object.freeze({
+  MOVES: 'MOVES'
+})
