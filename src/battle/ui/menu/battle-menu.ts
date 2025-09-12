@@ -11,10 +11,6 @@ import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
 
 const infoPaneBorderWidth = 4
 
-const PLAYER_INPUT_CURSOR_POS = Object.freeze({
-  y: 488
-})
-
 export class BattleMenu {
   _scene: Phaser.Scene
   _activeBattleMenu: ACTIVE_BATTLE_MENU
