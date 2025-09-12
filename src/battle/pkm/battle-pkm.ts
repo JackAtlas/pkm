@@ -40,6 +40,10 @@ export class BattlePKM {
     })
   }
 
+  get pkmCenterPosition(): { x: number; y: number } {
+    throw new Error('playPkmAppearAnimation is not implemented.')
+  }
+
   get isFainted(): boolean {
     return this._currentHp <= 0
   }

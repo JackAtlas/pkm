@@ -14,6 +14,13 @@ export class FoeBattlePKM extends BattlePKM {
     this._createDataBox()
   }
 
+  get pkmCenterPosition(): { x: number; y: number } {
+    return {
+      x: this._pkmGameObject.x,
+      y: this._pkmGameObject.y - this._pkmGameObject.height / 2
+    }
+  }
+
   _paintBase(): void {
     const baseImageObj = this._scene.add
       .image(FOE_POSITION.x, FOE_POSITION.y - 40, this._base)
@@ -148,7 +155,7 @@ export class FoeBattlePKM extends BattlePKM {
 
   playFaintedAnimation(callback: () => void): void {
     const startYPos = this._pkmGameObject.y
-    const endYPos = startYPos - 400
+    const endYPos = startYPos - 500
 
     if (this._skipBattleAnimations) {
       this._pkmGameObject.setY(endYPos)

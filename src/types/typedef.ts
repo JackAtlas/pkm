@@ -1,3 +1,5 @@
+import { MOVE_KEYS } from '@/battle/move/move-keys'
+
 export interface Pokemon {
   name: string
   assetKey: string
@@ -26,5 +28,5 @@ export interface Coordinate {
 export interface MOVE {
   id: number
   name: string
-  animationName: string
+  animationName: MOVE_KEYS
 }

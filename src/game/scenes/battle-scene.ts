@@ -17,6 +17,7 @@ import {
   SKIP_BATTLE_ANIMATIONS,
   SKIP_TEXT_ANIMATIONS
 } from '@/config'
+import { MOVE_TARGET, MoveManager } from '@/battle/move/move-manager'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -43,6 +44,9 @@ export class BattleScene extends Scene {
 
   /** 敌方精灵 */
   _activeFoePkm: FoeBattlePKM
+
+  /** 招式管理 */
+  _moveManager: MoveManager
 
   constructor() {
     super({
@@ -132,6 +136,21 @@ export class BattleScene extends Scene {
     midContainer.setX((this.scale.width - midContainer.width) / 2)
 
     this._createBattleStateMachine()
+    this._moveManager = new MoveManager(
+      this,
+      battleSceneContainer,
+      {
+        foePosition: {
+          x: this._activeFoePkm.pkmCenterPosition.x,
+          y: this._activeFoePkm.pkmCenterPosition.y
+        },
+        playerPosition: {
+          x: this._activePlayerPkm.pkmCenterPosition.x,
+          y: this._activePlayerPkm.pkmCenterPosition.y
+        }
+      },
+      SKIP_BATTLE_ANIMATIONS
+    )
 
     this._cursorKeys = this.input.keyboard!.createCursorKeys()
   }
@@ -215,14 +234,21 @@ export class BattleScene extends Scene {
       }`,
       () => {
         this.time.delayedCall(500, () => {
-          this._activeFoePkm.playTakeDamageAnimation(() => {
-            this._activeFoePkm.takeDamage(
-              this._activePlayerPkm.baseAttack,
-              () => {
-                this._foeAttack()
-              }
-            )
-          })
+          this._moveManager.playMoveAnimation(
+            this._activePlayerPkm.moves[this._activePlayerMoveIndex]
+              .animationName,
+            MOVE_TARGET.FOE,
+            () => {
+              this._activeFoePkm.playTakeDamageAnimation(() => {
+                this._activeFoePkm.takeDamage(
+                  this._activePlayerPkm.baseAttack,
+                  () => {
+                    this._foeAttack()
+                  }
+                )
+              })
+            }
+          )
         })
       },
       SKIP_TEXT_ANIMATIONS
@@ -241,16 +267,22 @@ export class BattleScene extends Scene {
       `foe ${this._activeFoePkm.name} used ${this._activeFoePkm.moves[0].name}`,
       () => {
         this.time.delayedCall(500, () => {
-          this._activePlayerPkm.playTakeDamageAnimation(() => {
-            this._activePlayerPkm.takeDamage(
-              this._activeFoePkm.baseAttack,
-              () => {
-                this._battleStateMachine.setState(
-                  BATTLE_STATES.POST_ATTACK_CHECK
+          this._moveManager.playMoveAnimation(
+            this._activeFoePkm.moves[0].animationName,
+            MOVE_TARGET.PLAYER,
+            () => {
+              this._activePlayerPkm.playTakeDamageAnimation(() => {
+                this._activePlayerPkm.takeDamage(
+                  this._activeFoePkm.baseAttack,
+                  () => {
+                    this._battleStateMachine.setState(
+                      BATTLE_STATES.POST_ATTACK_CHECK
+                    )
+                  }
                 )
-              }
-            )
-          })
+              })
+            }
+          )
         })
       },
       SKIP_TEXT_ANIMATIONS

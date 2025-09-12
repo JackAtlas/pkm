@@ -16,6 +16,13 @@ export class PlayerBattlePKM extends BattlePKM {
     this._createDataBox()
   }
 
+  get pkmCenterPosition(): { x: number; y: number } {
+    return {
+      x: this._pkmGameObject.x,
+      y: this._pkmGameObject.y - this._pkmGameObject.height / 4
+    }
+  }
+
   _paintBase(): void {
     const baseImageObj = this._scene.add
       .image(0, 0, this._base)

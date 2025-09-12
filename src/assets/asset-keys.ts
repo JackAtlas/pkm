@@ -37,3 +37,9 @@ export const POKEMON_SHADOW_ASSET_KEYS = Object.freeze({
 export const DATA_ASSET_KEYS = Object.freeze({
   MOVES: 'MOVES'
 })
+
+export const MOVE_ASSET_KEYS = Object.freeze({
+  ICE_SHARD_START: 'ICE_SHARD_START',
+  ICE_SHARD: 'ICE_SHARD',
+  SCRATCH: 'SCRATCH'
+})

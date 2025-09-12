@@ -5,6 +5,7 @@ import {
   DATA_ASSET_KEYS,
   DATABOX_ASSET_KEYS,
   GENERAL_ASSET_KEYS,
+  MOVE_ASSET_KEYS,
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
@@ -101,6 +102,24 @@ export class PreloaderScene extends Scene {
     )
 
     this.load.json(DATA_ASSET_KEYS.MOVES, 'data/moves.json')
+
+    this.load.spritesheet(
+      MOVE_ASSET_KEYS.ICE_SHARD,
+      'Graphics/Animations/icewater.png',
+      {
+        frameWidth: 192,
+        frameHeight: 192
+      }
+    )
+
+    this.load.spritesheet(
+      MOVE_ASSET_KEYS.SCRATCH,
+      'Graphics/Animations/scratchbattle@2x.png',
+      {
+        frameWidth: 384,
+        frameHeight: 384
+      }
+    )
   }
 
   create() {
