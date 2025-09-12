@@ -243,7 +243,7 @@ export class BattleMenu {
               this._waitingForPlayerInput = true
               this._queuedMessageAnimationPlaying = false
             },
-            delay: 0
+            delay: 50
           }
         )
       }
