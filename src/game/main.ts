@@ -19,7 +19,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.ScaleModes.FIT
   },
   parent: 'game-container',
-  backgroundColor: '#028af8',
+  backgroundColor: '0x000000',
   scene: [
     BootScene,
     PreloaderScene,
