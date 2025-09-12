@@ -1,11 +1,4 @@
-import {
-  Base,
-  BattlePKMConfig,
-  Coordinate,
-  MOVE,
-  Pokemon,
-  Shadow
-} from '@/types/typedef'
+import { BattlePKMConfig, MOVE, Pokemon } from '@/types/typedef'
 import { HealthBar } from '@/battle/ui/health-bar'
 import { DataUtils } from '@/utils/data-utils'
 
@@ -20,8 +13,8 @@ export class BattlePKM {
   protected _maxHp: number
   protected _pkmMoves: MOVE[]
   protected _skipBattleAnimations: boolean
-  protected _base: Base
-  protected _shadow: Shadow | undefined
+  protected _base: string
+  protected _shadow: string | undefined
 
   constructor(config: BattlePKMConfig) {
     this._scene = config.scene
@@ -32,8 +25,8 @@ export class BattlePKM {
     this._pkmMoves = []
     this._skipBattleAnimations = config.skipBattleAnimations || false
 
-    this._base = config.base
-    this._shadow = config.shadow
+    this._base = config.baseAssetKey
+    this._shadow = config.shadowAssetKey
 
     this._paintBase()
     this._paintShadow()

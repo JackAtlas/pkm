@@ -4,7 +4,7 @@ import { DATABOX_ASSET_KEYS } from '@/assets/asset-keys'
 import { HealthBar } from '../ui/health-bar'
 
 const PLAYER_POSITION = Object.freeze({
-  x: 80,
+  x: 200,
   y: 0
 })
 
@@ -18,7 +18,7 @@ export class PlayerBattlePKM extends BattlePKM {
 
   _paintBase(): void {
     const baseImageObj = this._scene.add
-      .image(this._base.x, this._base.y, this._base.assetKey)
+      .image(0, 0, this._base)
       .setOrigin(0)
     this._container.add(baseImageObj)
     baseImageObj
@@ -40,13 +40,11 @@ export class PlayerBattlePKM extends BattlePKM {
         this._pkm.assetKey,
         this._pkm.assetFrame || 0
       )
-      .setOrigin(0)
+      .setOrigin(0.5, 1)
       .setAlpha(0)
 
     this._container.add(this._pkmGameObject)
-    this._pkmGameObject.setY(
-      this._container.height - this._pkmGameObject.height
-    )
+    this._pkmGameObject.setY(this._container.height)
   }
 
   _createDataBox(): void {

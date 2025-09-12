@@ -66,16 +66,8 @@ export class BattleScene extends Scene {
     this._activeFoePkm = new FoeBattlePKM({
       scene: this,
       container: battleSceneContainer,
-      base: {
-        assetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE_FOE,
-        x: 0,
-        y: 180
-      },
-      shadow: {
-        assetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
-        x: battleSceneContainer.width - 250,
-        y: 310
-      },
+      baseAssetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE_FOE,
+      shadowAssetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
       pkm: {
         name: PKM_NAME_KEYS.HERACROSS,
         assetKey: POKEMON_FRONT_ASSET_KEYS.HERACROSS,
@@ -93,16 +85,8 @@ export class BattleScene extends Scene {
     this._activePlayerPkm = new PlayerBattlePKM({
       scene: this,
       container: battleSceneContainer,
-      base: {
-        assetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE,
-        x: 0,
-        y: 0
-      },
-      shadow: {
-        assetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
-        x: battleSceneContainer.width - 250,
-        y: 310
-      },
+      baseAssetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE,
+      shadowAssetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
       pkm: {
         name: PKM_NAME_KEYS.CHANDELURE,
         assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,

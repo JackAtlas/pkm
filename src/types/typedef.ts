@@ -9,24 +9,12 @@ export interface Pokemon {
   moveIds: number[]
 }
 
-export interface Shadow {
-  assetKey: string
-  x: number
-  y: number
-}
-
-export interface Base {
-  assetKey: string
-  x: number
-  y: number
-}
-
 export interface BattlePKMConfig {
   scene: Phaser.Scene
   container: Phaser.GameObjects.Container
   pkm: Pokemon
-  shadow?: Shadow
-  base: Base
+  shadowAssetKey?: string
+  baseAssetKey: string
   skipBattleAnimations?: boolean
 }
 

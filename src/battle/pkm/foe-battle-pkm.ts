@@ -4,8 +4,8 @@ import { DATABOX_ASSET_KEYS } from '@/assets/asset-keys'
 import { HealthBar } from '../ui/health-bar'
 
 const FOE_POSITION = Object.freeze({
-  x: 600,
-  y: 40
+  x: 760,
+  y: 360
 })
 
 export class FoeBattlePKM extends BattlePKM {
@@ -16,19 +16,16 @@ export class FoeBattlePKM extends BattlePKM {
 
   _paintBase(): void {
     const baseImageObj = this._scene.add
-      .image(this._base.x, this._base.y, this._base.assetKey)
-      .setOrigin(0)
+      .image(FOE_POSITION.x, FOE_POSITION.y - 40, this._base)
+      .setOrigin(0.5)
     this._container.add(baseImageObj)
-    baseImageObj.setX(this._container.width - baseImageObj.width + 2)
   }
 
   _paintShadow() {
     if (!this._shadow) return
-    const shadow = this._scene.add.image(
-      this._shadow.x,
-      this._shadow.y,
-      this._shadow.assetKey
-    )
+    const shadow = this._scene.add
+      .image(FOE_POSITION.x, FOE_POSITION.y - 40, this._shadow)
+      .setOrigin(0.5)
     this._container.add(shadow)
   }
 
@@ -40,7 +37,7 @@ export class FoeBattlePKM extends BattlePKM {
         this._pkm.assetKey,
         this._pkm.assetFrame || 0
       )
-      .setOrigin(0)
+      .setOrigin(0.5, 1)
       .setAlpha(0)
 
     this._container.add(this._pkmGameObject)
