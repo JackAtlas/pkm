@@ -27,6 +27,7 @@ export interface BattlePKMConfig {
   pkm: Pokemon
   shadow?: Shadow
   base: Base
+  skipBattleAnimations?: boolean
 }
 
 export interface Coordinate {

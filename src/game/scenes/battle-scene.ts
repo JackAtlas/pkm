@@ -13,7 +13,10 @@ import { Background } from '@/battle/background'
 import { FoeBattlePKM } from '@/battle/pkm/foe-battle-pkm'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { StateMachine } from '@/utils/state-machine'
-import { SKIP_TEXT_ANIMATIONS } from '@/config'
+import {
+  SKIP_BATTLE_ANIMATIONS,
+  SKIP_TEXT_ANIMATIONS
+} from '@/config'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -82,7 +85,8 @@ export class BattleScene extends Scene {
         currentHp: 100,
         baseAttack: 5,
         moveIds: [1]
-      }
+      },
+      skipBattleAnimations: SKIP_BATTLE_ANIMATIONS
     })
 
     // 我方精灵
@@ -108,7 +112,8 @@ export class BattleScene extends Scene {
         currentHp: 100,
         baseAttack: 45,
         moveIds: [2]
-      }
+      },
+      skipBattleAnimations: SKIP_BATTLE_ANIMATIONS
     })
 
     const midTopContainer = this.add.container(0, 0)

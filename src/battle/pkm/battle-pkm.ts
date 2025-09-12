@@ -19,6 +19,7 @@ export class BattlePKM {
   protected _currentHp: number
   protected _maxHp: number
   protected _pkmMoves: MOVE[]
+  protected _skipBattleAnimations: boolean
   protected _base: Base
   protected _shadow: Shadow | undefined
 
@@ -29,6 +30,7 @@ export class BattlePKM {
     this._currentHp = this._pkm.currentHp
     this._maxHp = this._pkm.maxHp
     this._pkmMoves = []
+    this._skipBattleAnimations = config.skipBattleAnimations || false
 
     this._base = config.base
     this._shadow = config.shadow
@@ -101,6 +103,12 @@ export class BattlePKM {
   }
 
   playTakeDamageAnimation(callback: () => void): void {
+    if (this._skipBattleAnimations) {
+      this._pkmGameObject.setAlpha(1)
+      callback()
+      return
+    }
+
     this._scene.tweens.add({
       delay: 0,
       duration: 150,

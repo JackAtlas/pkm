@@ -149,6 +149,12 @@ export class PlayerBattlePKM extends BattlePKM {
     this._pkmGameObject.setPosition(startXPos, this._pkmGameObject.y)
     this._pkmGameObject.setAlpha(1)
 
+    if (this._skipBattleAnimations) {
+      this._pkmGameObject.setX(endXPos)
+      callback()
+      return
+    }
+
     this._scene.tweens.add({
       delay: 0,
       duration: 800,
@@ -173,6 +179,12 @@ export class PlayerBattlePKM extends BattlePKM {
     )
     this._dataBoxContainer.setAlpha(1)
 
+    if (this._skipBattleAnimations) {
+      this._dataBoxContainer.setX(endXPos)
+      callback()
+      return
+    }
+
     this._scene.tweens.add({
       delay: 0,
       duration: 800,
@@ -191,6 +203,12 @@ export class PlayerBattlePKM extends BattlePKM {
   playFaintedAnimation(callback: () => void): void {
     const startYPos = this._pkmGameObject.y
     const endYPos = startYPos + 400
+
+    if (this._skipBattleAnimations) {
+      this._pkmGameObject.setY(endYPos)
+      callback()
+      return
+    }
 
     this._scene.tweens.add({
       delay: 0,

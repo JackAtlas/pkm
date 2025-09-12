@@ -217,6 +217,7 @@ export class BattleMenu {
     if (this._queuedInfoPaneMessages.length === 0) {
       if (this._queuedInfoPaneCallback) {
         this._queuedInfoPaneCallback()
+        this._queuedInfoPaneCallback = undefined
       }
       return
     } else {
@@ -227,9 +228,7 @@ export class BattleMenu {
           this._battleTextGameObjectLine.setText(messageToDisplay)
           this._queuedMessageAnimationPlaying = false
           this._waitingForPlayerInput = true
-          if (this._queuedInfoPaneCallback) {
-            this._queuedInfoPaneCallback()
-          }
+          this.playInputCursorAnimation()
           return
         }
 
