@@ -12,6 +12,19 @@ import { DIRECTION } from '@/common/direction'
 import { Background } from '@/battle/background'
 import { FoeBattlePKM } from '@/battle/pkm/foe-battle-pkm'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
+import { StateMachine } from '@/utils/state-machine'
+
+const BATTLE_STATES = Object.freeze({
+  INTRO: 'INTRO',
+  PRE_BATTLE_INFO: 'PRE_BATTLE_INFO',
+  BRING_OUT_PKM: 'BRING_OUT_PKM',
+  PLAYER_INPUT: 'PLAYER_INPUT',
+  FOE_INPUT: 'FOE_INPUT',
+  BATTLE: 'BATTLE',
+  POST_ATTACK_CHECK: 'POST_ATTACK_CHECK',
+  FINISHED: 'FINISHED',
+  FLEE_ATTEMPT: 'FLEE_ATTEMPT'
+})
 
 export class BattleScene extends Scene {
   _battleMenu: BattleMenu
@@ -21,6 +34,8 @@ export class BattleScene extends Scene {
   _activePlayerPkm: PlayerBattlePKM
   /** 我方精灵出招下标 */
   _activePlayerMoveIndex: number
+
+  _battleStateMachine: StateMachine
 
   /** 敌方精灵 */
   _activeFoePkm: FoeBattlePKM
@@ -64,7 +79,7 @@ export class BattleScene extends Scene {
         currentLevel: 5,
         maxHp: 100,
         currentHp: 100,
-        baseAttack: 10,
+        baseAttack: 5,
         moveIds: [1]
       }
     })
@@ -90,7 +105,7 @@ export class BattleScene extends Scene {
         currentLevel: 5,
         maxHp: 100,
         currentHp: 100,
-        baseAttack: 10,
+        baseAttack: 45,
         moveIds: [2]
       }
     })
@@ -120,15 +135,17 @@ export class BattleScene extends Scene {
       midBottomContainer,
       this._activePlayerPkm
     )
-    this._battleMenu.showMainBattleMenu()
 
     // 设置场景居中
     midContainer.setX((this.scale.width - midContainer.width) / 2)
+
+    this._createBattleStateMachine()
 
     this._cursorKeys = this.input.keyboard!.createCursorKeys()
   }
 
   update() {
+    this._battleStateMachine.update()
     const wasSpaceKeyPressed = Phaser.Input.Keyboard.JustDown(
       this._cursorKeys.space
     )
@@ -145,7 +162,7 @@ export class BattleScene extends Scene {
         return
 
       this._battleMenu.hidePkmMoveSubMenu()
-      this._handleBattleSequence()
+      this._battleStateMachine.setState(BATTLE_STATES.FOE_INPUT)
     }
 
     if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.shift)) {
@@ -173,9 +190,7 @@ export class BattleScene extends Scene {
     }
   }
 
-  _handleBattleSequence() {
-    this._playerAttack()
-  }
+  // _handleBattleSequence() {}
 
   _playerAttack() {
     if (this._activePlayerPkm.isFainted) {
@@ -205,7 +220,9 @@ export class BattleScene extends Scene {
 
   _foeAttack() {
     if (this._activeFoePkm.isFainted) {
-      this._postBattleSequenceCheck()
+      this._battleStateMachine.setState(
+        BATTLE_STATES.POST_ATTACK_CHECK
+      )
       return
     }
 
@@ -218,7 +235,9 @@ export class BattleScene extends Scene {
           this._activePlayerPkm.takeDamage(
             this._activeFoePkm.baseAttack,
             () => {
-              this._postBattleSequenceCheck()
+              this._battleStateMachine.setState(
+                BATTLE_STATES.POST_ATTACK_CHECK
+              )
             }
           )
         })
@@ -234,7 +253,7 @@ export class BattleScene extends Scene {
           `You have gained some experience`
         ],
         () => {
-          this._transitionToNextScene()
+          this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
         }
       )
       return
@@ -247,13 +266,13 @@ export class BattleScene extends Scene {
           `You have no more pokemons, escaping to safty...`
         ],
         () => {
-          this._transitionToNextScene()
+          this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
         }
       )
       return
     }
 
-    this._battleMenu.showMainBattleMenu()
+    this._battleStateMachine.setState(BATTLE_STATES.PLAYER_INPUT)
   }
 
   _transitionToNextScene() {
@@ -264,5 +283,106 @@ export class BattleScene extends Scene {
         this.scene.start(SCENE_KEYS.BATTLE_SCENE)
       }
     )
+  }
+
+  _createBattleStateMachine() {
+    this._battleStateMachine = new StateMachine('battle', this)
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.INTRO,
+      onEnter: () => {
+        // 等待场景设置和动画
+        this.time.delayedCall(500, () => {
+          this._battleStateMachine.setState(
+            BATTLE_STATES.PRE_BATTLE_INFO
+          )
+        })
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.PRE_BATTLE_INFO,
+      onEnter: () => {
+        // 等待敌方精灵出现并通知玩家
+        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+          [`A wild ${this._activeFoePkm.name} appeared!`],
+          () => {
+            this.time.delayedCall(500, () => {
+              this._battleStateMachine.setState(
+                BATTLE_STATES.BRING_OUT_PKM
+              )
+            })
+          }
+        )
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.BRING_OUT_PKM,
+      onEnter: () => {
+        // 等待己方精灵出现
+        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+          [`go ${this._activePlayerPkm.name}!`],
+          () => {
+            this.time.delayedCall(500, () => {
+              this._battleStateMachine.setState(
+                BATTLE_STATES.PLAYER_INPUT
+              )
+            })
+          }
+        )
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.PLAYER_INPUT,
+      onEnter: () => {
+        this._battleMenu.showMainBattleMenu()
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.FOE_INPUT,
+      onEnter: () => {
+        // TODO: 敌方 AI
+        // 敌方选择随机技能
+        this._battleStateMachine.setState(BATTLE_STATES.BATTLE)
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.BATTLE,
+      onEnter: () => {
+        this._playerAttack()
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.POST_ATTACK_CHECK,
+      onEnter: () => {
+        this._postBattleSequenceCheck()
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.FINISHED,
+      onEnter: () => {
+        this._transitionToNextScene()
+      }
+    })
+
+    this._battleStateMachine.addState({
+      name: BATTLE_STATES.FLEE_ATTEMPT,
+      onEnter: () => {
+        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+          ['You got away safely!'],
+          () => {
+            this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
+          }
+        )
+      }
+    })
+
+    this._battleStateMachine.setState('INTRO')
   }
 }
