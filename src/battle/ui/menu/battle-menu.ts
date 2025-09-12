@@ -297,7 +297,7 @@ export class BattleMenu {
         GENERAL_ASSET_KEYS.PAUSE_ARROW,
         {
           start: 0,
-          end: 4
+          end: 3
         }
       ),
       frameRate: 6,
