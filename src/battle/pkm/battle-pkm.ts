@@ -12,6 +12,7 @@ import { DataUtils } from '@/utils/data-utils'
 export class BattlePKM {
   protected _scene: Phaser.Scene
   protected _container: Phaser.GameObjects.Container
+  protected _pkmGameObject: Phaser.GameObjects.Image
   protected _pkm: Pokemon
   protected _healthBar: HealthBar
   protected _currentHp: number
