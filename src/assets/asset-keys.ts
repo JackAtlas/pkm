@@ -9,8 +9,8 @@ export const PKM_NAME_KEYS = Object.freeze({
   CHANDELURE: 'Charmander'
 })
 
-export const BATTLE_ASSET_KEYS = Object.freeze({
-  HEALTH_BAR_BACKGROUND: 'HEALTH_BAR_BACKGROUND'
+export const GENERAL_ASSET_KEYS = Object.freeze({
+  PAUSE_ARROW: 'PAUSE_ARROW'
 })
 
 export const DATABOX_ASSET_KEYS = Object.freeze({

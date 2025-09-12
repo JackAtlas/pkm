@@ -114,8 +114,10 @@ export class BattleScene extends Scene {
     const midBottomContainer = this.add.container(0, 0)
     midTopContainer.width = midBottomContainer.width =
       battleSceneContainer.width
-    midTopContainer.height = midBottomContainer.height =
-      (this.scale.height - battleSceneContainer.height) / 2
+    midTopContainer.height =
+      (this.scale.height - battleSceneContainer.height) / 8
+    midBottomContainer.height =
+      ((this.scale.height - battleSceneContainer.height) / 8) * 7
 
     const midContainer = this.add.container(0, 0, [
       midTopContainer,
@@ -149,6 +151,27 @@ export class BattleScene extends Scene {
     const wasSpaceKeyPressed = Phaser.Input.Keyboard.JustDown(
       this._cursorKeys.space
     )
+
+    if (
+      wasSpaceKeyPressed &&
+      (this._battleStateMachine.currentStateName ===
+        BATTLE_STATES.PRE_BATTLE_INFO ||
+        this._battleStateMachine.currentStateName ===
+          BATTLE_STATES.POST_ATTACK_CHECK ||
+        this._battleStateMachine.currentStateName ===
+          BATTLE_STATES.FLEE_ATTEMPT)
+    ) {
+      this._battleMenu.handlePlayerInput('OK')
+      return
+    }
+
+    if (
+      this._battleStateMachine.currentStateName !==
+      BATTLE_STATES.PLAYER_INPUT
+    ) {
+      return
+    }
+
     if (wasSpaceKeyPressed) {
       this._battleMenu.handlePlayerInput('OK')
 
@@ -190,23 +213,18 @@ export class BattleScene extends Scene {
     }
   }
 
-  // _handleBattleSequence() {}
-
   _playerAttack() {
     if (this._activePlayerPkm.isFainted) {
       this._postBattleSequenceCheck()
       return
     }
 
-    this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-      [
-        `${this._activePlayerPkm.name} used ${
-          this._activePlayerPkm.moves[this._activePlayerMoveIndex]
-            .name
-        }`
-      ],
+    this._battleMenu.updateInfoPaneMessageNoInputRequired(
+      `${this._activePlayerPkm.name} used ${
+        this._activePlayerPkm.moves[this._activePlayerMoveIndex].name
+      }`,
       () => {
-        this.time.delayedCall(500, () => {
+        this.time.delayedCall(1200, () => {
           this._activeFoePkm.takeDamage(
             this._activePlayerPkm.baseAttack,
             () => {
@@ -226,12 +244,10 @@ export class BattleScene extends Scene {
       return
     }
 
-    this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-      [
-        `foe ${this._activeFoePkm.name} used ${this._activeFoePkm.moves[0].name}`
-      ],
+    this._battleMenu.updateInfoPaneMessageNoInputRequired(
+      `foe ${this._activeFoePkm.name} used ${this._activeFoePkm.moves[0].name}`,
       () => {
-        this.time.delayedCall(500, () => {
+        this.time.delayedCall(1200, () => {
           this._activePlayerPkm.takeDamage(
             this._activeFoePkm.baseAttack,
             () => {
@@ -321,10 +337,10 @@ export class BattleScene extends Scene {
       name: BATTLE_STATES.BRING_OUT_PKM,
       onEnter: () => {
         // 等待己方精灵出现
-        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-          [`go ${this._activePlayerPkm.name}!`],
+        this._battleMenu.updateInfoPaneMessageNoInputRequired(
+          `go ${this._activePlayerPkm.name}!`,
           () => {
-            this.time.delayedCall(500, () => {
+            this.time.delayedCall(1200, () => {
               this._battleStateMachine.setState(
                 BATTLE_STATES.PLAYER_INPUT
               )

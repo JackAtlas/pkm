@@ -7,17 +7,22 @@ import {
   BATTLE_MENU_OPTIONS
 } from './battle-menu-options'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
+import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
 
 const infoPaneBorderWidth = 4
+
+const PLAYER_INPUT_CURSOR_POS = Object.freeze({
+  y: 488
+})
 
 export class BattleMenu {
   _scene: Phaser.Scene
   _activeBattleMenu: ACTIVE_BATTLE_MENU
   _container: Phaser.GameObjects.Container
+  _messagePanePhaserContainerObject: Phaser.GameObjects.Container
   _mainBattleMenuPhaserContainerGameObject: Phaser.GameObjects.Container
   _moveSelectionSubBattleMenuPhaserGameObject: Phaser.GameObjects.Container
-  _battleTextGameObjectLine1: Phaser.GameObjects.Text
-  _battleTextGameObjectLine2: Phaser.GameObjects.Text
+  _battleTextGameObjectLine: Phaser.GameObjects.Text
   _mainBattleMenuCursorPhaserGameObject: Phaser.GameObjects.Arc
   _moveSelectMenuCursorPhaserGameObject: Phaser.GameObjects.Arc
   _selectedBattleMenuOption: BATTLE_MENU_OPTIONS
@@ -29,6 +34,9 @@ export class BattleMenu {
 
   /** 玩家精灵 */
   _activePlayerPkm: PlayerBattlePKM
+
+  /** 消息栏的箭头 */
+  _userInputCursorPhaserSpriteGameObject: Phaser.GameObjects.Sprite
 
   /**
    *
@@ -54,6 +62,7 @@ export class BattleMenu {
     this._selectedMoveIndex = undefined
 
     this._createBackground()
+    this._createMessagePane()
     this._createMainBattleMenu()
     this._createPkmMoveSubMenu()
 
@@ -72,10 +81,10 @@ export class BattleMenu {
 
   showMainBattleMenu() {
     this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MAIN
-    this._battleTextGameObjectLine1.setText(`What should`)
+    this._battleTextGameObjectLine.setText(
+      `What should ${this._activePlayerPkm.name} do next?`
+    )
     this._mainBattleMenuPhaserContainerGameObject.setVisible(true)
-    this._battleTextGameObjectLine1.setVisible(true)
-    this._battleTextGameObjectLine2.setVisible(true)
     this._selectedBattleMenuOption = BATTLE_MENU_OPTIONS.FIGHT
     this._mainBattleMenuCursorPhaserGameObject.setY(
       this._mainBattleMenuPhaserContainerGameObject.height / 8 -
@@ -87,8 +96,6 @@ export class BattleMenu {
 
   hideMainBattleMenu() {
     this._mainBattleMenuPhaserContainerGameObject.setVisible(false)
-    this._battleTextGameObjectLine1.setVisible(false)
-    this._battleTextGameObjectLine2.setVisible(false)
   }
 
   showPkmMoveSubMenu() {
@@ -101,9 +108,25 @@ export class BattleMenu {
     this._moveSelectionSubBattleMenuPhaserGameObject.setVisible(false)
   }
 
+  playInputCursorAnimation() {
+    this._userInputCursorPhaserSpriteGameObject.setPosition(
+      this._battleTextGameObjectLine.displayWidth +
+        this._userInputCursorPhaserSpriteGameObject.displayWidth +
+        20,
+      this._userInputCursorPhaserSpriteGameObject.y
+    )
+    this._userInputCursorPhaserSpriteGameObject.setVisible(true)
+  }
+
+  hideInputCursor() {
+    this._userInputCursorPhaserSpriteGameObject.setVisible(false)
+  }
+
   _switchToMainBattleMenu() {
-    this.showMainBattleMenu()
+    this._waitingForPlayerInput = false
+    this.hideInputCursor()
     this.hidePkmMoveSubMenu()
+    this.showMainBattleMenu()
   }
 
   handlePlayerInput(input: DIRECTION | 'OK' | 'CANCEL') {
@@ -142,6 +165,20 @@ export class BattleMenu {
     this._moveMoveSelectMenuCursor()
   }
 
+  updateInfoPaneMessageNoInputRequired(
+    message: string,
+    callback: () => void
+  ) {
+    this._battleTextGameObjectLine.setText('').setVisible(true)
+
+    // TODO
+    this._battleTextGameObjectLine.setText(message)
+    this._waitingForPlayerInput = false
+    if (callback) {
+      callback()
+    }
+  }
+
   updateInfoPaneMessagesAndWaitForInput(
     messages: string[],
     callback?: () => void
@@ -154,7 +191,8 @@ export class BattleMenu {
 
   _updateInfoPaneWithMessage() {
     this._waitingForPlayerInput = false
-    this._battleTextGameObjectLine1.setText('').setVisible(true)
+    this._battleTextGameObjectLine.setText('').setVisible(true)
+    this.hideInputCursor()
 
     // check if all messages have been displayed from the queue and call the callback
     if (this._queuedInfoPaneMessages.length === 0) {
@@ -166,8 +204,9 @@ export class BattleMenu {
       // get first message from queue and animate message
       const messageToDisplay = this._queuedInfoPaneMessages.shift()
       if (messageToDisplay) {
-        this._battleTextGameObjectLine1.setText(messageToDisplay)
+        this._battleTextGameObjectLine.setText(messageToDisplay)
         this._waitingForPlayerInput = true
+        this.playInputCursorAnimation()
       }
     }
   }
@@ -186,29 +225,60 @@ export class BattleMenu {
     )
   }
 
-  _createMainBattleMenu() {
-    this._battleTextGameObjectLine1 = this._scene.add.text(
-      this._container.width / 2 + 20,
-      20,
-      'What should',
-      { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
-    )
-    // TODO: update to use pkm data that is passed into this class instance
-    this._battleTextGameObjectLine2 = this._scene.add.text(
-      this._container.width / 2 + 20,
-      76,
-      `${this._activePlayerPkm.name} do next?`,
-      { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
-    )
-    this._container.add(this._battleTextGameObjectLine1)
-    this._container.add(this._battleTextGameObjectLine2)
-
-    this._mainBattleMenuPhaserContainerGameObject =
+  _createMessagePane() {
+    this._messagePanePhaserContainerObject =
       this._scene.add.container(0, 0)
+    this._messagePanePhaserContainerObject.width =
+      this._container.width
+    this._messagePanePhaserContainerObject.height =
+      this._container.height / 7
+    // TODO: update to use pkm data that is passed into this class instance
+    this._battleTextGameObjectLine = this._scene.add.text(
+      20,
+      20,
+      `What should ${this._activePlayerPkm.name} do next?`,
+      { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
+    )
+    this._messagePanePhaserContainerObject.add(
+      this._battleTextGameObjectLine
+    )
+    this._userInputCursorPhaserSpriteGameObject =
+      this._scene.add.sprite(
+        0,
+        this._messagePanePhaserContainerObject.height / 2,
+        GENERAL_ASSET_KEYS.PAUSE_ARROW
+      )
+    this._userInputCursorPhaserSpriteGameObject.setVisible(false)
+    this._messagePanePhaserContainerObject.add(
+      this._userInputCursorPhaserSpriteGameObject
+    )
+    this._scene.anims.create({
+      key: 'pause-arrow',
+      frames: this._scene.anims.generateFrameNumbers(
+        GENERAL_ASSET_KEYS.PAUSE_ARROW,
+        {
+          start: 0,
+          end: 4
+        }
+      ),
+      frameRate: 6,
+      repeat: -1
+    })
+    this._userInputCursorPhaserSpriteGameObject.play('pause-arrow')
+    this._container.add(this._messagePanePhaserContainerObject)
+  }
+
+  _createMainBattleMenu() {
+    this._mainBattleMenuPhaserContainerGameObject =
+      this._scene.add.container(
+        0,
+        this._messagePanePhaserContainerObject.height
+      )
     this._mainBattleMenuPhaserContainerGameObject.width =
       this._container.width / 2
     this._mainBattleMenuPhaserContainerGameObject.height =
-      this._container.height
+      this._container.height -
+      this._messagePanePhaserContainerObject.height
     const mainInfoPane = this._createInfoPane(
       this._mainBattleMenuPhaserContainerGameObject,
       {
@@ -267,11 +337,15 @@ export class BattleMenu {
 
   _createPkmMoveSubMenu() {
     this._moveSelectionSubBattleMenuPhaserGameObject =
-      this._scene.add.container(this._container.width / 2, 0)
+      this._scene.add.container(
+        this._container.width / 2,
+        this._messagePanePhaserContainerObject.height
+      )
     this._moveSelectionSubBattleMenuPhaserGameObject.width =
       this._container.width / 2
     this._moveSelectionSubBattleMenuPhaserGameObject.height =
-      this._container.height
+      this._container.height -
+      this._messagePanePhaserContainerObject.height
     const mainInfoSubPane = this._createInfoPane(
       this._moveSelectionSubBattleMenuPhaserGameObject,
       {

@@ -4,6 +4,7 @@ import {
   BATTLE_BACKGROUND_ASSET_KEYS,
   DATA_ASSET_KEYS,
   DATABOX_ASSET_KEYS,
+  GENERAL_ASSET_KEYS,
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
@@ -69,6 +70,14 @@ export class PreloaderScene extends Scene {
     this.load.image(
       DATABOX_ASSET_KEYS.OVERLAY_EXP,
       'Graphics/UI/Battle/overlay_exp@2x.png'
+    )
+    this.load.spritesheet(
+      GENERAL_ASSET_KEYS.PAUSE_ARROW,
+      'Graphics/pause_arrow@2x.png',
+      {
+        frameWidth: 40,
+        frameHeight: 56
+      }
     )
     this.load.image(
       POKEMON_FRONT_ASSET_KEYS.HERACROSS,
