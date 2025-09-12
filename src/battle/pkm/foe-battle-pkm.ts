@@ -10,7 +10,7 @@ const FOE_POSITION = Object.freeze({
 
 export class FoeBattlePKM extends BattlePKM {
   constructor(config: BattlePKMConfig) {
-    super(config, FOE_POSITION)
+    super(config)
     this._createDataBox()
   }
 
@@ -30,6 +30,20 @@ export class FoeBattlePKM extends BattlePKM {
       this._shadow.assetKey
     )
     this._container.add(shadow)
+  }
+
+  _paintPkm() {
+    this._pkmGameObject = this._scene.add
+      .image(
+        FOE_POSITION.x,
+        FOE_POSITION.y,
+        this._pkm.assetKey,
+        this._pkm.assetFrame || 0
+      )
+      .setOrigin(0)
+      .setAlpha(0)
+
+    this._container.add(this._pkmGameObject)
   }
 
   _createDataBox(): void {

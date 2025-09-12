@@ -12,7 +12,7 @@ export class PlayerBattlePKM extends BattlePKM {
   protected _hpTextObj: Phaser.GameObjects.Text
 
   constructor(config: BattlePKMConfig) {
-    super(config, PLAYER_POSITION)
+    super(config)
     this._createDataBox()
   }
 
@@ -32,9 +32,14 @@ export class PlayerBattlePKM extends BattlePKM {
       )
   }
 
-  _paintPkm(x: number, y: number) {
+  _paintPkm() {
     this._pkmGameObject = this._scene.add
-      .image(x, y, this._pkm.assetKey, this._pkm.assetFrame || 0)
+      .image(
+        PLAYER_POSITION.x,
+        PLAYER_POSITION.y,
+        this._pkm.assetKey,
+        this._pkm.assetFrame || 0
+      )
       .setOrigin(0)
 
     this._container.add(this._pkmGameObject)

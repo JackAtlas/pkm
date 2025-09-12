@@ -21,7 +21,7 @@ export class BattlePKM {
   protected _base: Base
   protected _shadow: Shadow | undefined
 
-  constructor(config: BattlePKMConfig, position: Coordinate) {
+  constructor(config: BattlePKMConfig) {
     this._scene = config.scene
     this._container = config.container
     this._pkm = config.pkm
@@ -34,7 +34,7 @@ export class BattlePKM {
 
     this._paintBase()
     this._paintShadow()
-    this._paintPkm(position.x, position.y)
+    this._paintPkm()
 
     this._pkm.moveIds.forEach((moveId) => {
       const pkmMove = DataUtils.getPkmMove(this._scene, moveId)
@@ -72,12 +72,8 @@ export class BattlePKM {
 
   _paintShadow() {}
 
-  _paintPkm(x: number, y: number) {
-    this._phaserGameObject = this._scene.add
-      .image(x, y, this._pkm.assetKey, this._pkm.assetFrame || 0)
-      .setOrigin(0)
-
-    this._container.add(this._phaserGameObject)
+  _paintPkm() {
+    throw new Error('_paintPkm is not implemented.')
   }
 
   _createDataBox() {}
