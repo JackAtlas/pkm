@@ -41,6 +41,7 @@ export class PlayerBattlePKM extends BattlePKM {
         this._pkm.assetFrame || 0
       )
       .setOrigin(0)
+      .setAlpha(0)
 
     this._container.add(this._pkmGameObject)
     this._pkmGameObject.setY(
@@ -101,16 +102,17 @@ export class PlayerBattlePKM extends BattlePKM {
       .setOrigin(0)
     objArr.push(this._hpTextObj)
 
-    const container = this._scene.add.container(0, 0, objArr)
-    container.width = dataBoxImageObj.width
-    container.height = dataBoxImageObj.height
+    this._dataBoxContainer = this._scene.add.container(0, 0, objArr)
+    this._dataBoxContainer.width = dataBoxImageObj.width
+    this._dataBoxContainer.height = dataBoxImageObj.height
+    this._dataBoxContainer.setAlpha(0)
 
-    container.setPosition(
-      this._container.width - container.width,
-      this._container.height - container.height - 50
+    this._dataBoxContainer.setPosition(
+      this._container.width - this._dataBoxContainer.width,
+      this._container.height - this._dataBoxContainer.height - 50
     )
 
-    this._container.add(container)
+    this._container.add(this._dataBoxContainer)
   }
 
   _setHpText() {
@@ -139,5 +141,70 @@ export class PlayerBattlePKM extends BattlePKM {
     const formerHp = this._currentHp
     super.takeDamage(damage, callback)
     this._setAnimatedHpText(formerHp)
+  }
+
+  playPkmAppearAnimation(callback: () => void): void {
+    const startXPos = -30
+    const endXPos = PLAYER_POSITION.x
+    this._pkmGameObject.setPosition(startXPos, this._pkmGameObject.y)
+    this._pkmGameObject.setAlpha(1)
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 800,
+      x: {
+        from: startXPos,
+        start: startXPos,
+        to: endXPos
+      },
+      targets: this._pkmGameObject,
+      onComplete: () => {
+        callback()
+      }
+    })
+  }
+
+  playDataBoxAnimation(callback: () => void): void {
+    const startXPos = 800
+    const endXPos = this._dataBoxContainer.x
+    this._dataBoxContainer.setPosition(
+      startXPos,
+      this._dataBoxContainer.y
+    )
+    this._dataBoxContainer.setAlpha(1)
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 800,
+      x: {
+        from: startXPos,
+        start: startXPos,
+        to: endXPos
+      },
+      targets: this._dataBoxContainer,
+      onComplete: () => {
+        callback()
+      }
+    })
+  }
+
+  playFaintedAnimation(callback: () => void): void {
+    const startYPos = this._pkmGameObject.y
+    const endYPos = startYPos + 400
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 1600,
+      y: {
+        from: startYPos,
+        start: startYPos,
+        to: endYPos
+      },
+      targets: this._pkmGameObject,
+      onComplete: () => {
+        this._pkmGameObject.setAlpha(0)
+        callback()
+      }
+    })
   }
 }

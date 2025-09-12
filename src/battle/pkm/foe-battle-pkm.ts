@@ -84,10 +84,76 @@ export class FoeBattlePKM extends BattlePKM {
       levelTextObj
     ]
 
-    const container = this._scene.add.container(0, 20, objArr)
-    container.width = dataBoxImageObj.width
-    container.height = dataBoxImageObj.height
+    this._dataBoxContainer = this._scene.add.container(0, 20, objArr)
+    this._dataBoxContainer.width = dataBoxImageObj.width
+    this._dataBoxContainer.height = dataBoxImageObj.height
+    this._dataBoxContainer.setAlpha(0)
 
-    this._container.add(container)
+    this._container.add(this._dataBoxContainer)
+  }
+
+  playPkmAppearAnimation(callback: () => void): void {
+    const startXPos = this._container.width + 30
+    const endXPos = FOE_POSITION.x
+    this._pkmGameObject.setPosition(startXPos, FOE_POSITION.y)
+    this._pkmGameObject.setAlpha(1)
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 1600,
+      x: {
+        from: startXPos,
+        start: startXPos,
+        to: endXPos
+      },
+      targets: this._pkmGameObject,
+      onComplete: () => {
+        callback()
+      }
+    })
+  }
+
+  playDataBoxAnimation(callback: () => void): void {
+    const startXPos = -600
+    const endXPos = 0
+    this._dataBoxContainer.setPosition(
+      startXPos,
+      this._dataBoxContainer.y
+    )
+    this._dataBoxContainer.setAlpha(1)
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 1500,
+      x: {
+        from: startXPos,
+        start: startXPos,
+        to: endXPos
+      },
+      targets: this._dataBoxContainer,
+      onComplete: () => {
+        callback()
+      }
+    })
+  }
+
+  playFaintedAnimation(callback: () => void): void {
+    const startYPos = this._pkmGameObject.y
+    const endYPos = startYPos - 400
+
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 1600,
+      y: {
+        from: startYPos,
+        start: startYPos,
+        to: endYPos
+      },
+      targets: this._pkmGameObject,
+      onComplete: () => {
+        this._pkmGameObject.setAlpha(0)
+        callback()
+      }
+    })
   }
 }

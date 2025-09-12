@@ -224,13 +224,15 @@ export class BattleScene extends Scene {
         this._activePlayerPkm.moves[this._activePlayerMoveIndex].name
       }`,
       () => {
-        this.time.delayedCall(1200, () => {
-          this._activeFoePkm.takeDamage(
-            this._activePlayerPkm.baseAttack,
-            () => {
-              this._foeAttack()
-            }
-          )
+        this.time.delayedCall(500, () => {
+          this._activeFoePkm.playTakeDamageAnimation(() => {
+            this._activeFoePkm.takeDamage(
+              this._activePlayerPkm.baseAttack,
+              () => {
+                this._foeAttack()
+              }
+            )
+          })
         })
       }
     )
@@ -247,15 +249,17 @@ export class BattleScene extends Scene {
     this._battleMenu.updateInfoPaneMessageNoInputRequired(
       `foe ${this._activeFoePkm.name} used ${this._activeFoePkm.moves[0].name}`,
       () => {
-        this.time.delayedCall(1200, () => {
-          this._activePlayerPkm.takeDamage(
-            this._activeFoePkm.baseAttack,
-            () => {
-              this._battleStateMachine.setState(
-                BATTLE_STATES.POST_ATTACK_CHECK
-              )
-            }
-          )
+        this.time.delayedCall(500, () => {
+          this._activePlayerPkm.playTakeDamageAnimation(() => {
+            this._activePlayerPkm.takeDamage(
+              this._activeFoePkm.baseAttack,
+              () => {
+                this._battleStateMachine.setState(
+                  BATTLE_STATES.POST_ATTACK_CHECK
+                )
+              }
+            )
+          })
         })
       }
     )
@@ -263,28 +267,32 @@ export class BattleScene extends Scene {
 
   _postBattleSequenceCheck() {
     if (this._activeFoePkm.isFainted) {
-      this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-        [
-          `Wild ${this._activeFoePkm.name} fainted`,
-          `You have gained some experience`
-        ],
-        () => {
-          this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-        }
-      )
+      this._activeFoePkm.playFaintedAnimation(() => {
+        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+          [
+            `Wild ${this._activeFoePkm.name} fainted`,
+            `You have gained some experience`
+          ],
+          () => {
+            this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
+          }
+        )
+      })
       return
     }
 
     if (this._activePlayerPkm.isFainted) {
-      this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-        [
-          `${this._activePlayerPkm.name} fainted`,
-          `You have no more pokemons, escaping to safty...`
-        ],
-        () => {
-          this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-        }
-      )
+      this._activePlayerPkm.playFaintedAnimation(() => {
+        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+          [
+            `${this._activePlayerPkm.name} fainted`,
+            `You have no more pokemons, escaping to safty...`
+          ],
+          () => {
+            this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
+          }
+        )
+      })
       return
     }
 
@@ -320,16 +328,19 @@ export class BattleScene extends Scene {
       name: BATTLE_STATES.PRE_BATTLE_INFO,
       onEnter: () => {
         // 等待敌方精灵出现并通知玩家
-        this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
-          [`A wild ${this._activeFoePkm.name} appeared!`],
-          () => {
-            this.time.delayedCall(500, () => {
-              this._battleStateMachine.setState(
-                BATTLE_STATES.BRING_OUT_PKM
-              )
-            })
-          }
-        )
+        this._activeFoePkm.playPkmAppearAnimation(() => {
+          this._activeFoePkm.playDataBoxAnimation(() => undefined)
+          this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
+            [`A wild ${this._activeFoePkm.name} appeared!`],
+            () => {
+              this.time.delayedCall(500, () => {
+                this._battleStateMachine.setState(
+                  BATTLE_STATES.BRING_OUT_PKM
+                )
+              })
+            }
+          )
+        })
       }
     })
 
@@ -337,16 +348,19 @@ export class BattleScene extends Scene {
       name: BATTLE_STATES.BRING_OUT_PKM,
       onEnter: () => {
         // 等待己方精灵出现
-        this._battleMenu.updateInfoPaneMessageNoInputRequired(
-          `go ${this._activePlayerPkm.name}!`,
-          () => {
-            this.time.delayedCall(1200, () => {
-              this._battleStateMachine.setState(
-                BATTLE_STATES.PLAYER_INPUT
-              )
-            })
-          }
-        )
+        this._activePlayerPkm.playPkmAppearAnimation(() => {
+          this._activePlayerPkm.playDataBoxAnimation(() => undefined)
+          this._battleMenu.updateInfoPaneMessageNoInputRequired(
+            `go ${this._activePlayerPkm.name}!`,
+            () => {
+              this.time.delayedCall(1200, () => {
+                this._battleStateMachine.setState(
+                  BATTLE_STATES.PLAYER_INPUT
+                )
+              })
+            }
+          )
+        })
       }
     })
 

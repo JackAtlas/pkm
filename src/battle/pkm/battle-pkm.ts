@@ -13,6 +13,7 @@ export class BattlePKM {
   protected _scene: Phaser.Scene
   protected _container: Phaser.GameObjects.Container
   protected _pkmGameObject: Phaser.GameObjects.Image
+  protected _dataBoxContainer: Phaser.GameObjects.Container
   protected _pkm: Pokemon
   protected _healthBar: HealthBar
   protected _currentHp: number
@@ -89,5 +90,35 @@ export class BattlePKM {
       this._currentHp / this._maxHp,
       { callback }
     )
+  }
+
+  playPkmAppearAnimation(callback: () => void): void {
+    throw new Error('playPkmAppearAnimation is not implemented.')
+  }
+
+  playDataBoxAnimation(callback: () => void): void {
+    throw new Error('playPkmHealthBarAnimation is not implemented.')
+  }
+
+  playTakeDamageAnimation(callback: () => void): void {
+    this._scene.tweens.add({
+      delay: 0,
+      duration: 150,
+      targets: this._pkmGameObject,
+      alpha: {
+        from: 1,
+        start: 1,
+        to: 0
+      },
+      repeat: 5,
+      onComplete: () => {
+        this._pkmGameObject.setAlpha(1)
+        callback()
+      }
+    })
+  }
+
+  playFaintedAnimation(callback: () => void): void {
+    throw new Error('playFaintedAnimation is not implemented.')
   }
 }
