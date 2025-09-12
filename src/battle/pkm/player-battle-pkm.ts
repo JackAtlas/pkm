@@ -33,13 +33,13 @@ export class PlayerBattlePKM extends BattlePKM {
   }
 
   _paintPkm(x: number, y: number) {
-    this._phaserGameObject = this._scene.add
+    this._pkmGameObject = this._scene.add
       .image(x, y, this._pkm.assetKey, this._pkm.assetFrame || 0)
       .setOrigin(0)
 
-    this._container.add(this._phaserGameObject)
-    this._phaserGameObject.setY(
-      this._container.height - this._phaserGameObject.height
+    this._container.add(this._pkmGameObject)
+    this._pkmGameObject.setY(
+      this._container.height - this._pkmGameObject.height
     )
   }
 

@@ -14,7 +14,6 @@ export class BattlePKM {
   protected _container: Phaser.GameObjects.Container
   protected _pkm: Pokemon
   protected _healthBar: HealthBar
-  protected _phaserGameObject: Phaser.GameObjects.Image
   protected _currentHp: number
   protected _maxHp: number
   protected _pkmMoves: MOVE[]
