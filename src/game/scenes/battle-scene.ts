@@ -18,6 +18,7 @@ import {
   SKIP_TEXT_ANIMATIONS
 } from '@/config'
 import { MOVE_TARGET, MoveManager } from '@/battle/move/move-manager'
+import { createSceneTransition } from '@/utils/scene-transition'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -342,10 +343,13 @@ export class BattleScene extends Scene {
       name: BATTLE_STATES.INTRO,
       onEnter: () => {
         // 等待场景设置和动画
-        this.time.delayedCall(500, () => {
-          this._battleStateMachine.setState(
-            BATTLE_STATES.PRE_BATTLE_INFO
-          )
+        createSceneTransition(this, {
+          callback: () => {
+            this._battleStateMachine.setState(
+              BATTLE_STATES.PRE_BATTLE_INFO
+            )
+          },
+          skipSceneTransition: SKIP_BATTLE_ANIMATIONS
         })
       }
     })
