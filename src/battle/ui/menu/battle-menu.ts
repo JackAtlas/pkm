@@ -9,6 +9,7 @@ import {
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
 import { animateText } from '@/utils/text-utils'
+import { SKIP_TEXT_ANIMATIONS } from '@/config'
 
 const infoPaneBorderWidth = 4
 
@@ -711,7 +712,8 @@ export class BattleMenu {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_POKEMON
       this.updateInfoPaneMessagesAndWaitForInput(
         ['没有后备宝可梦了'],
-        () => this._switchToMainBattleMenu()
+        () => this._switchToMainBattleMenu(),
+        SKIP_TEXT_ANIMATIONS
       )
       return
     } else if (
@@ -720,15 +722,18 @@ export class BattleMenu {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_BAG
       this.updateInfoPaneMessagesAndWaitForInput(
         ['背包空', 'test', '123'],
-        () => this._switchToMainBattleMenu()
+        () => this._switchToMainBattleMenu(),
+        SKIP_TEXT_ANIMATIONS
       )
       return
     } else if (
       this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.RUN
     ) {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_RUN
-      this.updateInfoPaneMessagesAndWaitForInput(['不能逃跑'], () =>
-        this._switchToMainBattleMenu()
+      this.updateInfoPaneMessagesAndWaitForInput(
+        ['不能逃跑'],
+        () => this._switchToMainBattleMenu(),
+        SKIP_TEXT_ANIMATIONS
       )
       return
     } else {

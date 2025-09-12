@@ -13,6 +13,7 @@ import { Background } from '@/battle/background'
 import { FoeBattlePKM } from '@/battle/pkm/foe-battle-pkm'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { StateMachine } from '@/utils/state-machine'
+import { SKIP_TEXT_ANIMATIONS } from '@/config'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -234,7 +235,8 @@ export class BattleScene extends Scene {
             )
           })
         })
-      }
+      },
+      SKIP_TEXT_ANIMATIONS
     )
   }
 
@@ -261,7 +263,8 @@ export class BattleScene extends Scene {
             )
           })
         })
-      }
+      },
+      SKIP_TEXT_ANIMATIONS
     )
   }
 
@@ -275,7 +278,8 @@ export class BattleScene extends Scene {
           ],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          }
+          },
+          SKIP_TEXT_ANIMATIONS
         )
       })
       return
@@ -290,7 +294,8 @@ export class BattleScene extends Scene {
           ],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          }
+          },
+          SKIP_TEXT_ANIMATIONS
         )
       })
       return
@@ -338,7 +343,8 @@ export class BattleScene extends Scene {
                   BATTLE_STATES.BRING_OUT_PKM
                 )
               })
-            }
+            },
+            SKIP_TEXT_ANIMATIONS
           )
         })
       }
@@ -358,7 +364,8 @@ export class BattleScene extends Scene {
                   BATTLE_STATES.PLAYER_INPUT
                 )
               })
-            }
+            },
+            SKIP_TEXT_ANIMATIONS
           )
         })
       }
@@ -408,7 +415,8 @@ export class BattleScene extends Scene {
           ['You got away safely!'],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          }
+          },
+          SKIP_TEXT_ANIMATIONS
         )
       }
     })
