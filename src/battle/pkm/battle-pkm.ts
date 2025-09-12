@@ -76,7 +76,9 @@ export class BattlePKM {
     throw new Error('_paintPkm is not implemented.')
   }
 
-  _createDataBox() {}
+  _createDataBox() {
+    throw new Error('_createDataBox is not implemented.')
+  }
 
   takeDamage(damage: number, callback: () => void) {
     this._currentHp -= damage
