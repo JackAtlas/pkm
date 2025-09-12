@@ -8,6 +8,7 @@ import {
 } from './battle-menu-options'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
+import { animateText } from '@/utils/text-utils'
 
 const infoPaneBorderWidth = 4
 
@@ -25,6 +26,8 @@ export class BattleMenu {
   _selectedMoveMenuOption: ATTACK_MOVE_OPTIONS
   _queuedInfoPaneMessages: string[]
   _queuedInfoPaneCallback: (() => void) | undefined
+  _queuedMessagesSkipAnimation: boolean
+  _queuedMessageAnimationPlaying: boolean
   _waitingForPlayerInput: boolean
   _selectedMoveIndex: number | undefined
 
@@ -54,6 +57,8 @@ export class BattleMenu {
 
     this._queuedInfoPaneMessages = []
     this._queuedInfoPaneCallback = () => undefined
+    this._queuedMessagesSkipAnimation = false
+    this._queuedMessageAnimationPlaying = false
     this._waitingForPlayerInput = false
     this._selectedMoveIndex = undefined
 
@@ -126,6 +131,8 @@ export class BattleMenu {
   }
 
   handlePlayerInput(input: DIRECTION | 'OK' | 'CANCEL') {
+    if (this._queuedMessageAnimationPlaying) return
+
     if (
       this._waitingForPlayerInput &&
       (input === 'OK' || input === 'CANCEL')
@@ -163,25 +170,40 @@ export class BattleMenu {
 
   updateInfoPaneMessageNoInputRequired(
     message: string,
-    callback: () => void
+    callback?: () => void,
+    skipAnimation = false
   ) {
     this._battleTextGameObjectLine.setText('').setVisible(true)
 
-    // TODO
-    this._battleTextGameObjectLine.setText(message)
-    this._waitingForPlayerInput = false
-    if (callback) {
-      callback()
+    if (skipAnimation) {
+      this._battleTextGameObjectLine.setText(message)
+      this._waitingForPlayerInput = false
+      if (callback) callback()
+      return
+    } else {
+      animateText(
+        this._scene,
+        this._battleTextGameObjectLine,
+        message,
+        {
+          callback: () => {
+            this._waitingForPlayerInput = false
+            if (callback) callback()
+          },
+          delay: 50
+        }
+      )
     }
   }
 
   updateInfoPaneMessagesAndWaitForInput(
     messages: string[],
-    callback?: () => void
+    callback?: () => void,
+    skipAnimation = false
   ) {
     this._queuedInfoPaneMessages = messages
     this._queuedInfoPaneCallback = callback
-
+    this._queuedMessagesSkipAnimation = skipAnimation
     this._updateInfoPaneWithMessage()
   }
 
@@ -200,9 +222,30 @@ export class BattleMenu {
       // get first message from queue and animate message
       const messageToDisplay = this._queuedInfoPaneMessages.shift()
       if (messageToDisplay) {
-        this._battleTextGameObjectLine.setText(messageToDisplay)
-        this._waitingForPlayerInput = true
-        this.playInputCursorAnimation()
+        if (this._queuedMessagesSkipAnimation) {
+          this._battleTextGameObjectLine.setText(messageToDisplay)
+          this._queuedMessageAnimationPlaying = false
+          this._waitingForPlayerInput = true
+          if (this._queuedInfoPaneCallback) {
+            this._queuedInfoPaneCallback()
+          }
+          return
+        }
+
+        this._queuedMessageAnimationPlaying = true
+        animateText(
+          this._scene,
+          this._battleTextGameObjectLine,
+          messageToDisplay,
+          {
+            callback: () => {
+              this.playInputCursorAnimation()
+              this._waitingForPlayerInput = true
+              this._queuedMessageAnimationPlaying = false
+            },
+            delay: 0
+          }
+        )
       }
     }
   }
@@ -232,7 +275,7 @@ export class BattleMenu {
     this._battleTextGameObjectLine = this._scene.add.text(
       20,
       20,
-      `What should ${this._activePlayerPkm.name} do next?`,
+      '',
       { ...BATTLE_UI_TEXT_STYLE, color: '#a9b4b8' }
     )
     this._messagePanePhaserContainerObject.add(
