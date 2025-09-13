@@ -58,5 +58,6 @@ export const WORLD_ASSET_KEYS = Object.freeze({
 
 export const CHARACTER_ASSET_KEYS = Object.freeze({
   PLAYER: 'PLAYER',
-  NPC: 'NPC'
+  NPC_01: 'NPC_01',
+  NPC_06: 'NPC_06'
 })

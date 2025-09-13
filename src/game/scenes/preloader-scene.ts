@@ -159,8 +159,16 @@ export class PreloaderScene extends Scene {
     )
 
     this.load.spritesheet(
-      CHARACTER_ASSET_KEYS.NPC,
+      CHARACTER_ASSET_KEYS.NPC_01,
       'Graphics/Characters/NPC 01@2x.png',
+      {
+        frameWidth: 64,
+        frameHeight: 96
+      }
+    )
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.NPC_06,
+      'Graphics/Characters/NPC 06@2x.png',
       {
         frameWidth: 64,
         frameHeight: 96

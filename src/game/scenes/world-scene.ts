@@ -15,7 +15,26 @@ import {
   SAMPLE_TEXT
 } from '@/utils/text-utils'
 import { DialogUI } from '@/world/characters/dialog-ui'
+import { NPC } from '@/world/characters/npc'
 import { Player } from '@/world/characters/player'
+import { SCENE_KEYS } from './scene-keys'
+
+const TILED_SIGN_PROPERTY = Object.freeze({
+  MESSAGE: 'message'
+})
+
+const CUSTOM_TILED_TYPES = Object.freeze({
+  NPC: 'npc',
+  NPC_PATH: 'npc_path'
+})
+
+const TILED_NPC_PROPERTY = Object.freeze({
+  IS_SPAWN_POINT: 'is_spawn_point',
+  MOVEMENT_PATTERN: 'movement_pattern',
+  MESSAGES: 'messages',
+  FRAME: 'frame',
+  ASSET_KEY: 'asset_key'
+})
 
 type TypeMap = {
   string: string
@@ -38,9 +57,11 @@ export class WorldScene extends Phaser.Scene {
   protected _wildPkmEncountered: boolean
   protected _signLayer: Phaser.Tilemaps.ObjectLayer | null
 
+  protected _npcs: NPC[] = []
+
   constructor() {
     super({
-      key: 'WORLD_SCENE'
+      key: SCENE_KEYS.WORLD_SCENE
     })
   }
 
@@ -127,6 +148,8 @@ export class WorldScene extends Phaser.Scene {
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0)
       .setOrigin(0)
 
+    this._createNPCs(map)
+
     this._player = new Player({
       scene: this,
       position: dataManager.store.get(
@@ -183,6 +206,10 @@ export class WorldScene extends Phaser.Scene {
     }
 
     this._player.update(time)
+
+    this._npcs.forEach((npc) => {
+      npc.update(time)
+    })
   }
 
   _handlePlayerInteraction() {
@@ -220,7 +247,7 @@ export class WorldScene extends Phaser.Scene {
     if (nearbySign) {
       const props = nearbySign.properties
       const message = props.find(
-        (prop: Property) => prop.name === 'message'
+        (prop: Property) => prop.name === TILED_SIGN_PROPERTY.MESSAGE
       )?.value
 
       const usePlaceholderText =
@@ -267,7 +294,7 @@ export class WorldScene extends Phaser.Scene {
       this.cameras.main.once(
         Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
         () => {
-          this.scene.start('BATTLE_SCENE')
+          this.scene.start(SCENE_KEYS.BATTLE_SCENE)
         }
       )
     }
@@ -275,5 +302,45 @@ export class WorldScene extends Phaser.Scene {
 
   _isPlayerInputLocked() {
     return this._dialogUI.isVisible
+  }
+
+  _createNPCs(map: Phaser.Tilemaps.Tilemap) {
+    const npcLayers = map
+      .getObjectLayerNames()
+      .filter((name) => name.includes('NPC'))
+    npcLayers.forEach((name) => {
+      const layer = map.getObjectLayer(name)
+
+      const npcObject = layer?.objects.find(
+        (obj) => obj.type === CUSTOM_TILED_TYPES.NPC
+      )
+      if (
+        !npcObject ||
+        npcObject.x === undefined ||
+        npcObject.y === undefined
+      ) {
+        return
+      }
+
+      const npcFrame =
+        npcObject.properties.find(
+          (property: Property) =>
+            property.name === TILED_NPC_PROPERTY.FRAME
+        )?.value || '0'
+      const npcAssetKey =
+        npcObject.properties.find(
+          (property: Property) =>
+            property.name === TILED_NPC_PROPERTY.ASSET_KEY
+        )?.value || 'NPC_01'
+
+      const npc = new NPC({
+        assetKey: npcAssetKey,
+        scene: this,
+        position: { x: npcObject.x, y: npcObject.y - TILE_SIZE },
+        direction: DIRECTION.DOWN,
+        frame: parseInt(npcFrame, 10)
+      })
+      this._npcs.push(npc)
+    })
   }
 }
