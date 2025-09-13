@@ -30,3 +30,13 @@ export interface Move {
   name: string
   animationName: MOVE_KEYS
 }
+
+export interface Animation {
+  key: string
+  assetKey: string
+  frames?: number[]
+  frameRate: number
+  repeat: number
+  delay?: number
+  yoyo?: boolean
+}

@@ -5,7 +5,8 @@ import {
   GameOverScene,
   GameScene,
   MainMenuScene,
-  PreloaderScene
+  PreloaderScene,
+  WorldScene
 } from './scenes'
 
 //  Find out more information about the Game Config at:
@@ -26,7 +27,8 @@ const config: Phaser.Types.Core.GameConfig = {
     BattleScene,
     MainMenuScene,
     GameScene,
-    GameOverScene
+    GameOverScene,
+    WorldScene
   ]
 }
 

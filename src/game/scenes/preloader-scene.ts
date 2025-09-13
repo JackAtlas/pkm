@@ -2,14 +2,18 @@ import { Scene } from 'phaser'
 import { SCENE_KEYS } from './scene-keys'
 import {
   BATTLE_BACKGROUND_ASSET_KEYS,
+  CHARACTER_ASSET_KEYS,
   DATA_ASSET_KEYS,
   DATABOX_ASSET_KEYS,
   GENERAL_ASSET_KEYS,
   MOVE_ASSET_KEYS,
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
-  POKEMON_SHADOW_ASSET_KEYS
+  POKEMON_SHADOW_ASSET_KEYS,
+  WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
+import { DataUtils } from '@/utils/data-utils'
+import { Animation } from '@/types/typedef'
 
 export class PreloaderScene extends Scene {
   constructor() {
@@ -101,6 +105,7 @@ export class PreloaderScene extends Scene {
       'Graphics/Pokemon/Shadow/3@2x.png'
     )
 
+    this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'data/animations.json')
     this.load.json(DATA_ASSET_KEYS.MOVES, 'data/moves.json')
 
     this.load.spritesheet(
@@ -120,11 +125,35 @@ export class PreloaderScene extends Scene {
         frameHeight: 384
       }
     )
+
+    this.load.image(
+      WORLD_ASSET_KEYS.WORLD_BACKGROUND,
+      'Graphics/Map/level_background.png'
+    )
+
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.PLAYER,
+      'Graphics/Characters/boy_run@2x.png',
+      {
+        frameWidth: 64,
+        frameHeight: 96
+      }
+    )
+
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.NPC,
+      'Graphics/Characters/NPC 01@2x.png',
+      {
+        frameWidth: 64,
+        frameHeight: 96
+      }
+    )
   }
 
   create() {
     //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
     //  For example, you can define global animations here, so we can use them in other scenes.
+    this._createAnimations()
 
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
     console.log(`[${PreloaderScene.name}: create] invoked`)
@@ -173,7 +202,26 @@ export class PreloaderScene extends Scene {
       loadedFonts.forEach((loadedFont) => {
         document.fonts.add(loadedFont)
       })
-      this.scene.start(SCENE_KEYS.BATTLE_SCENE)
+      this.scene.start(SCENE_KEYS.WORLD_SCENE)
+    })
+  }
+
+  _createAnimations() {
+    const animations = DataUtils.getAnimations(this)
+    animations.forEach((animation: Animation) => {
+      const frames = animation.frames
+        ? this.anims.generateFrameNumbers(animation.assetKey, {
+            frames: animation.frames
+          })
+        : this.anims.generateFrameNumbers(animation.assetKey)
+      this.anims.create({
+        key: animation.key,
+        frames,
+        frameRate: animation.frameRate,
+        repeat: animation.repeat,
+        delay: animation.delay || 0,
+        yoyo: animation.yoyo || false
+      })
     })
   }
 }
