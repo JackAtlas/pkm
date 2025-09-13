@@ -19,6 +19,7 @@ import {
 } from '@/config'
 import { MOVE_TARGET, MoveManager } from '@/battle/move/move-manager'
 import { createSceneTransition } from '@/utils/scene-transition'
+import { Controls } from '@/utils/controls'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -34,7 +35,7 @@ const BATTLE_STATES = Object.freeze({
 
 export class BattleScene extends Scene {
   _battleMenu: BattleMenu
-  _cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys
+  _controls: Controls
 
   /** 我方精灵 */
   _activePlayerPkm: PlayerBattlePKM
@@ -153,14 +154,12 @@ export class BattleScene extends Scene {
       SKIP_BATTLE_ANIMATIONS
     )
 
-    this._cursorKeys = this.input.keyboard!.createCursorKeys()
+    this._controls = new Controls(this)
   }
 
   update() {
     this._battleStateMachine.update()
-    const wasSpaceKeyPressed = Phaser.Input.Keyboard.JustDown(
-      this._cursorKeys.space
-    )
+    const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
 
     if (
       wasSpaceKeyPressed &&
@@ -198,26 +197,13 @@ export class BattleScene extends Scene {
       this._battleStateMachine.setState(BATTLE_STATES.FOE_INPUT)
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.shift)) {
+    if (this._controls.wasBackKeyPressed()) {
       this._battleMenu.handlePlayerInput('CANCEL')
       return
     }
 
-    let selectedDirection: DIRECTION = DIRECTION.NONE
-    if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.left)) {
-      selectedDirection = DIRECTION.LEFT
-    } else if (
-      Phaser.Input.Keyboard.JustDown(this._cursorKeys.right)
-    ) {
-      selectedDirection = DIRECTION.RIGHT
-    } else if (Phaser.Input.Keyboard.JustDown(this._cursorKeys.up)) {
-      selectedDirection = DIRECTION.UP
-    } else if (
-      Phaser.Input.Keyboard.JustDown(this._cursorKeys.down)
-    ) {
-      selectedDirection = DIRECTION.DOWN
-    }
-
+    const selectedDirection =
+      this._controls.getDirectionKeyJustPressed()
     if (selectedDirection !== DIRECTION.NONE) {
       this._battleMenu.handlePlayerInput(selectedDirection)
     }
