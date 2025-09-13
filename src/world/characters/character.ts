@@ -56,6 +56,10 @@ export class Character {
       config.spriteGridMovementFinishedCallback
   }
 
+  get sprite(): Phaser.GameObjects.Sprite {
+    return this._characterGameObject
+  }
+
   get isMoving(): boolean {
     return this._isMoving
   }

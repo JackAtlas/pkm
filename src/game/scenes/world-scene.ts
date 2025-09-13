@@ -23,6 +23,11 @@ export class WorldScene extends Phaser.Scene {
 
   create() {
     console.log(`[${WorldScene.name}: preload] invoked`)
+
+    const x = 6 * TILE_SIZE
+    const y = 22 * TILE_SIZE
+    this.cameras.main.setBounds(0, 0, 1024, 576)
+
     this._fpsText = this.add
       .text(this.scale.width - 10, 10, '', {
         fontFamily: 'sans-serif',
@@ -39,6 +44,11 @@ export class WorldScene extends Phaser.Scene {
       position: PLAYER_POSITION,
       direction: DIRECTION.DOWN
     })
+
+    // TODO const centerCamera = this.cameras.add(x, y, width, height)
+    // centerCamera.setBounds(0, 0, mapWidth, mapHeight)
+    // centerCamera.startFollow(this._player.sprite, true)
+    this.cameras.main.startFollow(this._player.sprite, true)
 
     this._controls = new Controls(this)
   }
