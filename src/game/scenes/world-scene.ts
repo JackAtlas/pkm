@@ -51,6 +51,8 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.startFollow(this._player.sprite, true)
 
     this._controls = new Controls(this)
+
+    this.cameras.main.fadeIn(1000, 0, 0, 0)
   }
 
   update(time: DOMHighResTimeStamp) {
