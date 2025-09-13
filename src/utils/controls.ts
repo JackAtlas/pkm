@@ -1,4 +1,4 @@
-import { DIRECTION } from '@/common/direction'
+import { Direction, DIRECTION } from '@/common/direction'
 
 export class Controls {
   readonly _scene: Phaser.Scene
@@ -33,7 +33,7 @@ export class Controls {
     return Phaser.Input.Keyboard.JustDown(this._cursorKeys.shift)
   }
 
-  getDirectionKeyJustPressed(): DIRECTION {
+  getDirectionKeyJustPressed(): Direction {
     if (this._cursorKeys === undefined) {
       return DIRECTION.NONE
     }
@@ -55,12 +55,12 @@ export class Controls {
     }
   }
 
-  getDirectionKeyPressedDown(): DIRECTION {
+  getDirectionKeyPressedDown(): Direction {
     if (this._cursorKeys === undefined) {
       return DIRECTION.NONE
     }
 
-    let selectedDirection: DIRECTION = DIRECTION.NONE
+    let selectedDirection: Direction = DIRECTION.NONE
     if (this._cursorKeys.left.isDown) {
       selectedDirection = DIRECTION.LEFT
     } else if (this._cursorKeys.right.isDown) {

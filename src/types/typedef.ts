@@ -25,7 +25,7 @@ export interface Coordinate {
   y: number
 }
 
-export interface MOVE {
+export interface Move {
   id: number
   name: string
   animationName: MOVE_KEYS

@@ -1,4 +1,4 @@
-import { BattlePKMConfig, MOVE, Pokemon } from '@/types/typedef'
+import { BattlePKMConfig, Move, Pokemon } from '@/types/typedef'
 import { HealthBar } from '@/battle/ui/health-bar'
 import { DataUtils } from '@/utils/data-utils'
 
@@ -11,7 +11,7 @@ export class BattlePKM {
   protected _healthBar: HealthBar
   protected _currentHp: number
   protected _maxHp: number
-  protected _pkmMoves: MOVE[]
+  protected _pkmMoves: Move[]
   protected _skipBattleAnimations: boolean
   protected _base: string
   protected _shadow: string | undefined
@@ -56,7 +56,7 @@ export class BattlePKM {
     return this._pkm.currentLevel
   }
 
-  get moves(): MOVE[] {
+  get moves(): Move[] {
     return [...this._pkmMoves]
   }
 

@@ -1,4 +1,4 @@
-import { DIRECTION } from '@/common/direction'
+import { Direction, DIRECTION } from '@/common/direction'
 import { exhaustiveGuard } from '@/utils/guard'
 import { BATTLE_UI_TEXT_STYLE } from './battle-menu-config'
 import {
@@ -131,7 +131,7 @@ export class BattleMenu {
     this.showMainBattleMenu()
   }
 
-  handlePlayerInput(input: DIRECTION | 'OK' | 'CANCEL') {
+  handlePlayerInput(input: Direction | 'OK' | 'CANCEL') {
     if (this._queuedMessageAnimationPlaying) return
 
     if (
@@ -451,7 +451,7 @@ export class BattleMenu {
       .setStrokeStyle(8, borderColor, 1)
   }
 
-  _updateSelectedBattleMenuOptionFromInput(direction: DIRECTION) {
+  _updateSelectedBattleMenuOptionFromInput(direction: Direction) {
     if (this._activeBattleMenu !== ACTIVE_BATTLE_MENU.BATTLE_MAIN)
       return
 
@@ -573,7 +573,7 @@ export class BattleMenu {
     }
   }
 
-  _updateSelectedMoveMenuOptionFromInput(direction: DIRECTION) {
+  _updateSelectedMoveMenuOptionFromInput(direction: Direction) {
     if (
       this._activeBattleMenu !== ACTIVE_BATTLE_MENU.BATTLE_MOVE_SELECT
     )

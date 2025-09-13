@@ -1,4 +1,4 @@
-export type DIRECTION = (typeof DIRECTION)[keyof typeof DIRECTION]
+export type Direction = (typeof DIRECTION)[keyof typeof DIRECTION]
 
 export const DIRECTION = Object.freeze({
   LEFT: 'LEFT',
