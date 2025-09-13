@@ -317,7 +317,7 @@ export class BattleScene extends Scene {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        this.scene.start(SCENE_KEYS.BATTLE_SCENE)
+        this.scene.start(SCENE_KEYS.WORLD_SCENE)
       }
     )
   }

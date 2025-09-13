@@ -6,7 +6,7 @@ export const BATTLE_BACKGROUND_ASSET_KEYS = Object.freeze({
 
 export const PKM_NAME_KEYS = Object.freeze({
   HERACROSS: 'Heracross',
-  CHANDELURE: 'Charmander'
+  CHANDELURE: 'Chandelure'
 })
 
 export const GENERAL_ASSET_KEYS = Object.freeze({
@@ -46,7 +46,8 @@ export const MOVE_ASSET_KEYS = Object.freeze({
 })
 
 export const TILE_ASSET_KEYS = Object.freeze({
-  RED_TILE: 'RED_TILE'
+  RED_TILE: 'RED_TILE',
+  YELLOW_TILE: 'YELLOW_TILE'
 })
 
 export const WORLD_ASSET_KEYS = Object.freeze({

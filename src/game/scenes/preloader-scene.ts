@@ -131,6 +131,10 @@ export class PreloaderScene extends Scene {
       TILE_ASSET_KEYS.RED_TILE,
       'Graphics/Tilesets/Red.png'
     )
+    this.load.image(
+      TILE_ASSET_KEYS.YELLOW_TILE,
+      'Graphics/Tilesets/Yellow.png'
+    )
 
     this.load.tilemapTiledJSON(
       WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,

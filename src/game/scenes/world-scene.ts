@@ -9,14 +9,16 @@ import { Controls } from '@/utils/controls'
 import { Player } from '@/world/characters/player'
 
 const PLAYER_POSITION: Coordinate = Object.freeze({
-  x: 5 * TILE_SIZE,
-  y: 5 * TILE_SIZE
+  x: 20 * TILE_SIZE,
+  y: 25 * TILE_SIZE
 })
 
 export class WorldScene extends Phaser.Scene {
   protected _fpsText!: Phaser.GameObjects.Text
-  _player: Player
-  _controls: Controls
+  protected _player: Player
+  protected _controls: Controls
+  protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
+  protected _wildPkmEncountered: boolean
 
   constructor() {
     super({
@@ -24,14 +26,19 @@ export class WorldScene extends Phaser.Scene {
     })
   }
 
+  init() {
+    this._wildPkmEncountered = false
+  }
+
   create() {
     console.log(`[${WorldScene.name}: create] invoked`)
 
-    this.cameras.main.setBounds(0, 0, 1024, 576)
+    this.cameras.main.setBounds(0, 0, 1920, 1920)
 
     const map = this.make.tilemap({
       key: WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL
     })
+
     const collisionTiles = map.addTilesetImage(
       'Red',
       TILE_ASSET_KEYS.RED_TILE
@@ -56,6 +63,33 @@ export class WorldScene extends Phaser.Scene {
     }
     collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2)
 
+    const encounterTiles = map.addTilesetImage(
+      'Yellow',
+      TILE_ASSET_KEYS.YELLOW_TILE
+    )
+    if (!encounterTiles) {
+      console.error(
+        `[${WorldScene.name}: create] encountered error while creating encounter tiles using data from tiled`
+      )
+      return
+    }
+    const encounterLayer = map.createLayer(
+      'ENCOUNTER',
+      encounterTiles,
+      0,
+      0
+    )
+    if (!encounterLayer) {
+      console.error(
+        `[${WorldScene.name}: create] encountered error while creating encounter layer using data from tiled`
+      )
+      return
+    }
+    this._encounterLayer = encounterLayer
+    this._encounterLayer
+      .setAlpha(TILED_COLLISION_LAYER_ALPHA)
+      .setDepth(2)
+
     this._fpsText = this.add
       .text(this.scale.width - 10, 10, '', {
         fontFamily: 'sans-serif',
@@ -71,17 +105,20 @@ export class WorldScene extends Phaser.Scene {
       scene: this,
       position: PLAYER_POSITION,
       direction: DIRECTION.DOWN,
-      collisionLayer
+      collisionLayer,
+      spriteGridMovementFinishedCallback: () => {
+        this._handlePlayerMovementUpdate()
+      }
     })
+
+    this.add
+      .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
+      .setOrigin(0)
 
     // TODO const centerCamera = this.cameras.add(x, y, width, height)
     // centerCamera.setBounds(0, 0, mapWidth, mapHeight)
     // centerCamera.startFollow(this._player.sprite, true)
     this.cameras.main.startFollow(this._player.sprite, true)
-
-    this.add
-      .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
-      .setOrigin(0)
 
     this._controls = new Controls(this)
 
@@ -89,6 +126,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   update(time: DOMHighResTimeStamp) {
+    if (this._wildPkmEncountered) {
+      this._player.update(time)
+      return
+    }
+
     const fps = this.game.loop.actualFps.toFixed(1)
     this._fpsText.setText(`FPS: ${fps}`)
 
@@ -99,5 +141,34 @@ export class WorldScene extends Phaser.Scene {
     }
 
     this._player.update(time)
+  }
+
+  _handlePlayerMovementUpdate() {
+    if (!this._encounterLayer) return
+
+    const isInEncounterZone =
+      this._encounterLayer.getTileAtWorldXY(
+        this._player.sprite.x,
+        this._player.sprite.y,
+        true
+      ).index !== -1
+    if (!isInEncounterZone) return
+
+    console.log(
+      `[${WorldScene.name}: _handlePlayerMovementUpdate] player is in an encounter zone`
+    )
+    this._wildPkmEncountered = Math.random() < 0.2
+    if (this._wildPkmEncountered) {
+      console.log(
+        `[${WorldScene.name}: _handlePlayerMovementUpdate] player encountered a wild pkm`
+      )
+      this.cameras.main.fadeOut(2000)
+      this.cameras.main.once(
+        Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
+        () => {
+          this.scene.start('BATTLE_SCENE')
+        }
+      )
+    }
   }
 }
