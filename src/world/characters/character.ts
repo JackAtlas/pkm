@@ -79,7 +79,7 @@ export class Character {
       this._characterGameObject.anims.currentAnim?.frames[0].frame
         .name
     this._characterGameObject.anims.stop()
-    if (!idleFrame) return
+    if (idleFrame === undefined || idleFrame === null) return
     switch (this._direction) {
       case DIRECTION.DOWN:
       case DIRECTION.LEFT:
