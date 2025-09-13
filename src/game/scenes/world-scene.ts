@@ -3,15 +3,13 @@ import {
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { DIRECTION } from '@/common/direction'
-import { TILE_SIZE, TILED_COLLISION_LAYER_ALPHA } from '@/config'
-import { Coordinate } from '@/types/typedef'
+import { TILED_COLLISION_LAYER_ALPHA } from '@/config'
 import { Controls } from '@/utils/controls'
+import {
+  DATA_MANAGER_STORE_KEYS,
+  dataManager
+} from '@/utils/data-manager'
 import { Player } from '@/world/characters/player'
-
-const PLAYER_POSITION: Coordinate = Object.freeze({
-  x: 20 * TILE_SIZE,
-  y: 25 * TILE_SIZE
-})
 
 export class WorldScene extends Phaser.Scene {
   protected _fpsText!: Phaser.GameObjects.Text
@@ -103,8 +101,12 @@ export class WorldScene extends Phaser.Scene {
 
     this._player = new Player({
       scene: this,
-      position: PLAYER_POSITION,
-      direction: DIRECTION.DOWN,
+      position: dataManager.store.get(
+        DATA_MANAGER_STORE_KEYS.PLAYER_POSITION
+      ),
+      direction: dataManager.store.get(
+        DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION
+      ),
       collisionLayer,
       spriteGridMovementFinishedCallback: () => {
         this._handlePlayerMovementUpdate()
@@ -144,6 +146,15 @@ export class WorldScene extends Phaser.Scene {
   }
 
   _handlePlayerMovementUpdate() {
+    dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION, {
+      x: this._player.sprite.x,
+      y: this._player.sprite.y
+    })
+    dataManager.store.set(
+      DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION,
+      this._player.direction
+    )
+
     if (!this._encounterLayer) return
 
     const isInEncounterZone =
