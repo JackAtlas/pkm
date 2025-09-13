@@ -10,6 +10,7 @@ import {
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS,
+  TILE_ASSET_KEYS,
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { DataUtils } from '@/utils/data-utils'
@@ -127,8 +128,21 @@ export class PreloaderScene extends Scene {
     )
 
     this.load.image(
+      TILE_ASSET_KEYS.RED_TILE,
+      'Graphics/Tilesets/Red.png'
+    )
+
+    this.load.tilemapTiledJSON(
+      WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,
+      'data/town_1.json'
+    )
+    this.load.image(
       WORLD_ASSET_KEYS.WORLD_BACKGROUND,
-      'Graphics/Map/level_background.png'
+      'Graphics/Map/town_1_background.png'
+    )
+    this.load.image(
+      WORLD_ASSET_KEYS.WORLD_FOREGROUND,
+      'Graphics/Map/town_1_foreground.png'
     )
 
     this.load.spritesheet(

@@ -1,13 +1,16 @@
-import { WORLD_ASSET_KEYS } from '@/assets/asset-keys'
+import {
+  TILE_ASSET_KEYS,
+  WORLD_ASSET_KEYS
+} from '@/assets/asset-keys'
 import { DIRECTION } from '@/common/direction'
-import { TILE_SIZE } from '@/config'
+import { TILE_SIZE, TILED_COLLISION_LAYER_ALPHA } from '@/config'
 import { Coordinate } from '@/types/typedef'
 import { Controls } from '@/utils/controls'
 import { Player } from '@/world/characters/player'
 
 const PLAYER_POSITION: Coordinate = Object.freeze({
-  x: 1 * TILE_SIZE,
-  y: 1 * TILE_SIZE
+  x: 5 * TILE_SIZE,
+  y: 5 * TILE_SIZE
 })
 
 export class WorldScene extends Phaser.Scene {
@@ -22,11 +25,36 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(`[${WorldScene.name}: preload] invoked`)
+    console.log(`[${WorldScene.name}: create] invoked`)
 
-    const x = 6 * TILE_SIZE
-    const y = 22 * TILE_SIZE
     this.cameras.main.setBounds(0, 0, 1024, 576)
+
+    const map = this.make.tilemap({
+      key: WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL
+    })
+    const collisionTiles = map.addTilesetImage(
+      'Red',
+      TILE_ASSET_KEYS.RED_TILE
+    )
+    if (!collisionTiles) {
+      console.error(
+        `[${WorldScene.name}: create] encountered error while creating collision tiles using data from tiled`
+      )
+      return
+    }
+    const collisionLayer = map.createLayer(
+      'COLLISION',
+      collisionTiles,
+      0,
+      0
+    )
+    if (!collisionLayer) {
+      console.error(
+        `[${WorldScene.name}: create] encountered error while creating collision layer using data from tiled`
+      )
+      return
+    }
+    collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2)
 
     this._fpsText = this.add
       .text(this.scale.width - 10, 10, '', {
@@ -42,13 +70,18 @@ export class WorldScene extends Phaser.Scene {
     this._player = new Player({
       scene: this,
       position: PLAYER_POSITION,
-      direction: DIRECTION.DOWN
+      direction: DIRECTION.DOWN,
+      collisionLayer
     })
 
     // TODO const centerCamera = this.cameras.add(x, y, width, height)
     // centerCamera.setBounds(0, 0, mapWidth, mapHeight)
     // centerCamera.startFollow(this._player.sprite, true)
     this.cameras.main.startFollow(this._player.sprite, true)
+
+    this.add
+      .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
+      .setOrigin(0)
 
     this._controls = new Controls(this)
 

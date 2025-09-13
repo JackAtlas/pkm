@@ -6,7 +6,7 @@ import { TILE_SIZE } from '@/config'
 export function getTargetPositionFromGameObjectPositionAndDirection(
   currentPosition: Coordinate,
   direction: Direction
-) {
+): Coordinate {
   const targetPosition = { ...currentPosition }
   switch (direction) {
     case DIRECTION.UP:

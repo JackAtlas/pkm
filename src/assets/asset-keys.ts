@@ -45,8 +45,14 @@ export const MOVE_ASSET_KEYS = Object.freeze({
   SCRATCH: 'SCRATCH'
 })
 
+export const TILE_ASSET_KEYS = Object.freeze({
+  RED_TILE: 'RED_TILE'
+})
+
 export const WORLD_ASSET_KEYS = Object.freeze({
-  WORLD_BACKGROUND: 'WORLD_BACKGROUND'
+  WORLD_BACKGROUND: 'WORLD_BACKGROUND',
+  WORLD_MAIN_LEVEL: 'WORLD_MAIN_LEVEL',
+  WORLD_FOREGROUND: 'WORLD_FOREGROUND'
 })
 
 export const CHARACTER_ASSET_KEYS = Object.freeze({

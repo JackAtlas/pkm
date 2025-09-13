@@ -17,6 +17,7 @@ export interface CharacterConfig {
   origin?: Coordinate
   position: Coordinate
   direction: Direction
+  collisionLayer?: Phaser.Tilemaps.TilemapLayer
   spriteGridMovementFinishedCallback?: () => void
   idleFrameConfig: CharacterIdleFrameConfig
 }
@@ -33,6 +34,8 @@ export class Character {
   protected _spriteGridMovementFinishedCallback:
     | (() => void)
     | undefined
+
+  protected _collisionLayer: Phaser.Tilemaps.TilemapLayer | undefined
 
   constructor(config: CharacterConfig) {
     this._scene = config.scene
@@ -52,6 +55,7 @@ export class Character {
         this._getIdleFrame()
       )
       .setOrigin(this._origin.x, this._origin.y)
+    this._collisionLayer = config.collisionLayer
     this._spriteGridMovementFinishedCallback =
       config.spriteGridMovementFinishedCallback
   }
@@ -115,7 +119,16 @@ export class Character {
     if (this._direction === DIRECTION.NONE) {
       return true
     }
-    return false
+
+    const targetPosition = { ...this._targetPosition }
+    const updatedPosition =
+      getTargetPositionFromGameObjectPositionAndDirection(
+        targetPosition,
+        this._direction
+      )
+    return this._doesPositionCollideWithCollisionLayer(
+      updatedPosition
+    )
   }
 
   _handleSpriteMovement() {
@@ -153,5 +166,16 @@ export class Character {
         }
       }
     })
+  }
+
+  _doesPositionCollideWithCollisionLayer(
+    position: Coordinate
+  ): boolean {
+    if (!this._collisionLayer) return false
+
+    const { x, y } = position
+    const tile = this._collisionLayer.getTileAtWorldXY(x, y, true)
+
+    return tile.index !== -1
   }
 }
