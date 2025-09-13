@@ -3,13 +3,30 @@ import {
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { DIRECTION } from '@/common/direction'
-import { TILED_COLLISION_LAYER_ALPHA } from '@/config'
+import { TILE_SIZE, TILED_COLLISION_LAYER_ALPHA } from '@/config'
 import { Controls } from '@/utils/controls'
 import {
   DATA_MANAGER_STORE_KEYS,
   dataManager
 } from '@/utils/data-manager'
+import { getTargetPositionFromGameObjectPositionAndDirection } from '@/utils/grid-utils'
+import {
+  CANNOT_READ_SIGN_TEXT,
+  SAMPLE_TEXT
+} from '@/utils/text-utils'
 import { Player } from '@/world/characters/player'
+
+type TypeMap = {
+  string: string
+  number: number
+  boolean: boolean
+}
+
+type Property<K extends keyof TypeMap = keyof TypeMap> = {
+  name: string
+  type: K
+  value: TypeMap[K]
+}
 
 export class WorldScene extends Phaser.Scene {
   protected _fpsText!: Phaser.GameObjects.Text
@@ -17,6 +34,7 @@ export class WorldScene extends Phaser.Scene {
   protected _controls: Controls
   protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
   protected _wildPkmEncountered: boolean
+  protected _signLayer: Phaser.Tilemaps.ObjectLayer | null
 
   constructor() {
     super({
@@ -60,6 +78,14 @@ export class WorldScene extends Phaser.Scene {
       return
     }
     collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2)
+
+    this._signLayer = map.getObjectLayer('SIGNS')
+    if (!this._signLayer) {
+      console.error(
+        `[${WorldScene.name}: create] encountered error while creating sign layer using data from tiled`
+      )
+      return
+    }
 
     const encounterTiles = map.addTilesetImage(
       'Yellow',
@@ -137,12 +163,51 @@ export class WorldScene extends Phaser.Scene {
     this._fpsText.setText(`FPS: ${fps}`)
 
     const selectedDirection =
-      this._controls.getDirectionKeyJustPressed()
+      this._controls.getDirectionKeyPressedDown()
     if (selectedDirection !== DIRECTION.NONE) {
       this._player.moveCharacter(selectedDirection)
     }
 
+    if (
+      this._controls.wasSpaceKeyPressed() &&
+      !this._player.isMoving
+    ) {
+      this._handlePlayerInteraction()
+    }
+
     this._player.update(time)
+  }
+
+  _handlePlayerInteraction() {
+    const { x, y } = this._player.sprite
+    const targetPosition =
+      getTargetPositionFromGameObjectPositionAndDirection(
+        { x, y },
+        this._player.direction
+      )
+    const nearbySign = this._signLayer?.objects.find((object) => {
+      if (!object.x || !object.y) return
+      return (
+        object.x === targetPosition.x &&
+        object.y - TILE_SIZE === targetPosition.y
+      )
+    })
+    if (nearbySign) {
+      const props = nearbySign.properties
+      const message = props.find(
+        (prop: Property) => prop.name === 'message'
+      )?.value
+
+      const usePlaceholderText =
+        this._player.direction !== DIRECTION.UP
+
+      let textToShow = CANNOT_READ_SIGN_TEXT
+      if (!usePlaceholderText) {
+        textToShow = message || SAMPLE_TEXT
+      }
+      console.log(textToShow)
+      return
+    }
   }
 
   _handlePlayerMovementUpdate() {
