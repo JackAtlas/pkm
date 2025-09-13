@@ -30,5 +30,37 @@
     "frameRate": 4,
     "repeat": -1,
     "delay": 0
+  },
+  {
+    "assetKey": "SCRATCH",
+    "key": "SCRATCH",
+    "frames": [0, 1, 2, 3, 4],
+    "frameRate": 5,
+    "repeat": 0,
+    "delay": 0
+  },
+  {
+    "assetKey": "ICE_SHARD",
+    "key": "ICE_SHARD_START",
+    "frames": [0],
+    "frameRate": 1,
+    "repeat": 0,
+    "delay": 0
+  },
+  {
+    "assetKey": "ICE_SHARD",
+    "key": "ICE_SHARD",
+    "frames": [1, 2, 3, 4, 5, 6],
+    "frameRate": 5,
+    "repeat": 0,
+    "delay": 0
+  },
+  {
+    "assetKey": "PAUSE_ARROW",
+    "key": "PAUSE_ARROW",
+    "frames": [0, 1, 2, 3],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0
   }
 ]

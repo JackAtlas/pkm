@@ -12,28 +12,6 @@ export class IceShard extends Move {
   ) {
     super(scene, container, position)
 
-    this._scene.anims.create({
-      key: MOVE_ASSET_KEYS.ICE_SHARD_START,
-      frames: this._scene.anims.generateFrameNumbers(
-        MOVE_ASSET_KEYS.ICE_SHARD,
-        { start: 0, end: 0 }
-      ),
-      frameRate: 1,
-      repeat: 0,
-      delay: 0
-    })
-
-    this._scene.anims.create({
-      key: MOVE_ASSET_KEYS.ICE_SHARD,
-      frames: this._scene.anims.generateFrameNumbers(
-        MOVE_ASSET_KEYS.ICE_SHARD,
-        { start: 1, end: 6 }
-      ),
-      frameRate: 5,
-      repeat: 0,
-      delay: 0
-    })
-
     this._moveGameObject = this._scene.add
       .sprite(position.x, position.y, MOVE_ASSET_KEYS.ICE_SHARD, 0)
       .setOrigin(0.5)

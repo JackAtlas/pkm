@@ -12,20 +12,6 @@ export class Scratch extends Move {
   ) {
     super(scene, container, position)
 
-    this._scene.anims.create({
-      key: MOVE_ASSET_KEYS.SCRATCH,
-      frames: this._scene.anims.generateFrameNumbers(
-        MOVE_ASSET_KEYS.SCRATCH,
-        {
-          start: 0,
-          end: 4
-        }
-      ),
-      frameRate: 5,
-      repeat: 0,
-      delay: 0
-    })
-
     this._moveGameObject = this._scene.add
       .sprite(position.x, position.y, MOVE_ASSET_KEYS.SCRATCH, 0)
       .setOrigin(0.5)

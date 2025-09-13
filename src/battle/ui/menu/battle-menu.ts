@@ -112,9 +112,7 @@ export class BattleMenu {
 
   playInputCursorAnimation() {
     this._userInputCursorPhaserSpriteGameObject.setPosition(
-      this._battleTextGameObjectLine.displayWidth +
-        this._userInputCursorPhaserSpriteGameObject.displayWidth +
-        20,
+      this._battleTextGameObjectLine.displayWidth + 90,
       this._userInputCursorPhaserSpriteGameObject.y
     )
     this._userInputCursorPhaserSpriteGameObject.setVisible(true)
@@ -291,19 +289,7 @@ export class BattleMenu {
     this._messagePanePhaserContainerObject.add(
       this._userInputCursorPhaserSpriteGameObject
     )
-    this._scene.anims.create({
-      key: 'pause-arrow',
-      frames: this._scene.anims.generateFrameNumbers(
-        GENERAL_ASSET_KEYS.PAUSE_ARROW,
-        {
-          start: 0,
-          end: 3
-        }
-      ),
-      frameRate: 6,
-      repeat: -1
-    })
-    this._userInputCursorPhaserSpriteGameObject.play('pause-arrow')
+    this._userInputCursorPhaserSpriteGameObject.play('PAUSE_ARROW')
     this._container.add(this._messagePanePhaserContainerObject)
   }
 
