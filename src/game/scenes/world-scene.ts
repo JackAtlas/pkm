@@ -14,6 +14,7 @@ import {
   CANNOT_READ_SIGN_TEXT,
   SAMPLE_TEXT
 } from '@/utils/text-utils'
+import { DialogUI } from '@/world/characters/dialog-ui'
 import { Player } from '@/world/characters/player'
 
 type TypeMap = {
@@ -32,6 +33,7 @@ export class WorldScene extends Phaser.Scene {
   protected _fpsText!: Phaser.GameObjects.Text
   protected _player: Player
   protected _controls: Controls
+  protected _dialogUI: DialogUI
   protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
   protected _wildPkmEncountered: boolean
   protected _signLayer: Phaser.Tilemaps.ObjectLayer | null
@@ -150,6 +152,8 @@ export class WorldScene extends Phaser.Scene {
 
     this._controls = new Controls(this)
 
+    this._dialogUI = new DialogUI(this, this.scale.width)
+
     this.cameras.main.fadeIn(1000, 0, 0, 0)
   }
 
@@ -164,7 +168,10 @@ export class WorldScene extends Phaser.Scene {
 
     const selectedDirection =
       this._controls.getDirectionKeyPressedDown()
-    if (selectedDirection !== DIRECTION.NONE) {
+    if (
+      selectedDirection !== DIRECTION.NONE &&
+      !this._isPlayerInputLocked()
+    ) {
       this._player.moveCharacter(selectedDirection)
     }
 
@@ -179,6 +186,24 @@ export class WorldScene extends Phaser.Scene {
   }
 
   _handlePlayerInteraction() {
+    if (this._dialogUI.isAnimationPlaying) return
+
+    if (
+      this._dialogUI.isVisible &&
+      !this._dialogUI.moreMessagesToShow
+    ) {
+      this._dialogUI.hideDialogModel()
+      return
+    }
+
+    if (
+      this._dialogUI.isVisible &&
+      this._dialogUI.moreMessagesToShow
+    ) {
+      this._dialogUI.showNextMessage()
+      return
+    }
+
     const { x, y } = this._player.sprite
     const targetPosition =
       getTargetPositionFromGameObjectPositionAndDirection(
@@ -205,7 +230,7 @@ export class WorldScene extends Phaser.Scene {
       if (!usePlaceholderText) {
         textToShow = message || SAMPLE_TEXT
       }
-      console.log(textToShow)
+      this._dialogUI.showDialogModel([textToShow])
       return
     }
   }
@@ -246,5 +271,9 @@ export class WorldScene extends Phaser.Scene {
         }
       )
     }
+  }
+
+  _isPlayerInputLocked() {
+    return this._dialogUI.isVisible
   }
 }
