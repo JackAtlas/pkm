@@ -3,7 +3,11 @@ import {
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { DIRECTION } from '@/common/direction'
-import { TILE_SIZE, TILED_COLLISION_LAYER_ALPHA } from '@/config'
+import {
+  DEBUG,
+  TILE_SIZE,
+  TILED_COLLISION_LAYER_ALPHA
+} from '@/config'
 import { Controls } from '@/utils/controls'
 import {
   DATA_MANAGER_STORE_KEYS,
@@ -106,7 +110,9 @@ export class WorldScene extends Phaser.Scene {
       )
       return
     }
-    collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2)
+    collisionLayer
+      .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
+      .setDepth(2)
 
     this._signLayer = map.getObjectLayer('SIGNS')
     if (!this._signLayer) {
@@ -140,7 +146,7 @@ export class WorldScene extends Phaser.Scene {
     }
     this._encounterLayer = encounterLayer
     this._encounterLayer
-      .setAlpha(TILED_COLLISION_LAYER_ALPHA)
+      .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
       .setDepth(2)
 
     this._fpsText = this.add

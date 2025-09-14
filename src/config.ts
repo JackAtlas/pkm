@@ -1,3 +1,5 @@
+export const DEBUG = false
+
 /** 跳过 UI 动画 */
 export const SKIP_BATTLE_ANIMATIONS = true
 
