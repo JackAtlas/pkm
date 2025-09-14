@@ -128,7 +128,7 @@ export class TitleScene extends Phaser.Scene {
         } else if (
           this._selectedMenuOption === MAIN_MENU_OPTIONS.OPTIONS
         ) {
-          this.scene.start(SCENE_KEYS.WORLD_SCENE)
+          this.scene.start(SCENE_KEYS.OPTIONS_SCENE)
         }
         return
       }
