@@ -61,3 +61,9 @@ export const CHARACTER_ASSET_KEYS = Object.freeze({
   NPC_01: 'NPC_01',
   NPC_06: 'NPC_06'
 })
+
+export const TITLE_ASSET_KEYS = Object.freeze({
+  BACKGROUND: 'BACKGROUND',
+  TITLE: 'TITLE',
+  PANEL: 'PANEL'
+})

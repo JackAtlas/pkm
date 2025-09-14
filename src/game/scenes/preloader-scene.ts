@@ -11,6 +11,7 @@ import {
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS,
   TILE_ASSET_KEYS,
+  TITLE_ASSET_KEYS,
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { DataUtils } from '@/utils/data-utils'
@@ -174,6 +175,11 @@ export class PreloaderScene extends Scene {
         frameHeight: 96
       }
     )
+
+    this.load.image(
+      TITLE_ASSET_KEYS.BACKGROUND,
+      'Graphics/Titles/Background.png'
+    )
   }
 
   create() {
@@ -228,7 +234,7 @@ export class PreloaderScene extends Scene {
       loadedFonts.forEach((loadedFont) => {
         document.fonts.add(loadedFont)
       })
-      this.scene.start(SCENE_KEYS.WORLD_SCENE)
+      this.scene.start(SCENE_KEYS.TITLE_SCENE)
     })
   }
 
