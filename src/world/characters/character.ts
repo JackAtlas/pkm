@@ -20,6 +20,7 @@ export interface CharacterConfig {
   collisionLayer?: Phaser.Tilemaps.TilemapLayer
   spriteGridMovementFinishedCallback?: () => void
   idleFrameConfig: CharacterIdleFrameConfig
+  otherCharactersToCheckForCollisionsWith?: Character[]
 }
 
 export class Character {
@@ -37,6 +38,9 @@ export class Character {
 
   protected _collisionLayer: Phaser.Tilemaps.TilemapLayer | undefined
 
+  /** 其他要进行碰撞检测的角色 */
+  protected _otherCharactersToCheckForCollisionsWith: Character[] = []
+
   constructor(config: CharacterConfig) {
     this._scene = config.scene
     this._direction = config.direction
@@ -47,6 +51,8 @@ export class Character {
     this._isMoving = false
     this._targetPosition = { ...config.position }
     this._previousTargetPosition = { ...config.position }
+    this._otherCharactersToCheckForCollisionsWith =
+      config.otherCharactersToCheckForCollisionsWith || []
     this._characterGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -106,6 +112,11 @@ export class Character {
     this._moveSprite(direction)
   }
 
+  /** 加入到该角色的碰撞检测对象中 */
+  addCharacterToCheckForCollisionsWith(character: Character) {
+    this._otherCharactersToCheckForCollisionsWith.push(character)
+  }
+
   _moveSprite(direction: Direction) {
     this._direction = direction
     if (this._isBlockingTile()) {
@@ -126,8 +137,9 @@ export class Character {
         targetPosition,
         this._direction
       )
-    return this._doesPositionCollideWithCollisionLayer(
-      updatedPosition
+    return (
+      this._doesPositionCollideWithCollisionLayer(updatedPosition) ||
+      this._doesPositionCollideWithOtherCharacters(updatedPosition)
     )
   }
 
@@ -177,5 +189,28 @@ export class Character {
     const tile = this._collisionLayer.getTileAtWorldXY(x, y, true)
 
     return tile.index !== -1
+  }
+
+  _doesPositionCollideWithOtherCharacters(
+    position: Coordinate
+  ): boolean {
+    const { x, y } = position
+    if (this._otherCharactersToCheckForCollisionsWith.length === 0) {
+      return false
+    }
+
+    const collidesWithACharacter =
+      this._otherCharactersToCheckForCollisionsWith.some(
+        (character) => {
+          return (
+            (character._targetPosition.x === x &&
+              character._targetPosition.y === y) ||
+            (character._previousTargetPosition.x === x &&
+              character._previousTargetPosition.y === y)
+          )
+        }
+      )
+
+    return collidesWithACharacter
   }
 }

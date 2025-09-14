@@ -148,8 +148,10 @@ export class WorldScene extends Phaser.Scene {
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0)
       .setOrigin(0)
 
+    // 生成 NPC
     this._createNPCs(map)
 
+    // 生成玩家
     this._player = new Player({
       scene: this,
       position: dataManager.store.get(
@@ -161,7 +163,12 @@ export class WorldScene extends Phaser.Scene {
       collisionLayer,
       spriteGridMovementFinishedCallback: () => {
         this._handlePlayerMovementUpdate()
-      }
+      },
+      otherCharactersToCheckForCollisionsWith: this._npcs
+    })
+
+    this._npcs.forEach((npc) => {
+      npc.addCharacterToCheckForCollisionsWith(this._player)
     })
 
     this.add
