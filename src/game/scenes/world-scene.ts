@@ -58,6 +58,7 @@ export class WorldScene extends Phaser.Scene {
   protected _signLayer: Phaser.Tilemaps.ObjectLayer | null
 
   protected _npcs: NPC[] = []
+  protected _npcPlayerIsInteractingWith: NPC | null = null
 
   constructor() {
     super({
@@ -227,6 +228,10 @@ export class WorldScene extends Phaser.Scene {
       !this._dialogUI.moreMessagesToShow
     ) {
       this._dialogUI.hideDialogModel()
+      if (this._npcPlayerIsInteractingWith) {
+        this._npcPlayerIsInteractingWith.isTalkingToPlayer = false
+        this._npcPlayerIsInteractingWith = null
+      }
       return
     }
 
@@ -266,6 +271,19 @@ export class WorldScene extends Phaser.Scene {
       }
       this._dialogUI.showDialogModel([textToShow])
       return
+    }
+
+    const nearbyNPC = this._npcs.find((npc) => {
+      return (
+        npc.sprite.x === targetPosition.x &&
+        npc.sprite.y === targetPosition.y
+      )
+    })
+    if (nearbyNPC) {
+      nearbyNPC.facePlayer(this._player.direction)
+      nearbyNPC.isTalkingToPlayer = true
+      this._npcPlayerIsInteractingWith = nearbyNPC
+      this._dialogUI.showDialogModel(nearbyNPC.messages)
     }
   }
 
@@ -339,13 +357,20 @@ export class WorldScene extends Phaser.Scene {
           (property: Property) =>
             property.name === TILED_NPC_PROPERTY.ASSET_KEY
         )?.value || 'NPC_01'
+      const npcMessagesString =
+        npcObject.properties.find(
+          (property: Property) =>
+            property.name === TILED_NPC_PROPERTY.MESSAGES
+        )?.value || ''
+      const npcMessages = npcMessagesString.split('::')
 
       const npc = new NPC({
         assetKey: npcAssetKey,
         scene: this,
         position: { x: npcObject.x, y: npcObject.y - TILE_SIZE },
         direction: DIRECTION.DOWN,
-        frame: parseInt(npcFrame, 10)
+        frame: parseInt(npcFrame, 10),
+        messages: npcMessages
       })
       this._npcs.push(npc)
     })

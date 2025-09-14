@@ -2,11 +2,18 @@ import { DIRECTION, Direction } from '@/common/direction'
 import { Character, CharacterConfig } from './character'
 import { exhaustiveGuard } from '@/utils/guard'
 
-type NPCConfig = Omit<CharacterConfig, 'idleFrameConfig'> & {
+interface NPCConfigProps {
   frame: number
+  messages: string[]
 }
 
+type NPCConfig = Omit<CharacterConfig, 'idleFrameConfig'> &
+  NPCConfigProps
+
 export class NPC extends Character {
+  protected _messages: string[]
+  protected _talkingToPlayer: boolean = false
+
   constructor(config: NPCConfig) {
     super({
       ...config,
@@ -19,6 +26,20 @@ export class NPC extends Character {
         NONE: config.frame
       }
     })
+
+    this._messages = config.messages
+  }
+
+  get messages(): string[] {
+    return this._messages
+  }
+
+  get isTalkingToPlayer(): boolean {
+    return this._talkingToPlayer
+  }
+
+  set isTalkingToPlayer(value: boolean) {
+    this._talkingToPlayer = value
   }
 
   facePlayer(playerDirection: Direction) {

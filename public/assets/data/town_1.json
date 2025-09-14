@@ -641,7 +641,7 @@
                   "value": "NPC_06"
                 },
                 {
-                  "name": "message",
+                  "name": "messages",
                   "type": "string",
                   "value": "\u79d1\u5b66\u7684\u529b\u91cf\u771f\u4f1f\u5927\uff01"
                 }
@@ -678,7 +678,7 @@
                   "value": "NPC_01"
                 },
                 {
-                  "name": "message",
+                  "name": "messages",
                   "type": "string",
                   "value": "\u5bf9\u5514\u4f4f\uff0c\u6211\u7cfb\u5dee\u4eba\u3002"
                 },
