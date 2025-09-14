@@ -3,7 +3,7 @@
     "assetKey": "PLAYER",
     "key": "PLAYER_DOWN",
     "frames": [0, 1, 2, 3],
-    "frameRate": 4,
+    "frameRate": 8,
     "repeat": -1,
     "delay": 0
   },
@@ -11,7 +11,7 @@
     "assetKey": "PLAYER",
     "key": "PLAYER_LEFT",
     "frames": [4, 5, 6, 7],
-    "frameRate": 4,
+    "frameRate": 8,
     "repeat": -1,
     "delay": 0
   },
@@ -19,7 +19,7 @@
     "assetKey": "PLAYER",
     "key": "PLAYER_RIGHT",
     "frames": [8, 9, 10, 11],
-    "frameRate": 4,
+    "frameRate": 8,
     "repeat": -1,
     "delay": 0
   },
@@ -27,7 +27,7 @@
     "assetKey": "PLAYER",
     "key": "PLAYER_UP",
     "frames": [12, 13, 14, 15],
-    "frameRate": 4,
+    "frameRate": 8,
     "repeat": -1,
     "delay": 0
   },
@@ -60,6 +60,38 @@
     "key": "PAUSE_ARROW",
     "frames": [0, 1, 2, 3],
     "frameRate": 6,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_01",
+    "key": "NPC_01_DOWN",
+    "frames": [0, 1, 2, 3],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_01",
+    "key": "NPC_01_LEFT",
+    "frames": [4, 5, 6, 7],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_01",
+    "key": "NPC_01_RIGHT",
+    "frames": [8, 9, 10, 11],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_01",
+    "key": "NPC_01_UP",
+    "frames": [12, 13, 14, 15],
+    "frameRate": 8,
     "repeat": -1,
     "delay": 0
   }

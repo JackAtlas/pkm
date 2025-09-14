@@ -25,6 +25,7 @@ export interface CharacterConfig {
 
 export class Character {
   protected _scene: Phaser.Scene
+  protected _assetKey: string
   protected _characterGameObject: Phaser.GameObjects.Sprite
   protected _idleFrameConfig: CharacterIdleFrameConfig
   protected _origin: Coordinate = { x: 0, y: 0 }
@@ -53,6 +54,7 @@ export class Character {
     this._previousTargetPosition = { ...config.position }
     this._otherCharactersToCheckForCollisionsWith =
       config.otherCharactersToCheckForCollisionsWith || []
+    this._assetKey = config.assetKey
     this._characterGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -82,9 +84,9 @@ export class Character {
     if (this._isMoving) return
 
     const idleFrame =
-      this._characterGameObject.anims.currentAnim?.frames[0].frame
+      this._characterGameObject.anims?.currentAnim?.frames[0].frame
         .name
-    this._characterGameObject.anims.stop()
+    this._characterGameObject.anims?.stop()
     if (idleFrame === undefined || idleFrame === null) return
     switch (this._direction) {
       case DIRECTION.DOWN:
@@ -158,7 +160,7 @@ export class Character {
 
     this._scene.add.tween({
       delay: 0,
-      duration: 600,
+      duration: 300,
       y: {
         from: this._characterGameObject.y,
         start: this._characterGameObject.y,

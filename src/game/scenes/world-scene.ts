@@ -15,7 +15,12 @@ import {
   SAMPLE_TEXT
 } from '@/utils/text-utils'
 import { DialogUI } from '@/world/characters/dialog-ui'
-import { NPC } from '@/world/characters/npc'
+import {
+  NPC,
+  NPC_MOVEMENT_PATTERN,
+  NpcMovementPattern,
+  NPCPath
+} from '@/world/characters/npc'
 import { Player } from '@/world/characters/player'
 import { SCENE_KEYS } from './scene-keys'
 
@@ -347,6 +352,21 @@ export class WorldScene extends Phaser.Scene {
         return
       }
 
+      const pathObjects = layer?.objects.filter((obj) => {
+        return obj.type === CUSTOM_TILED_TYPES.NPC_PATH
+      })
+      const npcPath: NPCPath = {
+        0: { x: npcObject.x, y: npcObject.y - TILE_SIZE }
+      }
+      pathObjects?.forEach((obj) => {
+        if (obj.x === undefined || obj.y === undefined) return
+
+        npcPath[parseInt(obj.name, 10)] = {
+          x: obj.x,
+          y: obj.y - TILE_SIZE
+        }
+      })
+
       const npcFrame =
         npcObject.properties.find(
           (property: Property) =>
@@ -363,6 +383,11 @@ export class WorldScene extends Phaser.Scene {
             property.name === TILED_NPC_PROPERTY.MESSAGES
         )?.value || ''
       const npcMessages = npcMessagesString.split('::')
+      const npcMovement =
+        (npcObject.properties.find(
+          (property: Property) =>
+            property.name === TILED_NPC_PROPERTY.MOVEMENT_PATTERN
+        )?.value as NpcMovementPattern) || NPC_MOVEMENT_PATTERN.IDLE
 
       const npc = new NPC({
         assetKey: npcAssetKey,
@@ -370,7 +395,9 @@ export class WorldScene extends Phaser.Scene {
         position: { x: npcObject.x, y: npcObject.y - TILE_SIZE },
         direction: DIRECTION.DOWN,
         frame: parseInt(npcFrame, 10),
-        messages: npcMessages
+        messages: npcMessages,
+        npcPath,
+        movementPattern: npcMovement
       })
       this._npcs.push(npc)
     })
