@@ -71,6 +71,10 @@ export class PlayerBattlePKM extends BattlePKM {
     )
 
     this._healthBar = new HealthBar(this._scene, 272, 80)
+    this._healthBar.setMeterPercentageAnimated(
+      this._currentHp / this._maxHp,
+      { skipBattleAnimations: true }
+    )
 
     const levelTextObj = this._scene.add.text(
       0,
