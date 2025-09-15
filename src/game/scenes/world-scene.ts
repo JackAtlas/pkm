@@ -174,6 +174,9 @@ export class WorldScene extends Phaser.Scene {
         DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION
       ),
       collisionLayer,
+      spriteChangedDirectionCallback: () => {
+        this._handlePlayerDirectionUpdate()
+      },
       spriteGridMovementFinishedCallback: () => {
         this._handlePlayerMovementUpdate()
       },
@@ -304,10 +307,6 @@ export class WorldScene extends Phaser.Scene {
       x: this._player.sprite.x,
       y: this._player.sprite.y
     })
-    dataManager.store.set(
-      DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION,
-      this._player.direction
-    )
 
     if (!this._encounterLayer) return
 
@@ -410,5 +409,12 @@ export class WorldScene extends Phaser.Scene {
       })
       this._npcs.push(npc)
     })
+  }
+
+  _handlePlayerDirectionUpdate() {
+    dataManager.store.set(
+      DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION,
+      this._player.direction
+    )
   }
 }

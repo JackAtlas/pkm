@@ -19,6 +19,7 @@ export interface CharacterConfig {
   direction: Direction
   collisionLayer?: Phaser.Tilemaps.TilemapLayer
   spriteGridMovementFinishedCallback?: () => void
+  spriteChangedDirectionCallback?: () => void
   idleFrameConfig: CharacterIdleFrameConfig
   otherCharactersToCheckForCollisionsWith?: Character[]
 }
@@ -36,6 +37,8 @@ export class Character {
   protected _spriteGridMovementFinishedCallback:
     | (() => void)
     | undefined
+
+  protected _spriteChangedDirectionCallback: (() => void) | undefined
 
   protected _collisionLayer: Phaser.Tilemaps.TilemapLayer | undefined
 
@@ -66,6 +69,8 @@ export class Character {
     this._collisionLayer = config.collisionLayer
     this._spriteGridMovementFinishedCallback =
       config.spriteGridMovementFinishedCallback
+    this._spriteChangedDirectionCallback =
+      config.spriteChangedDirectionCallback
   }
 
   get sprite(): Phaser.GameObjects.Sprite {
@@ -120,7 +125,15 @@ export class Character {
   }
 
   _moveSprite(direction: Direction) {
+    const changedDirection = this._direction !== direction
     this._direction = direction
+
+    if (changedDirection) {
+      if (this._spriteChangedDirectionCallback !== undefined) {
+        this._spriteChangedDirectionCallback()
+      }
+    }
+
     if (this._isBlockingTile()) {
       return
     }
