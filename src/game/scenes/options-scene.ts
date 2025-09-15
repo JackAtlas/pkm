@@ -13,6 +13,10 @@ import {
 } from '@/common/options'
 import { Direction, DIRECTION } from '@/common/direction'
 import { exhaustiveGuard } from '@/utils/guard'
+import {
+  DATA_MANAGER_STORE_KEYS,
+  dataManager
+} from '@/utils/data-manager'
 
 const OPTION_COLORS = Object.freeze({
   NORMAL: '#ffffff',
@@ -74,11 +78,21 @@ export class OptionsScene extends Phaser.Scene {
 
   init() {
     this._selectedOptionMenu = OPTION_MENU_OPTIONS.BGM_VOLUME
-    this._BGMVolumeValue = 100
-    this._SEVolumeValue = 100
-    this._selectedTextSpeedOption = TEXT_SPEED_OPTIONS.MID
-    this._selectedBattleSceneOption = BATTLE_SCENE_OPTIONS.ON
-    this._selectedBattleStyleOption = BATTLE_STYLE_OPTIONS.SET
+    this._BGMVolumeValue = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_BGM_VOLUME
+    )
+    this._SEVolumeValue = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_SE_VOLUME
+    )
+    this._selectedTextSpeedOption = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_TEXT_SPEED
+    )
+    this._selectedBattleSceneOption = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION
+    )
+    this._selectedBattleStyleOption = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_STYLE
+    )
   }
 
   create() {
@@ -97,6 +111,8 @@ export class OptionsScene extends Phaser.Scene {
       Number(OPTION_COLORS.HIGHLIGHTED.replace('#', '0x'))
     )
 
+    this._updateBGMVolumeGameObject()
+    this._updateSEVolumeGameObject()
     this._updateTextSpeedGameObjects()
     this._updateBattleSceneGameObjects()
     this._updateBattleStyleGameObjects()
@@ -124,8 +140,8 @@ export class OptionsScene extends Phaser.Scene {
       this._controls.wasSpaceKeyPressed() &&
       this._selectedOptionMenu === OPTION_MENU_OPTIONS.CONFIRM
     ) {
-      // TODO save changes
       this._controls.lockInput = true
+      this._updateOptionDataInDataManager()
       this.cameras.main.fadeOut(500, 0, 0, 0)
       return
     }
@@ -135,6 +151,22 @@ export class OptionsScene extends Phaser.Scene {
     if (selectedDirection !== DIRECTION.NONE) {
       this._moveOptionMenuCursor(selectedDirection)
     }
+  }
+
+  _updateOptionDataInDataManager() {
+    dataManager.store.set({
+      [DATA_MANAGER_STORE_KEYS.OPTIONS_BGM_VOLUME]:
+        this._BGMVolumeValue,
+      [DATA_MANAGER_STORE_KEYS.OPTIONS_SE_VOLUME]:
+        this._SEVolumeValue,
+      [DATA_MANAGER_STORE_KEYS.OPTIONS_TEXT_SPEED]:
+        this._selectedTextSpeedOption,
+      [DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION]:
+        this._selectedBattleSceneOption,
+      [DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_STYLE]:
+        this._selectedBattleStyleOption
+    })
+    dataManager.saveData()
   }
 
   _createContainer() {
@@ -618,6 +650,18 @@ export class OptionsScene extends Phaser.Scene {
 
     this._BGMVolumeCursor.x = 300 + (260 * this._BGMVolumeValue) / 100
     this._BGMVolumeText.setText(`${this._BGMVolumeValue}%`)
+  }
+
+  _updateBGMVolumeGameObject() {
+    this._BGMVolumeCursor.setX(
+      300 + (260 * this._BGMVolumeValue) / 100
+    )
+    this._BGMVolumeText.setText(`${this._BGMVolumeValue}%`)
+  }
+
+  _updateSEVolumeGameObject() {
+    this._SEVolumeCursor.setX(300 + (260 * this._SEVolumeValue) / 100)
+    this._SEVolumeText.setText(`${this._SEVolumeValue}%`)
   }
 
   _updateSEVolumeOption(direction: Direction) {

@@ -16,6 +16,7 @@ import {
 } from '@/assets/asset-keys'
 import { DataUtils } from '@/utils/data-utils'
 import { Animation } from '@/types/typedef'
+import { dataManager } from '@/utils/data-manager'
 
 export class PreloaderScene extends Scene {
   constructor() {
@@ -239,6 +240,7 @@ export class PreloaderScene extends Scene {
       loadedFonts.forEach((loadedFont) => {
         document.fonts.add(loadedFont)
       })
+      dataManager.loadData()
       this.scene.start(SCENE_KEYS.TITLE_SCENE)
     })
   }
