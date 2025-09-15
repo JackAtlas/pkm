@@ -84,9 +84,9 @@ export class Character {
     if (this._isMoving) return
 
     const idleFrame =
-      this._characterGameObject.anims?.currentAnim?.frames[0].frame
+      this._characterGameObject.anims.currentAnim?.frames[0].frame
         .name
-    this._characterGameObject.anims?.stop()
+    this._characterGameObject.anims.stop()
     if (idleFrame === undefined || idleFrame === null) return
     switch (this._direction) {
       case DIRECTION.DOWN:

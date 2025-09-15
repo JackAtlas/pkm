@@ -145,7 +145,7 @@ export class NPC extends Character {
       case DIRECTION.UP:
         if (
           !this._characterGameObject.anims.isPlaying ||
-          this._characterGameObject.anims?.currentAnim?.key !==
+          this._characterGameObject.anims.currentAnim?.key !==
             `${this._assetKey}_${this._direction}`
         ) {
           this._characterGameObject.play(
