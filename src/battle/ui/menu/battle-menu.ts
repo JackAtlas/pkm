@@ -9,7 +9,6 @@ import {
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
 import { animateText } from '@/utils/text-utils'
-import { SKIP_TEXT_ANIMATIONS } from '@/config'
 
 const infoPaneBorderWidth = 4
 
@@ -27,7 +26,7 @@ export class BattleMenu {
   _selectedMoveMenuOption: ATTACK_MOVE_OPTIONS
   _queuedInfoPaneMessages: string[]
   _queuedInfoPaneCallback: (() => void) | undefined
-  _queuedMessagesSkipAnimation: boolean
+  _skipAnimations: boolean
   _queuedMessageAnimationPlaying: boolean
   _waitingForPlayerInput: boolean
   _selectedMoveIndex: number | undefined
@@ -43,11 +42,13 @@ export class BattleMenu {
    * @param {Phaser.Scene} scene Battle Menu 所在的 Scene 对象
    * @param {Phaser.GameObjects.Container} container Battle Menu 所在的 Container 对象
    * @param {BattlePKM} activePlayerPkm 玩家精灵
+   * @param {boolean} skipBattleAnimations 是否跳过文字动画
    */
   constructor(
     scene: Phaser.Scene,
     container: Phaser.GameObjects.Container,
-    activePlayerPkm: PlayerBattlePKM
+    activePlayerPkm: PlayerBattlePKM,
+    skipBattleAnimations: boolean = false
   ) {
     this._scene = scene
     this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_MAIN
@@ -58,7 +59,7 @@ export class BattleMenu {
 
     this._queuedInfoPaneMessages = []
     this._queuedInfoPaneCallback = () => undefined
-    this._queuedMessagesSkipAnimation = false
+    this._skipAnimations = skipBattleAnimations
     this._queuedMessageAnimationPlaying = false
     this._waitingForPlayerInput = false
     this._selectedMoveIndex = undefined
@@ -169,12 +170,11 @@ export class BattleMenu {
 
   updateInfoPaneMessageNoInputRequired(
     message: string,
-    callback?: () => void,
-    skipAnimation = false
+    callback?: () => void
   ) {
     this._battleTextGameObjectLine.setText('').setVisible(true)
 
-    if (skipAnimation) {
+    if (this._skipAnimations) {
       this._battleTextGameObjectLine.setText(message)
       this._waitingForPlayerInput = false
       if (callback) callback()
@@ -197,12 +197,10 @@ export class BattleMenu {
 
   updateInfoPaneMessagesAndWaitForInput(
     messages: string[],
-    callback?: () => void,
-    skipAnimation = false
+    callback?: () => void
   ) {
     this._queuedInfoPaneMessages = messages
     this._queuedInfoPaneCallback = callback
-    this._queuedMessagesSkipAnimation = skipAnimation
     this._updateInfoPaneWithMessage()
   }
 
@@ -222,7 +220,7 @@ export class BattleMenu {
       // get first message from queue and animate message
       const messageToDisplay = this._queuedInfoPaneMessages.shift()
       if (messageToDisplay) {
-        if (this._queuedMessagesSkipAnimation) {
+        if (this._skipAnimations) {
           this._battleTextGameObjectLine.setText(messageToDisplay)
           this._queuedMessageAnimationPlaying = false
           this._waitingForPlayerInput = true
@@ -697,8 +695,7 @@ export class BattleMenu {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_POKEMON
       this.updateInfoPaneMessagesAndWaitForInput(
         ['没有后备宝可梦了'],
-        () => this._switchToMainBattleMenu(),
-        SKIP_TEXT_ANIMATIONS
+        () => this._switchToMainBattleMenu()
       )
       return
     } else if (
@@ -707,18 +704,15 @@ export class BattleMenu {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_BAG
       this.updateInfoPaneMessagesAndWaitForInput(
         ['背包空', 'test', '123'],
-        () => this._switchToMainBattleMenu(),
-        SKIP_TEXT_ANIMATIONS
+        () => this._switchToMainBattleMenu()
       )
       return
     } else if (
       this._selectedBattleMenuOption === BATTLE_MENU_OPTIONS.RUN
     ) {
       this._activeBattleMenu = ACTIVE_BATTLE_MENU.BATTLE_RUN
-      this.updateInfoPaneMessagesAndWaitForInput(
-        ['不能逃跑'],
-        () => this._switchToMainBattleMenu(),
-        SKIP_TEXT_ANIMATIONS
+      this.updateInfoPaneMessagesAndWaitForInput(['不能逃跑'], () =>
+        this._switchToMainBattleMenu()
       )
       return
     } else {

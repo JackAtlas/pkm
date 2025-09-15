@@ -13,13 +13,14 @@ import { Background } from '@/battle/background'
 import { FoeBattlePKM } from '@/battle/pkm/foe-battle-pkm'
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { StateMachine } from '@/utils/state-machine'
-import {
-  SKIP_BATTLE_ANIMATIONS,
-  SKIP_TEXT_ANIMATIONS
-} from '@/config'
 import { MOVE_TARGET, MoveManager } from '@/battle/move/move-manager'
 import { createSceneTransition } from '@/utils/scene-transition'
 import { Controls } from '@/utils/controls'
+import {
+  DATA_MANAGER_STORE_KEYS,
+  dataManager
+} from '@/utils/data-manager'
+import { BATTLE_SCENE_OPTIONS } from '@/common/options'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -50,6 +51,9 @@ export class BattleScene extends Scene {
   /** 招式管理 */
   _moveManager: MoveManager
 
+  /** 是否跳过战斗动画，关联游戏配置 */
+  _skipAnimations: boolean
+
   constructor() {
     super({
       key: SCENE_KEYS.BATTLE_SCENE
@@ -58,6 +62,17 @@ export class BattleScene extends Scene {
 
   init() {
     this._activePlayerMoveIndex = -1
+    const chosenBattleSceneOption = dataManager.store.get(
+      DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION
+    )
+    if (
+      chosenBattleSceneOption === undefined ||
+      chosenBattleSceneOption === BATTLE_SCENE_OPTIONS.OFF
+    ) {
+      this._skipAnimations = false
+      return
+    }
+    this._skipAnimations = true
   }
 
   create() {
@@ -84,7 +99,7 @@ export class BattleScene extends Scene {
         baseAttack: 5,
         moveIds: [1]
       },
-      skipBattleAnimations: SKIP_BATTLE_ANIMATIONS
+      skipBattleAnimations: this._skipAnimations
     })
 
     // 我方精灵
@@ -103,7 +118,7 @@ export class BattleScene extends Scene {
         baseAttack: 45,
         moveIds: [2]
       },
-      skipBattleAnimations: SKIP_BATTLE_ANIMATIONS
+      skipBattleAnimations: this._skipAnimations
     })
 
     const midTopContainer = this.add.container(0, 0)
@@ -131,7 +146,8 @@ export class BattleScene extends Scene {
     this._battleMenu = new BattleMenu(
       this,
       midBottomContainer,
-      this._activePlayerPkm
+      this._activePlayerPkm,
+      this._skipAnimations
     )
 
     // 设置场景居中
@@ -151,7 +167,7 @@ export class BattleScene extends Scene {
           y: this._activePlayerPkm.pkmCenterPosition.y
         }
       },
-      SKIP_BATTLE_ANIMATIONS
+      this._skipAnimations
     )
 
     this._controls = new Controls(this)
@@ -237,8 +253,7 @@ export class BattleScene extends Scene {
             }
           )
         })
-      },
-      SKIP_TEXT_ANIMATIONS
+      }
     )
   }
 
@@ -271,8 +286,7 @@ export class BattleScene extends Scene {
             }
           )
         })
-      },
-      SKIP_TEXT_ANIMATIONS
+      }
     )
   }
 
@@ -286,8 +300,7 @@ export class BattleScene extends Scene {
           ],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          },
-          SKIP_TEXT_ANIMATIONS
+          }
         )
       })
       return
@@ -302,8 +315,7 @@ export class BattleScene extends Scene {
           ],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          },
-          SKIP_TEXT_ANIMATIONS
+          }
         )
       })
       return
@@ -335,7 +347,7 @@ export class BattleScene extends Scene {
               BATTLE_STATES.PRE_BATTLE_INFO
             )
           },
-          skipSceneTransition: SKIP_BATTLE_ANIMATIONS
+          skipSceneTransition: this._skipAnimations
         })
       }
     })
@@ -354,8 +366,7 @@ export class BattleScene extends Scene {
                   BATTLE_STATES.BRING_OUT_PKM
                 )
               })
-            },
-            SKIP_TEXT_ANIMATIONS
+            }
           )
         })
       }
@@ -375,8 +386,7 @@ export class BattleScene extends Scene {
                   BATTLE_STATES.PLAYER_INPUT
                 )
               })
-            },
-            SKIP_TEXT_ANIMATIONS
+            }
           )
         })
       }
@@ -426,8 +436,7 @@ export class BattleScene extends Scene {
           ['You got away safely!'],
           () => {
             this._battleStateMachine.setState(BATTLE_STATES.FINISHED)
-          },
-          SKIP_TEXT_ANIMATIONS
+          }
         )
       }
     })
