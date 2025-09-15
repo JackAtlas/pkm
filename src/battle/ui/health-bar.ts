@@ -53,11 +53,20 @@ export class HealthBar {
    */
   setMeterPercentageAnimated(
     percent = 1,
-    options?: {
+    options: {
       duration?: number
       callback?: () => void
+      skipBattleAnimations?: boolean
+    } = {
+      skipBattleAnimations: false
     }
   ) {
+    if (options?.skipBattleAnimations) {
+      this._setMeterPercentage(percent)
+      options?.callback?.()
+      return
+    }
+
     const width = this._fullWidth * percent
     this._scene.tweens.add({
       targets: this._overlay_hp,

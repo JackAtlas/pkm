@@ -87,7 +87,7 @@ export class BattlePKM {
     }
     this._healthBar.setMeterPercentageAnimated(
       this._currentHp / this._maxHp,
-      { callback }
+      { callback, skipBattleAnimations: this._skipBattleAnimations }
     )
   }
 
