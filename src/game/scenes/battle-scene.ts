@@ -171,10 +171,14 @@ export class BattleScene extends Scene {
     )
 
     this._controls = new Controls(this)
+    this._controls.lockInput = true
   }
 
   update() {
     this._battleStateMachine.update()
+
+    if (this._controls.isInputLocked) return
+
     const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
 
     if (
@@ -358,6 +362,7 @@ export class BattleScene extends Scene {
         // 等待敌方精灵出现并通知玩家
         this._activeFoePkm.playPkmAppearAnimation(() => {
           this._activeFoePkm.playDataBoxAnimation(() => undefined)
+          this._controls.lockInput = false
           this._battleMenu.updateInfoPaneMessagesAndWaitForInput(
             [`A wild ${this._activeFoePkm.name} appeared!`],
             () => {
