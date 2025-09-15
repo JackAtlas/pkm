@@ -70,7 +70,8 @@ export class HealthBar {
     const width = this._fullWidth * percent
     this._scene.tweens.add({
       targets: this._overlay_hp,
-      duration: options?.duration || 1000,
+      duration:
+        options?.duration || options?.duration === 0 ? 0 : 1000,
       width,
       ease: Phaser.Math.Easing.Sine.Out,
       onUpdate: () => {
