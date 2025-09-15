@@ -77,6 +77,7 @@ export class WorldScene extends Phaser.Scene {
 
   init() {
     this._wildPkmEncountered = false
+    this._npcPlayerIsInteractingWith = null
   }
 
   create() {
@@ -341,6 +342,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   _createNPCs(map: Phaser.Tilemaps.Tilemap) {
+    this._npcs = []
+
     const npcLayers = map
       .getObjectLayerNames()
       .filter((name) => name.includes('NPC'))
