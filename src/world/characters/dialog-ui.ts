@@ -1,4 +1,5 @@
 import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
+import { dataManager } from '@/utils/data-manager'
 import {
   animateText,
   CANNOT_READ_SIGN_TEXT
@@ -86,7 +87,7 @@ export class DialogUI {
       this._uiText,
       this._messagesToShow.shift() as string,
       {
-        delay: 50,
+        delay: dataManager.getAnimatedTextSpeed(),
         callback: () => {
           this._textAnimationPlaying = false
         }

@@ -9,6 +9,7 @@ import {
 import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { GENERAL_ASSET_KEYS } from '@/assets/asset-keys'
 import { animateText } from '@/utils/text-utils'
+import { dataManager } from '@/utils/data-manager'
 
 const infoPaneBorderWidth = 4
 
@@ -189,7 +190,7 @@ export class BattleMenu {
             this._waitingForPlayerInput = false
             if (callback) callback()
           },
-          delay: 50
+          delay: dataManager.getAnimatedTextSpeed()
         }
       )
     }
@@ -239,7 +240,7 @@ export class BattleMenu {
               this._waitingForPlayerInput = true
               this._queuedMessageAnimationPlaying = false
             },
-            delay: 50
+            delay: dataManager.getAnimatedTextSpeed()
           }
         )
       }

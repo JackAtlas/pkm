@@ -7,7 +7,8 @@ import {
   TEXT_SPEED_OPTIONS,
   TextSpeedOptions
 } from '@/common/options'
-import { TILE_SIZE } from '@/config'
+import { TEXT_SPEED, TILE_SIZE } from '@/config'
+import { exhaustiveGuard } from './guard'
 
 interface GoldenState {
   options: {
@@ -103,6 +104,25 @@ class DataManager extends Phaser.Events.EventEmitter {
       LOCAL_STORAGE_KEY,
       JSON.stringify(dataToSave)
     )
+  }
+
+  getAnimatedTextSpeed(): number {
+    const chosenTextSpeed: TextSpeedOptions | undefined =
+      this._store.get(DATA_MANAGER_STORE_KEYS.OPTIONS_TEXT_SPEED)
+
+    if (chosenTextSpeed === undefined) return TEXT_SPEED.MEDIUM
+
+    switch (chosenTextSpeed) {
+      case TEXT_SPEED_OPTIONS.SLOW:
+        return TEXT_SPEED.SLOW
+      case TEXT_SPEED_OPTIONS.MID:
+        return TEXT_SPEED.MEDIUM
+      case TEXT_SPEED_OPTIONS.FAST:
+        return TEXT_SPEED.FAST
+      default:
+        exhaustiveGuard(chosenTextSpeed)
+        return TEXT_SPEED.MEDIUM
+    }
   }
 
   _updateDataManager(data: GoldenState) {
