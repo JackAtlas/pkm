@@ -221,6 +221,10 @@ export class PreloaderScene extends Scene {
       'Power Red and Green',
       'url("/assets/Fonts/power red and green.ttf")'
     )
+    const boldPixels = new FontFace(
+      'Bold Pixels',
+      'url("/assets/Fonts/BoldPixels.ttf")'
+    )
     Promise.all([
       fontPowerClear.load(),
       fontPowerClearBold.load(),
@@ -229,7 +233,8 @@ export class PreloaderScene extends Scene {
       fontPowerGreenSmall.load(),
       fontPowerRedAndBlue.load(),
       fontPowerRedAndBlueIntl.load(),
-      fontPowerRedAndGreen.load()
+      fontPowerRedAndGreen.load(),
+      boldPixels.load()
     ]).then((loadedFonts) => {
       loadedFonts.forEach((loadedFont) => {
         document.fonts.add(loadedFont)
