@@ -67,7 +67,7 @@ export class BattleScene extends Scene {
     )
     if (
       chosenBattleSceneOption === undefined ||
-      chosenBattleSceneOption === BATTLE_SCENE_OPTIONS.OFF
+      chosenBattleSceneOption === BATTLE_SCENE_OPTIONS.ON
     ) {
       this._skipAnimations = false
       return
