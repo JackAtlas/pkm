@@ -198,7 +198,7 @@ export class WorldScene extends BaseScene {
     // centerCamera.startFollow(this._player.sprite, true)
     this.cameras.main.startFollow(this._player.sprite, true)
 
-    this._dialogUI = new DialogUI(this, this.scale.width)
+    this._dialogUI = new DialogUI(this)
 
     this._menu = new Menu(this)
 

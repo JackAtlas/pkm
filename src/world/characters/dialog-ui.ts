@@ -15,38 +15,20 @@ const UI_TEXT_STYLE = Object.freeze({
 export class DialogUI {
   protected _scene: Phaser.Scene
   protected _container: Phaser.GameObjects.Container
-  protected _width: number
-  protected _height: number = 124
-  protected _padding: number = 90
+  protected _width: number = 200
+  protected _height: number = 150
+  protected _padding: number = 20
   protected _isVisible: boolean
 
+  protected _uiPanel: Phaser.GameObjects.Rectangle
   protected _uiText: Phaser.GameObjects.Text
   protected _userInputCursor: Phaser.GameObjects.Sprite
   protected _textAnimationPlaying: boolean = false
   protected _messagesToShow: string[] = []
 
-  constructor(scene: Phaser.Scene, width: number) {
+  constructor(scene: Phaser.Scene) {
     this._scene = scene
-    this._width = width - this._padding * 2
-
-    const panel = this._scene.add
-      .rectangle(0, 0, this._width, this._height, 0xede4f3, 0.9)
-      .setOrigin(0)
-      .setStrokeStyle(8, 0x905ac2, 1)
-    this._uiText = this._scene.add.text(
-      18,
-      12,
-      CANNOT_READ_SIGN_TEXT,
-      {
-        ...UI_TEXT_STYLE,
-        ...{ wordWrap: { width: this._width - 18 } }
-      }
-    )
-    this._container = this._scene.add.container(0, 0, [
-      panel,
-      this._uiText
-    ])
-    this._createPlayerInputCursor()
+    this._container = this._scene.add.container(0, 0)
     this.hideDialogModel()
   }
 
@@ -65,9 +47,60 @@ export class DialogUI {
   showDialogModel(messages: string[]) {
     this._messagesToShow = [...messages]
 
-    const { x, bottom } = this._scene.cameras.main.worldView
-    const startX = x + this._padding
-    const startY = bottom - this._height - this._padding / 4
+    const {
+      width: viewPortwith,
+      x,
+      bottom
+    } = this._scene.cameras.main.worldView
+    const width = viewPortwith > 1000 ? 1000 : viewPortwith
+    const startX =
+      width < viewPortwith
+        ? (viewPortwith - width) / 2 + x + this._padding
+        : x + this._padding
+    const startY = bottom - this._height - this._padding
+
+    if (!this._uiPanel) {
+      this._uiPanel = this._scene.add
+        .rectangle(
+          0,
+          0,
+          width - this._padding * 2,
+          this._height,
+          0xede4f3,
+          0.9
+        )
+        .setStrokeStyle(8, 0x905ac2, 1)
+        .setOrigin(0)
+    }
+
+    if (!this._uiText) {
+      this._uiText = this._scene.add.text(
+        18,
+        12,
+        CANNOT_READ_SIGN_TEXT,
+        {
+          ...UI_TEXT_STYLE,
+          ...{ wordWrap: { width: this._width - 18 } }
+        }
+      )
+    }
+
+    if (!this._userInputCursor) {
+      this._userInputCursor = this._scene.add
+        .sprite(
+          width - this._padding * 3,
+          this._height - this._padding,
+          GENERAL_ASSET_KEYS.PAUSE_ARROW
+        )
+        .setOrigin(1)
+      this._userInputCursor.play(GENERAL_ASSET_KEYS.PAUSE_ARROW)
+    }
+
+    if (this._container.length === 0) {
+      this._container.add(this._uiPanel)
+      this._container.add(this._uiText)
+      this._container.add(this._userInputCursor)
+    }
 
     this._container.setPosition(startX, startY)
     this._container.setAlpha(1)
@@ -99,17 +132,5 @@ export class DialogUI {
   hideDialogModel() {
     this._container.setAlpha(0)
     this._isVisible = false
-  }
-
-  _createPlayerInputCursor() {
-    this._userInputCursor = this._scene.add
-      .sprite(
-        this._width - this._padding / 4,
-        this._height - this._padding / 4,
-        GENERAL_ASSET_KEYS.PAUSE_ARROW
-      )
-      .setOrigin(1)
-    this._container.add(this._userInputCursor)
-    this._userInputCursor.play(GENERAL_ASSET_KEYS.PAUSE_ARROW)
   }
 }
