@@ -63,8 +63,14 @@ export class WorldScene extends BaseScene {
   protected _player: Player
   protected _menu: Menu
   protected _dialogUI: DialogUI
-  protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
   protected _wildPkmEncountered: boolean
+
+  protected _backgroundGameObjectImage: Phaser.GameObjects.Image
+  protected _foregroundGameObjectImage: Phaser.GameObjects.Image
+
+  protected _collisionLayer: Phaser.Tilemaps.TilemapLayer
+  protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
+
   protected _signLayer: Phaser.Tilemaps.ObjectLayer | null
 
   protected _npcs: NPC[] = []
@@ -84,8 +90,6 @@ export class WorldScene extends BaseScene {
 
   create() {
     super.create()
-
-    this.cameras.main.setBounds(0, 0, 1920, 1920)
 
     const map = this.make.tilemap({
       key: WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL
@@ -113,7 +117,8 @@ export class WorldScene extends BaseScene {
       )
       return
     }
-    collisionLayer
+    this._collisionLayer = collisionLayer
+    this._collisionLayer
       .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
       .setDepth(2)
 
@@ -152,14 +157,7 @@ export class WorldScene extends BaseScene {
       .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
       .setDepth(2)
 
-    this._fpsText = this.add
-      .text(this.scale.width - 10, 10, '', {
-        fontFamily: 'sans-serif',
-        color: '#ffffff'
-      })
-      .setOrigin(1, 0)
-
-    this.add
+    this._backgroundGameObjectImage = this.add
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0)
       .setOrigin(0)
 
@@ -175,7 +173,7 @@ export class WorldScene extends BaseScene {
       direction: dataManager.store.get(
         DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION
       ),
-      collisionLayer,
+      collisionLayer: this._collisionLayer,
       spriteChangedDirectionCallback: () => {
         this._handlePlayerDirectionUpdate()
       },
@@ -189,18 +187,28 @@ export class WorldScene extends BaseScene {
       npc.addCharacterToCheckForCollisionsWith(this._player)
     })
 
-    this.add
+    this._foregroundGameObjectImage = this.add
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
       .setOrigin(0)
 
-    // TODO const centerCamera = this.cameras.add(x, y, width, height)
-    // centerCamera.setBounds(0, 0, mapWidth, mapHeight)
-    // centerCamera.startFollow(this._player.sprite, true)
-    this.cameras.main.startFollow(this._player.sprite, true)
+    this._fpsText = this.add
+      .text(this.scale.width - 10, 10, '', {
+        fontFamily: 'sans-serif',
+        color: '#ffffff'
+      })
+      .setOrigin(1, 0)
 
     this._dialogUI = new DialogUI(this)
 
     this._menu = new Menu(this)
+
+    this.cameras.main.setBounds(
+      0,
+      0,
+      map.widthInPixels,
+      map.heightInPixels
+    )
+    this.cameras.main.startFollow(this._player.sprite, true)
 
     this.cameras.main.fadeIn(1000, 0, 0, 0)
 
@@ -280,6 +288,42 @@ export class WorldScene extends BaseScene {
       npc.update(time)
     })
   }
+
+  // 旧设计：分割型 UI
+  // private _setCamera() {
+  //   // 设置 UI 摄像头
+  //   const centerCamera = this.cameras.add(
+  //     0,
+  //     0,
+  //     this.scale.width,
+  //     this.scale.height
+  //   )
+  //   centerCamera.ignore([
+  //     this._collisionLayer,
+  //     this._encounterLayer,
+  //     this._backgroundGameObjectImage,
+  //     this._foregroundGameObjectImage,
+  //     this._player.sprite,
+  //     this._menu.gameObject
+  //   ])
+  //   const npcObjs = this._npcs.map((npc) => npc.sprite)
+  //   centerCamera.ignore(npcObjs)
+
+  //   // 设置世界摄像头
+  //   this.cameras.main.ignore([
+  //     this._leftContainer,
+  //     this._rightContainer,
+  //     this._topContainer
+  //   ])
+  //   this.cameras.main.setBounds(0, 0, 1920, 1920)
+  //   this.cameras.main.setViewport(
+  //     this.scale.width / 4,
+  //     this.scale.height / 4,
+  //     this.scale.width / 2,
+  //     (this.scale.height * 3) / 4
+  //   )
+  //   this.cameras.main.startFollow(this._player.sprite, true)
+  // }
 
   _handlePlayerInteraction() {
     if (this._dialogUI.isAnimationPlaying) return
