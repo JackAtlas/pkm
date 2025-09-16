@@ -27,6 +27,7 @@ import {
 } from '@/world/characters/npc'
 import { Player } from '@/world/characters/player'
 import { SCENE_KEYS } from './scene-keys'
+import { Menu } from '@/world/menu/menu'
 
 const TILED_SIGN_PROPERTY = Object.freeze({
   MESSAGE: 'message'
@@ -61,6 +62,7 @@ export class WorldScene extends Phaser.Scene {
   protected _fpsText!: Phaser.GameObjects.Text
   protected _player: Player
   protected _controls: Controls
+  protected _menu: Menu
   protected _dialogUI: DialogUI
   protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
   protected _wildPkmEncountered: boolean
@@ -200,6 +202,8 @@ export class WorldScene extends Phaser.Scene {
 
     this._dialogUI = new DialogUI(this, this.scale.width)
 
+    this._menu = new Menu(this)
+
     this.cameras.main.fadeIn(1000, 0, 0, 0)
   }
 
@@ -212,20 +216,61 @@ export class WorldScene extends Phaser.Scene {
     const fps = this.game.loop.actualFps.toFixed(1)
     this._fpsText.setText(`FPS: ${fps}`)
 
-    const selectedDirection =
+    const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
+    const selectedDirectionHeldDown =
       this._controls.getDirectionKeyPressedDown()
+    const selectedDirectionPressedOne =
+      this._controls.getDirectionKeyJustPressed()
     if (
-      selectedDirection !== DIRECTION.NONE &&
+      selectedDirectionHeldDown !== DIRECTION.NONE &&
       !this._isPlayerInputLocked()
     ) {
-      this._player.moveCharacter(selectedDirection)
+      this._player.moveCharacter(selectedDirectionHeldDown)
     }
 
     if (
-      this._controls.wasSpaceKeyPressed() &&
-      !this._player.isMoving
+      wasSpaceKeyPressed &&
+      !this._player.isMoving &&
+      !this._menu.isVisible
     ) {
       this._handlePlayerInteraction()
+    }
+
+    if (
+      this._controls.wasMenuKeyPressed() &&
+      !this._player.isMoving
+    ) {
+      if (this._dialogUI.isVisible) return
+
+      if (this._menu.isVisible) {
+        this._menu.hide()
+      } else {
+        this._menu.show()
+      }
+    }
+
+    if (this._menu.isVisible) {
+      if (selectedDirectionPressedOne !== DIRECTION.NONE) {
+        this._menu.handlePlayerInput(selectedDirectionPressedOne)
+      }
+
+      if (wasSpaceKeyPressed) {
+        this._menu.handlePlayerInput('OK')
+
+        if (this._menu.selectedMenuOption === 'SAVE') {
+          dataManager.saveData()
+          this._menu.hide()
+          this._dialogUI.showDialogModel([
+            'Game progress has been saved'
+          ])
+        } else if (this._menu.selectedMenuOption === 'EXIT') {
+          this._menu.hide()
+        }
+      }
+
+      if (this._controls.wasBackKeyPressed()) {
+        this._menu.hide()
+      }
     }
 
     this._player.update(time)
@@ -337,7 +382,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   _isPlayerInputLocked() {
-    return this._dialogUI.isVisible
+    return (
+      this._controls.isInputLocked ||
+      this._dialogUI.isVisible ||
+      this._menu.isVisible
+    )
   }
 
   _createNPCs(map: Phaser.Tilemaps.Tilemap) {

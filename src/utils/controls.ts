@@ -4,11 +4,16 @@ export class Controls {
   readonly _scene: Phaser.Scene
   protected _cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys
   protected _lockPlayerInput: boolean
+  protected _menuKey: Phaser.Input.Keyboard.Key | undefined
 
   constructor(scene: Phaser.Scene) {
     this._scene = scene
     this._cursorKeys = this._scene.input.keyboard!.createCursorKeys()
     this._lockPlayerInput = false
+
+    this._menuKey = this._scene.input.keyboard!.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ENTER
+    )
   }
 
   get isInputLocked(): boolean {
@@ -24,6 +29,13 @@ export class Controls {
       return false
     }
     return Phaser.Input.Keyboard.JustDown(this._cursorKeys.space)
+  }
+
+  wasMenuKeyPressed(): boolean {
+    if (this._cursorKeys === undefined || !this._menuKey) {
+      return false
+    }
+    return Phaser.Input.Keyboard.JustDown(this._menuKey)
   }
 
   wasBackKeyPressed(): boolean {
