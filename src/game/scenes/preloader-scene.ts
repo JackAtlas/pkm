@@ -1,4 +1,3 @@
-import { Scene } from 'phaser'
 import { SCENE_KEYS } from './scene-keys'
 import {
   BATTLE_BACKGROUND_ASSET_KEYS,
@@ -17,8 +16,9 @@ import {
 import { DataUtils } from '@/utils/data-utils'
 import { Animation } from '@/types/typedef'
 import { dataManager } from '@/utils/data-manager'
+import { BaseScene } from './base-scene'
 
-export class PreloaderScene extends Scene {
+export class PreloaderScene extends BaseScene {
   constructor() {
     super({
       key: SCENE_KEYS.PRELOADER_SCENE
@@ -43,7 +43,7 @@ export class PreloaderScene extends Scene {
   // }
 
   preload() {
-    console.log(`[${PreloaderScene.name}: preload] invoked`)
+    super.preload()
     //  Load the assets for the game - Replace with your own assets
     this.load.setPath('assets')
 
@@ -184,6 +184,7 @@ export class PreloaderScene extends Scene {
   }
 
   create() {
+    super.create()
     //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
     //  For example, you can define global animations here, so we can use them in other scenes.
     this._createAnimations()

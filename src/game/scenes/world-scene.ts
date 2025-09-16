@@ -8,7 +8,6 @@ import {
   TILE_SIZE,
   TILED_COLLISION_LAYER_ALPHA
 } from '@/config'
-import { Controls } from '@/utils/controls'
 import {
   DATA_MANAGER_STORE_KEYS,
   dataManager
@@ -28,6 +27,7 @@ import {
 import { Player } from '@/world/characters/player'
 import { SCENE_KEYS } from './scene-keys'
 import { Menu } from '@/world/menu/menu'
+import { BaseScene } from './base-scene'
 
 const TILED_SIGN_PROPERTY = Object.freeze({
   MESSAGE: 'message'
@@ -58,10 +58,9 @@ type Property<K extends keyof TypeMap = keyof TypeMap> = {
   value: TypeMap[K]
 }
 
-export class WorldScene extends Phaser.Scene {
+export class WorldScene extends BaseScene {
   protected _fpsText!: Phaser.GameObjects.Text
   protected _player: Player
-  protected _controls: Controls
   protected _menu: Menu
   protected _dialogUI: DialogUI
   protected _encounterLayer: Phaser.Tilemaps.TilemapLayer
@@ -78,12 +77,13 @@ export class WorldScene extends Phaser.Scene {
   }
 
   init() {
+    super.init()
     this._wildPkmEncountered = false
     this._npcPlayerIsInteractingWith = null
   }
 
   create() {
-    console.log(`[${WorldScene.name}: create] invoked`)
+    super.create()
 
     this.cameras.main.setBounds(0, 0, 1920, 1920)
 
@@ -198,8 +198,6 @@ export class WorldScene extends Phaser.Scene {
     // centerCamera.startFollow(this._player.sprite, true)
     this.cameras.main.startFollow(this._player.sprite, true)
 
-    this._controls = new Controls(this)
-
     this._dialogUI = new DialogUI(this, this.scale.width)
 
     this._menu = new Menu(this)
@@ -210,6 +208,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   update(time: DOMHighResTimeStamp) {
+    super.update(time)
     if (this._wildPkmEncountered) {
       this._player.update(time)
       return

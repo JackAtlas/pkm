@@ -2,10 +2,8 @@ import { AUTO, Game } from 'phaser'
 import {
   BattleScene,
   BootScene,
-  GameOverScene,
-  GameScene,
-  MainMenuScene,
   OptionsScene,
+  PKMPartyScene,
   PreloaderScene,
   TitleScene,
   WorldScene
@@ -29,10 +27,8 @@ const config: Phaser.Types.Core.GameConfig = {
     TitleScene,
     OptionsScene,
     BattleScene,
-    MainMenuScene,
-    GameScene,
-    GameOverScene,
-    WorldScene
+    WorldScene,
+    PKMPartyScene
   ]
 }
 

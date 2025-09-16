@@ -1,9 +1,7 @@
-import { Scene } from 'phaser'
 import { SCENE_KEYS } from '@/game/scenes/scene-keys'
 import {
   BATTLE_BACKGROUND_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
-  POKEMON_BACK_ASSET_KEYS,
   PKM_NAME_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
 } from '@/assets/asset-keys'
@@ -15,12 +13,12 @@ import { PlayerBattlePKM } from '@/battle/pkm/player-battle-pkm'
 import { StateMachine } from '@/utils/state-machine'
 import { MOVE_TARGET, MoveManager } from '@/battle/move/move-manager'
 import { createSceneTransition } from '@/utils/scene-transition'
-import { Controls } from '@/utils/controls'
 import {
   DATA_MANAGER_STORE_KEYS,
   dataManager
 } from '@/utils/data-manager'
 import { BATTLE_SCENE_OPTIONS } from '@/common/options'
+import { BaseScene } from './base-scene'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -34,9 +32,8 @@ const BATTLE_STATES = Object.freeze({
   FLEE_ATTEMPT: 'FLEE_ATTEMPT'
 })
 
-export class BattleScene extends Scene {
+export class BattleScene extends BaseScene {
   _battleMenu: BattleMenu
-  _controls: Controls
 
   /** 我方精灵 */
   _activePlayerPkm: PlayerBattlePKM
@@ -61,6 +58,7 @@ export class BattleScene extends Scene {
   }
 
   init() {
+    super.init()
     this._activePlayerMoveIndex = -1
     const chosenBattleSceneOption = dataManager.store.get(
       DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION
@@ -76,7 +74,7 @@ export class BattleScene extends Scene {
   }
 
   create() {
-    console.log(`[${BattleScene.name}: create] invoked`)
+    super.create()
 
     // 场景背景
     const battleSceneContainer = this.add.container(0, 0)
@@ -165,11 +163,11 @@ export class BattleScene extends Scene {
       this._skipAnimations
     )
 
-    this._controls = new Controls(this)
     this._controls.lockInput = true
   }
 
-  update() {
+  update(time: DOMHighResTimeStamp) {
+    super.update(time)
     this._battleStateMachine.update()
 
     if (this._controls.isInputLocked) return

@@ -1,12 +1,12 @@
 import { TITLE_ASSET_KEYS } from '@/assets/asset-keys'
 import { SCENE_KEYS } from './scene-keys'
-import { Controls } from '@/utils/controls'
 import { Direction, DIRECTION } from '@/common/direction'
 import { exhaustiveGuard } from '@/utils/guard'
 import {
   DATA_MANAGER_STORE_KEYS,
   dataManager
 } from '@/utils/data-manager'
+import { BaseScene } from './base-scene'
 
 type MainMenuOptions =
   (typeof MAIN_MENU_OPTIONS)[keyof typeof MAIN_MENU_OPTIONS]
@@ -19,8 +19,7 @@ const MAIN_MENU_OPTIONS = Object.freeze({
   CREDITS: 'CREDITS'
 })
 
-export class TitleScene extends Phaser.Scene {
-  protected _constrols: Controls
+export class TitleScene extends BaseScene {
   protected _selectedMenuOption: MainMenuOptions
 
   protected _text_0: Phaser.GameObjects.Text // Continue
@@ -39,8 +38,12 @@ export class TitleScene extends Phaser.Scene {
     })
   }
 
+  init() {
+    super.init()
+  }
+
   create() {
-    console.log(`[${TitleScene.name}:create] invoked`)
+    super.create()
 
     this._isContinueAble =
       dataManager.store.get(DATA_MANAGER_STORE_KEYS.GAME_STARTED) ||
@@ -129,6 +132,7 @@ export class TitleScene extends Phaser.Scene {
       () => {
         if (this._selectedMenuOption === MAIN_MENU_OPTIONS.OPTIONS) {
           this.scene.start(SCENE_KEYS.OPTIONS_SCENE)
+          return
         }
 
         if (this._selectedMenuOption === MAIN_MENU_OPTIONS.NEW_GAME) {
@@ -138,23 +142,22 @@ export class TitleScene extends Phaser.Scene {
         this.scene.start(SCENE_KEYS.WORLD_SCENE)
       }
     )
-
-    this._constrols = new Controls(this)
   }
 
-  update() {
-    if (this._constrols.isInputLocked) return
+  update(time: DOMHighResTimeStamp) {
+    super.update(time)
+    if (this._controls.isInputLocked) return
 
-    const wasSpaceKeyPressed = this._constrols.wasSpaceKeyPressed()
+    const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
     if (wasSpaceKeyPressed) {
       this.cameras.main.fadeOut(500, 0, 0, 0)
-      this._constrols.lockInput = true
+      this._controls.lockInput = true
 
       return
     }
 
     const selectedDirection =
-      this._constrols.getDirectionKeyJustPressed()
+      this._controls.getDirectionKeyJustPressed()
     if (selectedDirection !== DIRECTION.NONE) {
       this._moveMenuCursor(selectedDirection)
     }

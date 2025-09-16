@@ -1,6 +1,5 @@
 import { DEBUG } from '@/config'
 import { SCENE_KEYS } from './scene-keys'
-import { Controls } from '@/utils/controls'
 import {
   BATTLE_SCENE_OPTIONS,
   BATTLE_STYLE_OPTIONS,
@@ -17,6 +16,7 @@ import {
   DATA_MANAGER_STORE_KEYS,
   dataManager
 } from '@/utils/data-manager'
+import { BaseScene } from './base-scene'
 
 const OPTION_COLORS = Object.freeze({
   NORMAL: '#ffffff',
@@ -41,14 +41,13 @@ const OPTION_MENU_OPTION_DES_MSG = Object.freeze({
 const strokeWidth: number = 4
 const padding: number = 40
 
-export class OptionsScene extends Phaser.Scene {
+export class OptionsScene extends BaseScene {
   protected _container: Phaser.GameObjects.Container
   protected _title: Phaser.GameObjects.Text
   protected _mainContainer: Phaser.GameObjects.Container
   protected _desContainer: Phaser.GameObjects.Container
 
   protected _optionsMenuCursor: Phaser.GameObjects.Rectangle
-  protected _controls: Controls
   protected _selectedOptionMenu: OptionMenuOptions
 
   protected _textSpeedOptionTextGameObjects: Phaser.GameObjects.Group
@@ -77,6 +76,7 @@ export class OptionsScene extends Phaser.Scene {
   }
 
   init() {
+    super.init()
     this._selectedOptionMenu = OPTION_MENU_OPTIONS.BGM_VOLUME
     this._BGMVolumeValue = dataManager.store.get(
       DATA_MANAGER_STORE_KEYS.OPTIONS_BGM_VOLUME
@@ -96,7 +96,7 @@ export class OptionsScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(`[${OptionsScene.name}: created] invoked`)
+    super.create()
 
     this._title = this.add
       .text(0, 0, 'OPTIONS', OPTIONS_TEXT_STYLE)
@@ -117,8 +117,6 @@ export class OptionsScene extends Phaser.Scene {
     this._updateBattleSceneGameObjects()
     this._updateBattleStyleGameObjects()
 
-    this._controls = new Controls(this)
-
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
@@ -127,7 +125,8 @@ export class OptionsScene extends Phaser.Scene {
     )
   }
 
-  update() {
+  update(time: DOMHighResTimeStamp) {
+    super.update(time)
     if (this._controls.isInputLocked) return
 
     if (this._controls.wasBackKeyPressed()) {
