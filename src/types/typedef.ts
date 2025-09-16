@@ -1,6 +1,8 @@
 import { MOVE_KEYS } from '@/battle/move/move-keys'
 
 export interface Pokemon {
+  id: number
+  pkmId: number
   name: string
   assetKey: string
   assetFrame: number

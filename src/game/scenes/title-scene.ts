@@ -3,6 +3,10 @@ import { SCENE_KEYS } from './scene-keys'
 import { Controls } from '@/utils/controls'
 import { Direction, DIRECTION } from '@/common/direction'
 import { exhaustiveGuard } from '@/utils/guard'
+import {
+  DATA_MANAGER_STORE_KEYS,
+  dataManager
+} from '@/utils/data-manager'
 
 type MainMenuOptions =
   (typeof MAIN_MENU_OPTIONS)[keyof typeof MAIN_MENU_OPTIONS]
@@ -25,7 +29,7 @@ export class TitleScene extends Phaser.Scene {
   protected _text_3: Phaser.GameObjects.Text // Options
   protected _text_4: Phaser.GameObjects.Text // Credits
 
-  protected _isContinueAble: boolean = false
+  protected _isContinueAble: boolean
 
   protected _cursor: Phaser.GameObjects.Rectangle
 
@@ -37,6 +41,10 @@ export class TitleScene extends Phaser.Scene {
 
   create() {
     console.log(`[${TitleScene.name}:create] invoked`)
+
+    this._isContinueAble =
+      dataManager.store.get(DATA_MANAGER_STORE_KEYS.GAME_STARTED) ||
+      false
 
     this.add
       .image(
@@ -119,18 +127,15 @@ export class TitleScene extends Phaser.Scene {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        if (this._selectedMenuOption === MAIN_MENU_OPTIONS.NEW_GAME) {
-          this.scene.start(SCENE_KEYS.WORLD_SCENE)
-        } else if (
-          this._selectedMenuOption === MAIN_MENU_OPTIONS.CONTINUE
-        ) {
-          this.scene.start(SCENE_KEYS.GAME_SCENE)
-        } else if (
-          this._selectedMenuOption === MAIN_MENU_OPTIONS.OPTIONS
-        ) {
+        if (this._selectedMenuOption === MAIN_MENU_OPTIONS.OPTIONS) {
           this.scene.start(SCENE_KEYS.OPTIONS_SCENE)
         }
-        return
+
+        if (this._selectedMenuOption === MAIN_MENU_OPTIONS.NEW_GAME) {
+          dataManager.startNewGame()
+        }
+
+        this.scene.start(SCENE_KEYS.WORLD_SCENE)
       }
     )
 

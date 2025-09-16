@@ -90,6 +90,8 @@ export class BattleScene extends Scene {
       baseAssetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE_FOE,
       shadowAssetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
       pkm: {
+        id: 2,
+        pkmId: 2,
         name: PKM_NAME_KEYS.HERACROSS,
         assetKey: POKEMON_FRONT_ASSET_KEYS.HERACROSS,
         assetFrame: 0,
@@ -108,16 +110,9 @@ export class BattleScene extends Scene {
       container: battleSceneContainer,
       baseAssetKey: BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE,
       shadowAssetKey: POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
-      pkm: {
-        name: PKM_NAME_KEYS.CHANDELURE,
-        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
-        assetFrame: 0,
-        currentLevel: 5,
-        maxHp: 100,
-        currentHp: 100,
-        baseAttack: 45,
-        moveIds: [2]
-      },
+      pkm: dataManager.store.get(
+        DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY
+      )[0],
       skipBattleAnimations: this._skipAnimations
     })
 

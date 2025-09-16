@@ -9,8 +9,18 @@ import {
 } from '@/common/options'
 import { TEXT_SPEED, TILE_SIZE } from '@/config'
 import { exhaustiveGuard } from './guard'
+import { Pokemon } from '@/types/typedef'
+import {
+  PKM_NAME_KEYS,
+  POKEMON_BACK_ASSET_KEYS
+} from '@/assets/asset-keys'
 
-interface GoldenState {
+interface PKMData {
+  inParty: Pokemon[]
+}
+
+interface GlobalState {
+  gameStarted: boolean
   options: {
     battleSceneAnimations: BattleSceneOptions
     battleStyle: BattleStyleOptions
@@ -25,9 +35,11 @@ interface GoldenState {
       y: number
     }
   }
+  pkm: PKMData
 }
 
-const initialState: GoldenState = {
+const initialState: GlobalState = {
+  gameStarted: false,
   options: {
     battleSceneAnimations: BATTLE_SCENE_OPTIONS.ON,
     battleStyle: BATTLE_STYLE_OPTIONS.SHIFT,
@@ -38,20 +50,38 @@ const initialState: GoldenState = {
   player: {
     direction: DIRECTION.DOWN,
     position: {
-      x: 15 * TILE_SIZE,
+      x: 25 * TILE_SIZE,
       y: 20 * TILE_SIZE
     }
+  },
+  pkm: {
+    inParty: [
+      {
+        id: 1,
+        pkmId: 1,
+        name: PKM_NAME_KEYS.CHANDELURE,
+        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 100,
+        baseAttack: 45,
+        moveIds: [2]
+      }
+    ]
   }
 }
 
 export const DATA_MANAGER_STORE_KEYS = Object.freeze({
+  GAME_STARTED: 'GAME_STARTED',
   OPTIONS_BATTLE_SCENE_ANIMATION: 'OPTIONS_BATTLE_SCENE_ANIMATION',
   OPTIONS_BATTLE_STYLE: 'OPTIONS_BATTLE_STYLE',
   OPTIONS_BGM_VOLUME: 'OPTIONS_BGM_VOLUME',
   OPTIONS_SE_VOLUME: 'OPTIONS_SE_VOLUME',
   OPTIONS_TEXT_SPEED: 'OPTIONS_TEXT_SPEED',
   PLAYER_DIRECTION: 'PLAYER_DIRECTION',
-  PLAYER_POSITION: 'PLAYER_POSITION'
+  PLAYER_POSITION: 'PLAYER_POSITION',
+  PKM_IN_PARTY: 'PKM_IN_PARTY'
 })
 
 const LOCAL_STORAGE_KEY = 'PKM_DATA'
@@ -80,9 +110,9 @@ class DataManager extends Phaser.Events.EventEmitter {
     const savedData = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (savedData === null) return
     try {
-      const parsedData: GoldenState = JSON.parse(
+      const parsedData: GlobalState = JSON.parse(
         savedData
-      ) as GoldenState
+      ) as GlobalState
       this._updateDataManager(parsedData)
     } catch (error) {
       console.warn(
@@ -106,6 +136,20 @@ class DataManager extends Phaser.Events.EventEmitter {
     )
   }
 
+  startNewGame() {
+    const existingData = {
+      ...this._dataManagerDataToGlobalStateObject()
+    }
+    existingData.gameStarted = initialState.gameStarted
+    existingData.player.direction = initialState.player.direction
+    existingData.player.position = { ...initialState.player.position }
+    existingData.pkm = { inParty: [...initialState.pkm.inParty] }
+
+    this._store.reset()
+    this._updateDataManager(existingData)
+    this.saveData()
+  }
+
   getAnimatedTextSpeed(): number {
     const chosenTextSpeed: TextSpeedOptions | undefined =
       this._store.get(DATA_MANAGER_STORE_KEYS.OPTIONS_TEXT_SPEED)
@@ -125,8 +169,9 @@ class DataManager extends Phaser.Events.EventEmitter {
     }
   }
 
-  _updateDataManager(data: GoldenState) {
+  _updateDataManager(data: GlobalState) {
     this._store.set({
+      [DATA_MANAGER_STORE_KEYS.GAME_STARTED]: data.gameStarted,
       [DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION]:
         data.options.battleSceneAnimations,
       [DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_STYLE]:
@@ -139,12 +184,16 @@ class DataManager extends Phaser.Events.EventEmitter {
         data.options.textSpeed,
       [DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION]:
         data.player.direction,
-      [DATA_MANAGER_STORE_KEYS.PLAYER_POSITION]: data.player.position
+      [DATA_MANAGER_STORE_KEYS.PLAYER_POSITION]: data.player.position,
+      [DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY]: data.pkm.inParty
     })
   }
 
-  _dataManagerDataToGlobalStateObject(): GoldenState {
+  _dataManagerDataToGlobalStateObject(): GlobalState {
     return {
+      gameStarted: this._store.get(
+        DATA_MANAGER_STORE_KEYS.GAME_STARTED
+      ),
       options: {
         battleSceneAnimations: this._store.get(
           DATA_MANAGER_STORE_KEYS.OPTIONS_BATTLE_SCENE_ANIMATION
@@ -172,8 +221,11 @@ class DataManager extends Phaser.Events.EventEmitter {
           y: this._store.get(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION)
             .y
         }
+      },
+      pkm: {
+        inParty: this._store.get(DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY)
       }
-    } as GoldenState
+    } as GlobalState
   }
 }
 
