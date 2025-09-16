@@ -3,7 +3,6 @@ import {
   BattleScene,
   BootScene,
   OptionsScene,
-  PKMPartyScene,
   PreloaderScene,
   TitleScene,
   WorldScene
@@ -27,8 +26,7 @@ const config: Phaser.Types.Core.GameConfig = {
     TitleScene,
     OptionsScene,
     BattleScene,
-    WorldScene,
-    PKMPartyScene
+    WorldScene
   ]
 }
 

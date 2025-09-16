@@ -1,7 +1,6 @@
 export * from './battle-scene'
 export * from './boot-scene'
 export * from './options-scene'
-export * from './pkm-party-scene'
 export * from './preloader-scene'
 export * from './title-scene'
 export * from './world-scene'
