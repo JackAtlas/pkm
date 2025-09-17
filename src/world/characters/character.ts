@@ -1,4 +1,5 @@
 import { Direction, DIRECTION } from '@/common/direction'
+import { DEBUG, SPEED_MULTIPLIER } from '@/config'
 import { Coordinate } from '@/types/typedef'
 import { getTargetPositionFromGameObjectPositionAndDirection } from '@/utils/grid-utils'
 import { exhaustiveGuard } from '@/utils/guard'
@@ -14,6 +15,7 @@ interface CharacterIdleFrameConfig {
 export interface CharacterConfig {
   scene: Phaser.Scene
   assetKey: string
+  visible: boolean
   origin?: Coordinate
   position: Coordinate
   direction: Direction
@@ -27,7 +29,9 @@ export interface CharacterConfig {
 export class Character {
   protected _scene: Phaser.Scene
   protected _assetKey: string
+  protected _visible: boolean
   protected _characterGameObject: Phaser.GameObjects.Sprite
+  protected _debugRect: Phaser.GameObjects.Rectangle
   protected _idleFrameConfig: CharacterIdleFrameConfig
   protected _origin: Coordinate = { x: 0, y: 0 }
   protected _direction: Direction
@@ -47,10 +51,11 @@ export class Character {
 
   constructor(config: CharacterConfig) {
     this._scene = config.scene
+    this._visible = config.visible
     this._direction = config.direction
     this._origin = config.origin
       ? { ...config.origin }
-      : { x: 0, y: 0 }
+      : { x: 0.25, y: 0.5 }
     this._idleFrameConfig = config.idleFrameConfig
     this._isMoving = false
     this._targetPosition = { ...config.position }
@@ -58,6 +63,7 @@ export class Character {
     this._otherCharactersToCheckForCollisionsWith =
       config.otherCharactersToCheckForCollisionsWith || []
     this._assetKey = config.assetKey
+
     this._characterGameObject = this._scene.add
       .sprite(
         config.position.x,
@@ -66,6 +72,19 @@ export class Character {
         this._getIdleFrame()
       )
       .setOrigin(this._origin.x, this._origin.y)
+      .setVisible(config.visible)
+    if (DEBUG) {
+      this._debugRect = this._scene.add
+        .rectangle(
+          this._characterGameObject.x,
+          this._characterGameObject.y,
+          this._characterGameObject.width,
+          this._characterGameObject.height,
+          0xff0000,
+          0.5
+        )
+        .setOrigin(this._origin.x, this._origin.y)
+    }
     this._collisionLayer = config.collisionLayer
     this._spriteGridMovementFinishedCallback =
       config.spriteGridMovementFinishedCallback
@@ -173,7 +192,7 @@ export class Character {
 
     this._scene.add.tween({
       delay: 0,
-      duration: 300,
+      duration: 300 / SPEED_MULTIPLIER,
       y: {
         from: this._characterGameObject.y,
         start: this._characterGameObject.y,
@@ -186,6 +205,12 @@ export class Character {
       },
       targets: this._characterGameObject,
       onComplete: () => {
+        if (DEBUG && this._debugRect) {
+          this._debugRect.setPosition(
+            this._characterGameObject.x,
+            this._characterGameObject.y
+          )
+        }
         this._isMoving = false
         this._previousTargetPosition = { ...this._targetPosition }
         if (this._spriteGridMovementFinishedCallback) {

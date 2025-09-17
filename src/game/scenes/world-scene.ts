@@ -1,4 +1,5 @@
 import {
+  LAYER_KEYS,
   TILE_ASSET_KEYS,
   WORLD_ASSET_KEYS
 } from '@/assets/asset-keys'
@@ -43,7 +44,8 @@ const TILED_NPC_PROPERTY = Object.freeze({
   MOVEMENT_PATTERN: 'movement_pattern',
   MESSAGES: 'messages',
   FRAME: 'frame',
-  ASSET_KEY: 'asset_key'
+  ASSET_KEY: 'asset_key',
+  VISIBLE: 'visible'
 })
 
 type TypeMap = {
@@ -122,7 +124,7 @@ export class WorldScene extends BaseScene {
       .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
       .setDepth(2)
 
-    this._signLayer = map.getObjectLayer('SIGNS')
+    this._signLayer = map.getObjectLayer(LAYER_KEYS.SIGN_LAYER)
     if (!this._signLayer) {
       console.error(
         `[${WorldScene.name}: create] encountered error while creating sign layer using data from tiled`
@@ -130,32 +132,34 @@ export class WorldScene extends BaseScene {
       return
     }
 
+    if (map.tilesets.find((tileset) => tileset.name === 'Yellow')) {
     const encounterTiles = map.addTilesetImage(
       'Yellow',
       TILE_ASSET_KEYS.YELLOW_TILE
     )
-    if (!encounterTiles) {
-      console.error(
-        `[${WorldScene.name}: create] encountered error while creating encounter tiles using data from tiled`
-      )
-      return
-    }
+      if (encounterTiles) {
     const encounterLayer = map.createLayer(
       'ENCOUNTER',
       encounterTiles,
       0,
       0
     )
-    if (!encounterLayer) {
-      console.error(
-        `[${WorldScene.name}: create] encountered error while creating encounter layer using data from tiled`
-      )
-      return
-    }
+        if (encounterLayer) {
     this._encounterLayer = encounterLayer
     this._encounterLayer
       .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
       .setDepth(2)
+        } else {
+          console.warn(
+            `[${WorldScene.name}: create] encountered error while creating encounter layer using data from tiled`
+          )
+        }
+      } else {
+        console.warn(
+          `[${WorldScene.name}: create] encountered error while creating encounter tiles using data from tiled`
+        )
+      }
+    }
 
     this._backgroundGameObjectImage = this.add
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_BACKGROUND, 0)
@@ -167,6 +171,7 @@ export class WorldScene extends BaseScene {
     // 生成玩家
     this._player = new Player({
       scene: this,
+      visible: true,
       position: dataManager.store.get(
         DATA_MANAGER_STORE_KEYS.PLAYER_POSITION
       ),
@@ -208,6 +213,7 @@ export class WorldScene extends BaseScene {
       map.widthInPixels,
       map.heightInPixels
     )
+    this.cameras.main.setZoom(3)
     this.cameras.main.startFollow(this._player.sprite, true)
 
     this.cameras.main.fadeIn(1000, 0, 0, 0)
@@ -469,6 +475,12 @@ export class WorldScene extends BaseScene {
         }
       })
 
+      const npcVisibility =
+        npcObject.properties.find(
+          (property: Property) =>
+            property.name === TILED_NPC_PROPERTY.VISIBLE
+        )?.value ?? true
+
       const npcFrame =
         npcObject.properties.find(
           (property: Property) =>
@@ -499,7 +511,8 @@ export class WorldScene extends BaseScene {
         frame: parseInt(npcFrame, 10),
         messages: npcMessages,
         npcPath,
-        movementPattern: npcMovement
+        movementPattern: npcMovement,
+        visible: npcVisibility
       })
       this._npcs.push(npc)
     })

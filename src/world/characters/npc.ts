@@ -39,13 +39,13 @@ export class NPC extends Character {
   constructor(config: NPCConfig) {
     super({
       ...config,
-      origin: { x: 0, y: 1 / 3 },
+      origin: { x: 0.25, y: 0.5 },
       idleFrameConfig: {
-        DOWN: config.frame,
-        LEFT: config.frame + 4,
-        RIGHT: config.frame + 8,
-        UP: config.frame + 12,
-        NONE: config.frame
+        DOWN: 0,
+        UP: 4,
+        RIGHT: 8,
+        LEFT: 12,
+        NONE: 0
       }
     })
 
@@ -67,6 +67,8 @@ export class NPC extends Character {
   }
 
   update(time: DOMHighResTimeStamp): void {
+    if (!this._visible) return
+
     if (this._isMoving) return
 
     if (this._talkingToPlayer) return

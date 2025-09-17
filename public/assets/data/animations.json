@@ -9,7 +9,7 @@
   },
   {
     "assetKey": "PLAYER",
-    "key": "PLAYER_LEFT",
+    "key": "PLAYER_UP",
     "frames": [4, 5, 6, 7],
     "frameRate": 8,
     "repeat": -1,
@@ -25,7 +25,7 @@
   },
   {
     "assetKey": "PLAYER",
-    "key": "PLAYER_UP",
+    "key": "PLAYER_LEFT",
     "frames": [12, 13, 14, 15],
     "frameRate": 8,
     "repeat": -1,
@@ -51,7 +51,7 @@
     "assetKey": "ICE_SHARD",
     "key": "ICE_SHARD",
     "frames": [1, 2, 3, 4, 5, 6],
-    "frameRate": 5,
+    "frameRate": 12,
     "repeat": 0,
     "delay": 0
   },
@@ -73,7 +73,7 @@
   },
   {
     "assetKey": "NPC_01",
-    "key": "NPC_01_LEFT",
+    "key": "NPC_01_UP",
     "frames": [4, 5, 6, 7],
     "frameRate": 8,
     "repeat": -1,
@@ -89,7 +89,71 @@
   },
   {
     "assetKey": "NPC_01",
-    "key": "NPC_01_UP",
+    "key": "NPC_01_LEFT",
+    "frames": [12, 13, 14, 15],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_02",
+    "key": "NPC_02_DOWN",
+    "frames": [0, 1, 2, 3],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_02",
+    "key": "NPC_02_UP",
+    "frames": [4, 5, 6, 7],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_02",
+    "key": "NPC_02_RIGHT",
+    "frames": [8, 9, 10, 11],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_02",
+    "key": "NPC_02_LEFT",
+    "frames": [12, 13, 14, 15],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_51",
+    "key": "NPC_51_DOWN",
+    "frames": [0, 1, 2, 3],
+    "frameRate": 4,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_51",
+    "key": "NPC_51_UP",
+    "frames": [4, 5, 6, 7],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_51",
+    "key": "NPC_51_RIGHT",
+    "frames": [8, 9, 10, 11],
+    "frameRate": 8,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "NPC_51",
+    "key": "NPC_51_LEFT",
     "frames": [12, 13, 14, 15],
     "frameRate": 8,
     "repeat": -1,

@@ -50,8 +50,8 @@ const initialState: GlobalState = {
   player: {
     direction: DIRECTION.DOWN,
     position: {
-      x: 25 * TILE_SIZE,
-      y: 20 * TILE_SIZE
+      x: 6 * TILE_SIZE,
+      y: 16 * TILE_SIZE
     }
   },
   pkm: {

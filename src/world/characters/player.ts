@@ -13,7 +13,7 @@ export class Player extends Character {
     super({
       ...config,
       assetKey: CHARACTER_ASSET_KEYS.PLAYER,
-      origin: { x: 0, y: 1 / 3 },
+      origin: { x: 0.25, y: 0.5 },
       idleFrameConfig: {
         DOWN: 0,
         LEFT: 4,

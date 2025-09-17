@@ -18,6 +18,8 @@ const config: Phaser.Types.Core.GameConfig = {
     autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     mode: Phaser.Scale.ScaleModes.FIT
   },
+  pixelArt: true,
+  roundPixels: true,
   parent: 'game-container',
   backgroundColor: '0x000000',
   scene: [

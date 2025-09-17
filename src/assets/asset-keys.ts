@@ -59,11 +59,19 @@ export const WORLD_ASSET_KEYS = Object.freeze({
 export const CHARACTER_ASSET_KEYS = Object.freeze({
   PLAYER: 'PLAYER',
   NPC_01: 'NPC_01',
-  NPC_06: 'NPC_06'
+  NPC_02: 'NPC_02',
+  NPC_03: 'NPC_03',
+  NPC_06: 'NPC_06',
+  NPC_51: 'NPC_51',
+  NPC_52: 'NPC_52'
 })
 
 export const TITLE_ASSET_KEYS = Object.freeze({
   BACKGROUND: 'BACKGROUND',
   TITLE: 'TITLE',
   PANEL: 'PANEL'
+})
+
+export const LAYER_KEYS = Object.freeze({
+  SIGN_LAYER: 'SIGN'
 })

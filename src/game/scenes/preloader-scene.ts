@@ -140,40 +140,64 @@ export class PreloaderScene extends BaseScene {
 
     this.load.tilemapTiledJSON(
       WORLD_ASSET_KEYS.WORLD_MAIN_LEVEL,
-      'data/town_1.json'
+      'data/HUB_ISLAND_PC.json'
     )
     this.load.image(
       WORLD_ASSET_KEYS.WORLD_BACKGROUND,
-      'Graphics/Map/town_1_background.png'
+      'Graphics/Map/HUB_Island_PC_Background.png'
     )
     this.load.image(
       WORLD_ASSET_KEYS.WORLD_FOREGROUND,
-      'Graphics/Map/town_1_foreground.png'
+      'Graphics/Map/HUB_Island_PC_Foreground.png'
     )
 
     this.load.spritesheet(
       CHARACTER_ASSET_KEYS.PLAYER,
-      'Graphics/Characters/boy_run@2x.png',
+      `Graphics/Characters/Player 01.png`,
       {
-        frameWidth: 64,
-        frameHeight: 96
+        frameWidth: 32,
+        frameHeight: 32
       }
     )
 
     this.load.spritesheet(
       CHARACTER_ASSET_KEYS.NPC_01,
-      'Graphics/Characters/NPC 01@2x.png',
+      `Graphics/Characters/NPC_01.png`,
       {
-        frameWidth: 64,
-        frameHeight: 96
+        frameWidth: 32,
+        frameHeight: 32
       }
     )
     this.load.spritesheet(
-      CHARACTER_ASSET_KEYS.NPC_06,
-      'Graphics/Characters/NPC 06@2x.png',
+      CHARACTER_ASSET_KEYS.NPC_02,
+      `Graphics/Characters/NPC_02.png`,
       {
-        frameWidth: 64,
-        frameHeight: 96
+        frameWidth: 32,
+        frameHeight: 32
+      }
+    )
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.NPC_03,
+      `Graphics/Characters/NPC_03.png`,
+      {
+        frameWidth: 32,
+        frameHeight: 32
+      }
+    )
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.NPC_51,
+      `Graphics/Characters/NPC_51.png`,
+      {
+        frameWidth: 32,
+        frameHeight: 32
+      }
+    )
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.NPC_52,
+      `Graphics/Characters/NPC_52.png`,
+      {
+        frameWidth: 32,
+        frameHeight: 32
       }
     )
 
