@@ -17,6 +17,9 @@ import { DataUtils } from '@/utils/data-utils'
 import { Animation } from '@/types/typedef'
 import { dataManager } from '@/utils/data-manager'
 import { BaseScene } from './base-scene'
+import { SPEED_MULTIPLIER } from '@/config'
+
+const suffix = '@2x'
 
 export class PreloaderScene extends BaseScene {
   constructor() {
@@ -49,27 +52,27 @@ export class PreloaderScene extends BaseScene {
 
     this.load.image(
       BATTLE_BACKGROUND_ASSET_KEYS.FOREST,
-      'Graphics/Battlebacks/forest_bg@2x.png'
+      `Graphics/Battlebacks/forest_bg${suffix}.png`
     )
     this.load.image(
       BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE,
-      'Graphics/Battlebacks/forest_base0@2x.png'
+      `Graphics/Battlebacks/forest_base0${suffix}.png`
     )
     this.load.image(
       BATTLE_BACKGROUND_ASSET_KEYS.FOREST_BASE_FOE,
-      'Graphics/Battlebacks/forest_base1@2x.png'
+      `Graphics/Battlebacks/forest_base1${suffix}.png`
     )
     this.load.image(
       DATABOX_ASSET_KEYS.DATABOX_NORMAL,
-      'Graphics/UI/Battle/databox_normal@2x.png'
+      `Graphics/UI/Battle/databox_normal${suffix}.png`
     )
     this.load.image(
       DATABOX_ASSET_KEYS.DATABOX_NORMAL_FOE,
-      'Graphics/UI/Battle/databox_normal_foe@2x.png'
+      `Graphics/UI/Battle/databox_normal_foe${suffix}.png`
     )
     this.load.spritesheet(
       DATABOX_ASSET_KEYS.OVERLAY_HP,
-      'Graphics/UI/Battle/overlay_hp@2x.png',
+      `Graphics/UI/Battle/overlay_hp${suffix}.png`,
       {
         frameWidth: 192,
         frameHeight: 12
@@ -77,11 +80,11 @@ export class PreloaderScene extends BaseScene {
     )
     this.load.image(
       DATABOX_ASSET_KEYS.OVERLAY_EXP,
-      'Graphics/UI/Battle/overlay_exp@2x.png'
+      `Graphics/UI/Battle/overlay_exp${suffix}.png`
     )
     this.load.spritesheet(
       GENERAL_ASSET_KEYS.PAUSE_ARROW,
-      'Graphics/pause_arrow@2x.png',
+      `Graphics/pause_arrow${suffix}.png`,
       {
         frameWidth: 40,
         frameHeight: 56
@@ -89,23 +92,23 @@ export class PreloaderScene extends BaseScene {
     )
     this.load.image(
       POKEMON_FRONT_ASSET_KEYS.HERACROSS,
-      'Graphics/Pokemon/Front/HERACROSS@2x.png'
+      `Graphics/Pokemon/Front/HERACROSS${suffix}.png`
     )
     this.load.image(
       POKEMON_BACK_ASSET_KEYS.CHANDELURE,
-      'Graphics/Pokemon/Back/CHANDELURE@2x.png'
+      `Graphics/Pokemon/Back/CHANDELURE${suffix}.png`
     )
     this.load.image(
       POKEMON_SHADOW_ASSET_KEYS.SHADOW_SMALL,
-      'Graphics/Pokemon/Shadow/1@2x.png'
+      `Graphics/Pokemon/Shadow/1${suffix}.png`
     )
     this.load.image(
       POKEMON_SHADOW_ASSET_KEYS.SHADOW_MEDIUM,
-      'Graphics/Pokemon/Shadow/2@2x.png'
+      `Graphics/Pokemon/Shadow/2${suffix}.png`
     )
     this.load.image(
       POKEMON_SHADOW_ASSET_KEYS.SHADOW_LARGE,
-      'Graphics/Pokemon/Shadow/3@2x.png'
+      `Graphics/Pokemon/Shadow/3${suffix}.png`
     )
 
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'data/animations.json')
@@ -122,7 +125,7 @@ export class PreloaderScene extends BaseScene {
 
     this.load.spritesheet(
       MOVE_ASSET_KEYS.SCRATCH,
-      'Graphics/Animations/scratchbattle@2x.png',
+      `Graphics/Animations/scratchbattle${suffix}.png`,
       {
         frameWidth: 384,
         frameHeight: 384
@@ -214,7 +217,6 @@ export class PreloaderScene extends BaseScene {
     this._createAnimations()
 
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-    console.log(`[${PreloaderScene.name}: create] invoked`)
     const fontPowerClear = new FontFace(
       'Power Clear',
       'url("/assets/Fonts/power clear.ttf")'
@@ -266,7 +268,7 @@ export class PreloaderScene extends BaseScene {
         document.fonts.add(loadedFont)
       })
       dataManager.loadData()
-      this.scene.start(SCENE_KEYS.TITLE_SCENE)
+      this.scene.start(SCENE_KEYS.WORLD_SCENE)
     })
   }
 
@@ -281,7 +283,7 @@ export class PreloaderScene extends BaseScene {
       this.anims.create({
         key: animation.key,
         frames,
-        frameRate: animation.frameRate,
+        frameRate: animation.frameRate * SPEED_MULTIPLIER,
         repeat: animation.repeat,
         delay: animation.delay || 0,
         yoyo: animation.yoyo || false
