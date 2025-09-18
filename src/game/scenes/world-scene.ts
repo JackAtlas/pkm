@@ -133,22 +133,22 @@ export class WorldScene extends BaseScene {
     }
 
     if (map.tilesets.find((tileset) => tileset.name === 'Yellow')) {
-    const encounterTiles = map.addTilesetImage(
-      'Yellow',
-      TILE_ASSET_KEYS.YELLOW_TILE
-    )
+      const encounterTiles = map.addTilesetImage(
+        'Yellow',
+        TILE_ASSET_KEYS.YELLOW_TILE
+      )
       if (encounterTiles) {
-    const encounterLayer = map.createLayer(
-      'ENCOUNTER',
-      encounterTiles,
-      0,
-      0
-    )
+        const encounterLayer = map.createLayer(
+          'ENCOUNTER',
+          encounterTiles,
+          0,
+          0
+        )
         if (encounterLayer) {
-    this._encounterLayer = encounterLayer
-    this._encounterLayer
-      .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
-      .setDepth(2)
+          this._encounterLayer = encounterLayer
+          this._encounterLayer
+            .setAlpha(DEBUG ? TILED_COLLISION_LAYER_ALPHA : 0)
+            .setDepth(2)
         } else {
           console.warn(
             `[${WorldScene.name}: create] encountered error while creating encounter layer using data from tiled`
