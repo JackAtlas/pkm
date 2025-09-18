@@ -98,6 +98,7 @@ export class Menu {
     this._moveMenuCursor(DIRECTION.NONE)
     this._isVisible = false
     this._selectedMenuOptionIndex = 0
+    this._setCursorPosition()
   }
 
   handlePlayerInput(input: Direction | 'OK' | 'CANCEL') {
@@ -152,6 +153,10 @@ export class Menu {
         exhaustiveGuard(input)
     }
 
+    this._setCursorPosition()
+  }
+
+  _setCursorPosition() {
     const y = 30 + this._padding + this._selectedMenuOptionIndex * 50
     this._userInputCursor.setY(y)
   }
