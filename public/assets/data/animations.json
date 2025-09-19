@@ -158,5 +158,21 @@
     "frameRate": 8,
     "repeat": -1,
     "delay": 0
+  },
+  {
+    "assetKey": "PKM_ICON_000",
+    "key": "PKM_ICON_000",
+    "frames": [0, 1],
+    "frameRate": 4,
+    "repeat": -1,
+    "delay": 0
+  },
+  {
+    "assetKey": "PKM_ICON_CHANDELURE",
+    "key": "PKM_ICON_CHANDELURE",
+    "frames": [0, 1],
+    "frameRate": 4,
+    "repeat": -1,
+    "delay": 0
   }
 ]
