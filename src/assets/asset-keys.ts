@@ -5,8 +5,8 @@ export const BATTLE_BACKGROUND_ASSET_KEYS = Object.freeze({
 })
 
 export const PKM_NAME_KEYS = Object.freeze({
-  HERACROSS: 'Heracross',
-  CHANDELURE: 'Chandelure'
+  HERACROSS: 'HERACROSS',
+  CHANDELURE: 'CHANDELURE'
 })
 
 export const GENERAL_ASSET_KEYS = Object.freeze({
@@ -74,4 +74,11 @@ export const TITLE_ASSET_KEYS = Object.freeze({
 
 export const LAYER_KEYS = Object.freeze({
   SIGN_LAYER: 'SIGN'
+})
+
+export const pkmIconPrefix = 'PKM_ICON_'
+
+export const PKM_ICON_KEYS: Record<string, string> = Object.freeze({
+  '000': `${pkmIconPrefix}000`,
+  CHANDELURE: `${pkmIconPrefix}CHANDELURE`
 })

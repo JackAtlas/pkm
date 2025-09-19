@@ -61,7 +61,6 @@ type Property<K extends keyof TypeMap = keyof TypeMap> = {
 }
 
 export class WorldScene extends BaseScene {
-  protected _fpsText!: Phaser.GameObjects.Text
   protected _player: Player
   protected _menu: Menu
   protected _dialogUI: DialogUI
@@ -196,13 +195,6 @@ export class WorldScene extends BaseScene {
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
       .setOrigin(0)
 
-    this._fpsText = this.add
-      .text(this.scale.width - 10, 10, '', {
-        fontFamily: 'sans-serif',
-        color: '#ffffff'
-      })
-      .setOrigin(1, 0)
-
     this._dialogUI = new DialogUI(this)
 
     this._menu = new Menu(this)
@@ -219,6 +211,16 @@ export class WorldScene extends BaseScene {
     this.cameras.main.fadeIn(1000, 0, 0, 0)
 
     dataManager.store.set(DATA_MANAGER_STORE_KEYS.GAME_STARTED, true)
+
+    if (!this.scene.isActive(SCENE_KEYS.UI_SCENE)) {
+      this.scene.launch(SCENE_KEYS.UI_SCENE)
+    }
+
+    this.scene.bringToTop(SCENE_KEYS.UI_SCENE)
+
+    this.scene.get(SCENE_KEYS.UI_SCENE).events.on('hello', () => {
+      console.log('hello from UIScene')
+    })
   }
 
   update(time: DOMHighResTimeStamp) {
@@ -227,9 +229,6 @@ export class WorldScene extends BaseScene {
       this._player.update(time)
       return
     }
-
-    const fps = this.game.loop.actualFps.toFixed(1)
-    this._fpsText.setText(`FPS: ${fps}`)
 
     const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
     const selectedDirectionHeldDown =
@@ -259,8 +258,10 @@ export class WorldScene extends BaseScene {
 
       if (this._menu.isVisible) {
         this._menu.hide()
+        this.events.emit('party', false)
       } else {
         this._menu.show()
+        this.events.emit('party', true)
       }
     }
 
@@ -280,11 +281,13 @@ export class WorldScene extends BaseScene {
           ])
         } else if (this._menu.selectedMenuOption === 'EXIT') {
           this._menu.hide()
+          this.events.emit('party', false)
         }
       }
 
       if (this._controls.wasBackKeyPressed()) {
         this._menu.hide()
+        this.events.emit('party', false)
       }
     }
 

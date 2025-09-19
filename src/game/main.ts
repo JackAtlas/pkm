@@ -5,6 +5,7 @@ import {
   OptionsScene,
   PreloaderScene,
   TitleScene,
+  UIScene,
   WorldScene
 } from './scenes'
 
@@ -27,8 +28,9 @@ const config: Phaser.Types.Core.GameConfig = {
     PreloaderScene,
     TitleScene,
     OptionsScene,
-    BattleScene,
-    WorldScene
+    UIScene,
+    WorldScene,
+    BattleScene
   ]
 }
 
