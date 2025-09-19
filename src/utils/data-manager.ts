@@ -50,8 +50,8 @@ const initialState: GlobalState = {
   player: {
     direction: DIRECTION.DOWN,
     position: {
-      x: 6 * TILE_SIZE,
-      y: 16 * TILE_SIZE
+      x: 49 * TILE_SIZE,
+      y: 45 * TILE_SIZE
     }
   },
   pkm: {
@@ -65,6 +65,30 @@ const initialState: GlobalState = {
         currentLevel: 5,
         maxHp: 100,
         currentHp: 100,
+        baseAttack: 45,
+        moveIds: [2]
+      },
+      {
+        id: 2,
+        pkmId: 1,
+        name: PKM_NAME_KEYS.CHANDELURE,
+        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 40,
+        baseAttack: 45,
+        moveIds: [2]
+      },
+      {
+        id: 3,
+        pkmId: 1,
+        name: PKM_NAME_KEYS.CHANDELURE,
+        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 10,
         baseAttack: 45,
         moveIds: [2]
       }
