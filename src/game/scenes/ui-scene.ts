@@ -127,6 +127,12 @@ export class UIScene extends BaseScene {
         ctx.stroke()
 
         ctx.strokeStyle = '#18c020' // HP
+        if (hpPercentage < 0.5) {
+          ctx.strokeStyle = '#f8b000'
+        }
+        if (hpPercentage < 0.25) {
+          ctx.strokeStyle = '#f85828'
+        }
         ctx.beginPath()
         ctx.arc(
           CLOSE_SIZE.WIDTH / 2,
