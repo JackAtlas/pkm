@@ -6,6 +6,8 @@ import {
   DATABOX_ASSET_KEYS,
   GENERAL_ASSET_KEYS,
   MOVE_ASSET_KEYS,
+  PKM_ICON_KEYS,
+  PKM_NAME_KEYS,
   POKEMON_BACK_ASSET_KEYS,
   POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS,
@@ -202,6 +204,17 @@ export class PreloaderScene extends BaseScene {
         frameWidth: 32,
         frameHeight: 32
       }
+    )
+
+    this.load.spritesheet(
+      PKM_ICON_KEYS['000'],
+      'Graphics/Pokemon/Icons/000.png',
+      { frameWidth: 64, frameHeight: 64 }
+    )
+    this.load.spritesheet(
+      PKM_ICON_KEYS.CHANDELURE,
+      `Graphics/Pokemon/Icons/${PKM_NAME_KEYS.CHANDELURE}.png`,
+      { frameWidth: 64, frameHeight: 64 }
     )
 
     this.load.image(
