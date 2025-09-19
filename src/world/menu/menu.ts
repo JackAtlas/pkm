@@ -84,9 +84,9 @@ export class Menu {
   }
 
   show() {
-    const { right, top } = this._scene.cameras.main.worldView
-    const startX = right - this._width - this._padding * 2
-    const startY = top + this._padding * 2
+    const { bottom, centerX } = this._scene.cameras.main.worldView
+    const startX = centerX - this._width / 2
+    const startY = bottom - this._height - this._padding * 2
 
     this._container.setPosition(startX, startY)
     this._container.setAlpha(1)
