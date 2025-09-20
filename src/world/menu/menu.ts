@@ -6,7 +6,7 @@ export type MenuOption =
 
 export const MENU_OPTIONS = Object.freeze({
   POKEDEX: 'POKEDEX',
-  POKEMON: 'POKEMON',
+  PARTY: 'PARTY',
   BAG: 'BAG',
   SAVE: 'SAVE',
   OPTIONS: 'OPTIONS',
@@ -15,7 +15,7 @@ export const MENU_OPTIONS = Object.freeze({
 
 const MENU_TEXT_STYLE = Object.freeze({
   fontFamily: 'Power Green',
-  fontSize: '32px',
+  fontSize: '12px',
   color: '#ffffff'
 })
 
@@ -32,6 +32,7 @@ export class Menu {
   protected _isVisible: boolean = false
 
   protected _availableMenuOptions: MenuOption[] = [
+    MENU_OPTIONS.PARTY,
     MENU_OPTIONS.SAVE,
     MENU_OPTIONS.EXIT
   ]
@@ -44,7 +45,7 @@ export class Menu {
     this._scene = scene
 
     this._height =
-      10 + this._padding * 2 + 50 * this._availableMenuOptions.length
+      10 + this._padding * 2 + 20 * this._availableMenuOptions.length
 
     this._graphics = this._createGraphics()
     this._container = this._scene.add.container(0, 0, [
@@ -52,7 +53,7 @@ export class Menu {
     ])
 
     for (let i = 0; i < this._availableMenuOptions.length; i++) {
-      const y = 10 + 50 * i + this._padding
+      const y = 10 + 20 * i + this._padding
       const textObj = this._scene.add.text(
         40 + this._padding,
         y,
@@ -64,7 +65,7 @@ export class Menu {
     }
 
     this._userInputCursor = this._scene.add
-      .circle(20, 30 + this._padding, 5, 0xffffff, 1)
+      .circle(10, this._padding, 2, 0xffffff, 1)
       .setOrigin(0, 0.5)
     this._container.add(this._userInputCursor)
 
@@ -119,9 +120,8 @@ export class Menu {
 
     g.fillStyle(0x32454c, 0.5)
     g.fillRect(0, 0, this._width, this._height)
-    g.lineStyle(8, 0x6d9aa8, 1)
+    g.lineStyle(2, 0x6d9aa8, 1)
     g.strokeRect(0, 0, this._width, this._height)
-    g.setAlpha(0.9)
 
     return g
   }
@@ -157,7 +157,7 @@ export class Menu {
   }
 
   _setCursorPosition() {
-    const y = 30 + this._padding + this._selectedMenuOptionIndex * 50
+    const y = 16 + this._padding + this._selectedMenuOptionIndex * 20
     this._userInputCursor.setY(y)
   }
 
