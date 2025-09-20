@@ -26,7 +26,7 @@ import {
   NPCPath
 } from '@/world/characters/npc'
 import { Player } from '@/world/characters/player'
-import { SCENE_KEYS } from './scene-keys'
+import { SCENE_KEYS, SceneKeys } from './scene-keys'
 import { Menu } from '@/world/menu/menu'
 import { BaseScene } from './base-scene'
 
@@ -61,6 +61,9 @@ type Property<K extends keyof TypeMap = keyof TypeMap> = {
 }
 
 export class WorldScene extends BaseScene {
+  /** 菜单场景，叠加在场景上 */
+  protected _menuUIScene: Phaser.Scene
+
   protected _player: Player
   protected _menu: Menu
   protected _dialogUI: DialogUI
@@ -212,13 +215,15 @@ export class WorldScene extends BaseScene {
 
     dataManager.store.set(DATA_MANAGER_STORE_KEYS.GAME_STARTED, true)
 
-    if (!this.scene.isActive(SCENE_KEYS.UI_SCENE)) {
-      this.scene.launch(SCENE_KEYS.UI_SCENE)
+    if (!this.scene.isActive(SCENE_KEYS.WORLD_UI_SCENE)) {
+      this.scene.launch(SCENE_KEYS.WORLD_UI_SCENE)
+      this._menuUIScene = this.scene.get(SCENE_KEYS.WORLD_UI_SCENE)
+      this.scene.bringToTop(SCENE_KEYS.WORLD_UI_SCENE)
     }
 
-    this.scene.bringToTop(SCENE_KEYS.UI_SCENE)
+    this._sceneManager.activeScene = this.scene.key as SceneKeys
 
-    this.scene.get(SCENE_KEYS.UI_SCENE).events.on('hello', () => {
+    this._menuUIScene.events.on('hello', () => {
       console.log('hello from UIScene')
     })
   }
@@ -230,11 +235,10 @@ export class WorldScene extends BaseScene {
       return
     }
 
+    if (this._sceneManager.activeScene === this.scene.key) {
     const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
     const selectedDirectionHeldDown =
       this._controls.getDirectionKeyPressedDown()
-    const selectedDirectionPressedOne =
-      this._controls.getDirectionKeyJustPressed()
     if (
       selectedDirectionHeldDown !== DIRECTION.NONE &&
       !this._isPlayerInputLocked()
@@ -242,11 +246,7 @@ export class WorldScene extends BaseScene {
       this._player.moveCharacter(selectedDirectionHeldDown)
     }
 
-    if (
-      wasSpaceKeyPressed &&
-      !this._player.isMoving &&
-      !this._menu.isVisible
-    ) {
+      if (wasSpaceKeyPressed && !this._player.isMoving) {
       this._handlePlayerInteraction()
     }
 
@@ -256,39 +256,7 @@ export class WorldScene extends BaseScene {
     ) {
       if (this._dialogUI.isVisible) return
 
-      if (this._menu.isVisible) {
-        this._menu.hide()
-        this.events.emit('party', false)
-      } else {
-        this._menu.show()
-        this.events.emit('party', true)
-      }
-    }
-
-    if (this._menu.isVisible) {
-      if (selectedDirectionPressedOne !== DIRECTION.NONE) {
-        this._menu.handlePlayerInput(selectedDirectionPressedOne)
-      }
-
-      if (wasSpaceKeyPressed) {
-        this._menu.handlePlayerInput('OK')
-
-        if (this._menu.selectedMenuOption === 'SAVE') {
-          dataManager.saveData()
-          this._menu.hide()
-          this._dialogUI.showDialogModel([
-            'Game progress has been saved'
-          ])
-        } else if (this._menu.selectedMenuOption === 'EXIT') {
-          this._menu.hide()
-          this.events.emit('party', false)
-        }
-      }
-
-      if (this._controls.wasBackKeyPressed()) {
-        this._menu.hide()
-        this.events.emit('party', false)
-      }
+        this.events.emit('showWorldMenu')
     }
 
     this._player.update(time)

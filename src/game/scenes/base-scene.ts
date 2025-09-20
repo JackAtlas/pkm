@@ -1,6 +1,9 @@
 import { Controls } from '@/utils/controls'
+import { sceneManager, SceneManager } from '@/utils/scene-manager'
 
 export class BaseScene extends Phaser.Scene {
+  /** 管理当前操作的场景 */
+  protected _sceneManager: SceneManager
   protected _controls: Controls
 
   constructor(config: Phaser.Types.Scenes.SettingsConfig) {
@@ -8,6 +11,7 @@ export class BaseScene extends Phaser.Scene {
     if (this.constructor === BaseScene) {
       throw new Error('BaseScene 是不能直接实例化的抽象类')
     }
+    this._sceneManager = sceneManager
   }
 
   init() {

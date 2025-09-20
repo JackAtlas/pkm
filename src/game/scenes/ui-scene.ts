@@ -3,9 +3,11 @@ import {
   dataManager
 } from '@/utils/data-manager'
 import { BaseScene } from './base-scene'
-import { SCENE_KEYS } from './scene-keys'
+import { SCENE_KEYS, SceneKeys } from './scene-keys'
 import { Pokemon } from '@/types/typedef'
 import { PKM_ICON_KEYS } from '@/assets/asset-keys'
+import { Menu } from '@/world/menu/menu'
+import { DIRECTION } from '@/common/direction'
 
 const sideRingPrefix = 'Side_Ring_'
 const strokeWidth = 2
@@ -21,10 +23,12 @@ const OPEN_SIZE = Object.freeze({
   HEIGHT: 160
 })
 
-export class UIScene extends BaseScene {
+export class WorldUIScene extends BaseScene {
   protected _fpsText: Phaser.GameObjects.Text
   protected _topbarBg: Phaser.GameObjects.Rectangle
   protected _partyContainer: Phaser.GameObjects.Container
+
+  protected _menu: Menu
 
   protected _isPartyOpen: boolean = false
 
@@ -32,7 +36,7 @@ export class UIScene extends BaseScene {
 
   constructor() {
     super({
-      key: SCENE_KEYS.UI_SCENE
+      key: SCENE_KEYS.WORLD_UI_SCENE
     })
   }
 
@@ -58,11 +62,12 @@ export class UIScene extends BaseScene {
 
     this._updateParty()
 
+    this._menu = new Menu(this)
+
     this.scene
       .get(SCENE_KEYS.WORLD_SCENE)
-      .events.on('party', (val: boolean) => {
-        this._isPartyOpen = val
-        this._updatePartyLayout()
+      .events.on('showWorldMenu', () => {
+        this._showWorldMenu()
       })
   }
 
@@ -71,6 +76,50 @@ export class UIScene extends BaseScene {
 
     const fps = this.game.loop.actualFps.toFixed(1)
     this._fpsText.setText(`FPS: ${fps}`)
+
+    if (this._sceneManager.activeScene === this.scene.key) {
+      const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
+      const selectedDirectionPressedOne =
+        this._controls.getDirectionKeyJustPressed()
+
+      if (this._menu.isVisible) {
+        if (selectedDirectionPressedOne !== DIRECTION.NONE) {
+          this._menu.handlePlayerInput(selectedDirectionPressedOne)
+        }
+
+        if (wasSpaceKeyPressed) {
+          this._menu.handlePlayerInput('OK')
+
+          if (this._menu.selectedMenuOption === 'SAVE') {
+            dataManager.saveData()
+            this._hideWorldMenu()
+
+            // TODO 做一个 Toast 功能
+            console.log('Game progress has been saved')
+          } else if (this._menu.selectedMenuOption === 'EXIT') {
+            this._hideWorldMenu()
+          }
+        }
+
+        if (this._controls.wasBackKeyPressed()) {
+          this._hideWorldMenu()
+        }
+      }
+    }
+  }
+
+  _showWorldMenu() {
+    this._sceneManager.activeScene = this.scene.key as SceneKeys
+    this._isPartyOpen = true
+    this._menu.show()
+    this._updatePartyLayout()
+  }
+
+  _hideWorldMenu() {
+    this._sceneManager.activeScene = SCENE_KEYS.WORLD_SCENE
+    this._isPartyOpen = false
+    this._menu.hide()
+    this._updatePartyLayout()
   }
 
   _createTopbar() {

@@ -1,3 +1,5 @@
+export type SceneKeys = (typeof SCENE_KEYS)[keyof typeof SCENE_KEYS]
+
 export const SCENE_KEYS = Object.freeze({
   BATTLE_SCENE: 'BATTLE_SCENE',
   BOOT_SCENE: 'BOOT_SCENE',
@@ -7,6 +9,6 @@ export const SCENE_KEYS = Object.freeze({
   OPTIONS_SCENE: 'OPTIONS_SCENE',
   PRELOADER_SCENE: 'PRELOADER_SCENE',
   TITLE_SCENE: 'TITLE_SCENE',
-  UI_SCENE: 'UI_SCENE',
+  WORLD_UI_SCENE: 'WORLD_UI_SCENE',
   WORLD_SCENE: 'WORLD_SCENE'
 })
