@@ -188,22 +188,26 @@ export class UIScene extends BaseScene {
       graphic: Phaser.GameObjects.Graphics
       ring: Phaser.GameObjects.Image
       avatar: Phaser.GameObjects.Sprite
+      name: Phaser.GameObjects.Text
     }[] = []
     this._partyContainer.list.forEach((childContainer) => {
       if (childContainer instanceof Phaser.GameObjects.Container) {
         const childBg = childContainer.list[0]
         const childRing = childContainer.list[1]
         const childAvatar = childContainer.list[2]
+        const childName = childContainer.list[3]
         if (
           childBg instanceof Phaser.GameObjects.Graphics &&
           childRing instanceof Phaser.GameObjects.Image &&
-          childAvatar instanceof Phaser.GameObjects.Sprite
+          childAvatar instanceof Phaser.GameObjects.Sprite &&
+          childName instanceof Phaser.GameObjects.Text
         ) {
           childArray.push({
             container: childContainer,
             graphic: childBg,
             ring: childRing,
-            avatar: childAvatar
+            avatar: childAvatar,
+            name: childName
           })
         }
       }
@@ -216,7 +220,7 @@ export class UIScene extends BaseScene {
           w: CLOSE_SIZE.WIDTH,
           h: CLOSE_SIZE.HEIGHT
         },
-        progress: { from: 0, to: 1 },
+        progress: { from: 1, to: 0 },
         w: { from: CLOSE_SIZE.WIDTH, to: OPEN_SIZE.WIDTH },
         h: { from: CLOSE_SIZE.HEIGHT, to: OPEN_SIZE.HEIGHT },
         ease: 'Linear',
@@ -226,21 +230,25 @@ export class UIScene extends BaseScene {
           target: { progress: number; w: number; h: number }
         ) => {
           for (let i = 0; i < childArray.length; i++) {
-            const { container, graphic, ring, avatar } = childArray[i]
+            const { container, graphic, ring, avatar, name } =
+              childArray[i]
             graphic.clear()
             graphic.fillRect(0, 0, target.w, target.h)
             container.setPosition(
               -target.w - padding,
               (padding + target.h) * i
             )
-            ring.setAlpha(1 - target.progress)
+            ring.setAlpha(target.progress)
             const avatarX =
-              CLOSE_SIZE.WIDTH / 2 -
-              (CLOSE_SIZE.WIDTH / 4) * target.progress
+              (CLOSE_SIZE.WIDTH / 2 - avatar.width / 2) *
+                target.progress +
+              (CLOSE_SIZE.WIDTH / 10) * (1 - target.progress)
             const avatarY =
-              CLOSE_SIZE.HEIGHT / 2 -
-              (CLOSE_SIZE.HEIGHT / 4) * target.progress
+              (CLOSE_SIZE.HEIGHT / 2 - avatar.height / 2) *
+                target.progress +
+              (CLOSE_SIZE.HEIGHT / 10) * (1 - target.progress)
             avatar.setPosition(avatarX, avatarY)
+            name.setAlpha(1 - target.progress)
           }
         }
       })
@@ -251,28 +259,32 @@ export class UIScene extends BaseScene {
           w: OPEN_SIZE.WIDTH,
           h: OPEN_SIZE.HEIGHT
         },
-        progress: { from: 1, to: 0 },
+        progress: { from: 0, to: 1 },
         w: { from: OPEN_SIZE.WIDTH, to: CLOSE_SIZE.WIDTH },
         h: { from: OPEN_SIZE.HEIGHT, to: CLOSE_SIZE.HEIGHT },
         ease: 'Linear',
         duration: 300,
         onUpdate: (tween, target) => {
           for (let i = 0; i < childArray.length; i++) {
-            const { container, graphic, ring, avatar } = childArray[i]
+            const { container, graphic, ring, avatar, name } =
+              childArray[i]
             graphic.clear()
             graphic.fillRect(0, 0, target.w, target.h)
             container.setPosition(
               -target.w - padding,
               (padding + target.h) * i
             )
-            ring.setAlpha(1 - target.progress)
+            ring.setAlpha(target.progress)
             const avatarX =
-              CLOSE_SIZE.WIDTH / 2 -
-              (CLOSE_SIZE.WIDTH / 4) * target.progress
+              (CLOSE_SIZE.WIDTH / 2 - avatar.width / 2) *
+                target.progress +
+              (CLOSE_SIZE.HEIGHT / 10) * (1 - target.progress)
             const avatarY =
-              CLOSE_SIZE.HEIGHT / 2 -
-              (CLOSE_SIZE.HEIGHT / 4) * target.progress
+              (CLOSE_SIZE.HEIGHT / 2 - avatar.height / 2) *
+                target.progress +
+              (CLOSE_SIZE.HEIGHT / 10) * (1 - target.progress)
             avatar.setPosition(avatarX, avatarY)
+            name.setAlpha(1 - target.progress)
           }
         }
       })
@@ -297,14 +309,26 @@ export class UIScene extends BaseScene {
         )
         this._updateTexture(index, pkm.currentHp / pkm.maxHp)
         const sprite = this.add
-          .sprite(
-            CLOSE_SIZE.WIDTH / 2,
-            CLOSE_SIZE.HEIGHT / 2,
-            PKM_ICON_KEYS[pkm.assetKey],
-            0
-          )
+          .sprite(0, 0, PKM_ICON_KEYS[pkm.assetKey], 0)
+          .setOrigin(0)
           .play(PKM_ICON_KEYS[pkm.assetKey])
+        sprite.setPosition(
+          CLOSE_SIZE.WIDTH / 2 - sprite.width / 2,
+          CLOSE_SIZE.HEIGHT / 2 - sprite.height / 2
+        )
         child.add(sprite)
+        const name = this.add
+          .text(
+            (CLOSE_SIZE.WIDTH * 3) / 4,
+            CLOSE_SIZE.HEIGHT / 8,
+            pkm.name,
+            {
+              fontFamily: 'Power Green',
+              fontSize: 16
+            }
+          )
+          .setAlpha(0)
+        child.add(name)
       }
     })
   }
