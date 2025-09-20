@@ -31,7 +31,8 @@ const config: Phaser.Types.Core.GameConfig = {
     UIScene,
     WorldScene,
     WorldUIScene,
-    BattleScene
+    BattleScene,
+    DialogScene
   ]
 }
 

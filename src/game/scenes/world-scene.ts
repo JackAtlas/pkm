@@ -18,7 +18,6 @@ import {
   CANNOT_READ_SIGN_TEXT,
   SAMPLE_TEXT
 } from '@/utils/text-utils'
-import { DialogUI } from '@/world/characters/dialog-ui'
 import {
   NPC,
   NPC_MOVEMENT_PATTERN,
@@ -29,6 +28,7 @@ import { Player } from '@/world/characters/player'
 import { SCENE_KEYS, SceneKeys } from './scene-keys'
 import { Menu } from '@/world/menu/menu'
 import { BaseScene } from './base-scene'
+import { SCENE_COMMUNICATE_FLAGS } from '@/utils/scene-manager'
 
 const TILED_SIGN_PROPERTY = Object.freeze({
   MESSAGE: 'message'
@@ -63,10 +63,10 @@ type Property<K extends keyof TypeMap = keyof TypeMap> = {
 export class WorldScene extends BaseScene {
   /** 菜单场景，叠加在场景上 */
   protected _menuUIScene: Phaser.Scene
+  protected _dialogScene: Phaser.Scene
 
   protected _player: Player
   protected _menu: Menu
-  protected _dialogUI: DialogUI
   protected _wildPkmEncountered: boolean
 
   protected _backgroundGameObjectImage: Phaser.GameObjects.Image
@@ -198,8 +198,6 @@ export class WorldScene extends BaseScene {
       .image(0, 0, WORLD_ASSET_KEYS.WORLD_FOREGROUND, 0)
       .setOrigin(0)
 
-    this._dialogUI = new DialogUI(this)
-
     this._menu = new Menu(this)
 
     this.cameras.main.setBounds(
@@ -219,13 +217,29 @@ export class WorldScene extends BaseScene {
       this.scene.launch(SCENE_KEYS.WORLD_UI_SCENE)
       this._menuUIScene = this.scene.get(SCENE_KEYS.WORLD_UI_SCENE)
       this.scene.bringToTop(SCENE_KEYS.WORLD_UI_SCENE)
+      this._menuUIScene.events.on(
+        SCENE_COMMUNICATE_FLAGS.HIDE_WORLD_MENU,
+        () => {
+          if (this._sceneManager.activeScene === this.scene.key)
+            this._afterMenuHide()
+        }
+      )
+    }
+
+    if (!this.scene.isActive(SCENE_KEYS.DIALOG_SCENE)) {
+      this.scene.launch(SCENE_KEYS.DIALOG_SCENE)
+      this._dialogScene = this.scene.get(SCENE_KEYS.DIALOG_SCENE)
+      this.scene.bringToTop(SCENE_KEYS.DIALOG_SCENE)
+      this._dialogScene.events.on(
+        SCENE_COMMUNICATE_FLAGS.HIDE_DIALOG,
+        () => {
+          if (this._sceneManager.activeScene === this.scene.key)
+            this._afterDialogHide()
+        }
+      )
     }
 
     this._sceneManager.activeScene = this.scene.key as SceneKeys
-
-    this._menuUIScene.events.on('hello', () => {
-      console.log('hello from UIScene')
-    })
   }
 
   update(time: DOMHighResTimeStamp) {
@@ -236,95 +250,49 @@ export class WorldScene extends BaseScene {
     }
 
     if (this._sceneManager.activeScene === this.scene.key) {
-    const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
-    const selectedDirectionHeldDown =
-      this._controls.getDirectionKeyPressedDown()
-    if (
-      selectedDirectionHeldDown !== DIRECTION.NONE &&
-      !this._isPlayerInputLocked()
-    ) {
-      this._player.moveCharacter(selectedDirectionHeldDown)
-    }
+      const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
+      const selectedDirectionHeldDown =
+        this._controls.getDirectionKeyPressedDown()
+      if (
+        selectedDirectionHeldDown !== DIRECTION.NONE &&
+        !this._isPlayerInputLocked()
+      ) {
+        this._player.moveCharacter(selectedDirectionHeldDown)
+      }
 
       if (wasSpaceKeyPressed && !this._player.isMoving) {
-      this._handlePlayerInteraction()
+        this._handlePlayerInteraction()
+      }
+
+      if (
+        this._controls.wasMenuKeyPressed() &&
+        !this._player.isMoving
+      ) {
+        this.events.emit(SCENE_COMMUNICATE_FLAGS.SHOW_WORLD_MENU)
+        this.scene.pause()
+      }
+
+      this._player.update(time)
+
+      this._npcs.forEach((npc) => {
+        npc.update(time)
+      })
     }
-
-    if (
-      this._controls.wasMenuKeyPressed() &&
-      !this._player.isMoving
-    ) {
-      if (this._dialogUI.isVisible) return
-
-        this.events.emit('showWorldMenu')
-    }
-
-    this._player.update(time)
-
-    this._npcs.forEach((npc) => {
-      npc.update(time)
-    })
   }
 
-  // 旧设计：分割型 UI
-  // private _setCamera() {
-  //   // 设置 UI 摄像头
-  //   const centerCamera = this.cameras.add(
-  //     0,
-  //     0,
-  //     this.scale.width,
-  //     this.scale.height
-  //   )
-  //   centerCamera.ignore([
-  //     this._collisionLayer,
-  //     this._encounterLayer,
-  //     this._backgroundGameObjectImage,
-  //     this._foregroundGameObjectImage,
-  //     this._player.sprite,
-  //     this._menu.gameObject
-  //   ])
-  //   const npcObjs = this._npcs.map((npc) => npc.sprite)
-  //   centerCamera.ignore(npcObjs)
+  _afterDialogHide() {
+    if (this._npcPlayerIsInteractingWith) {
+      this._npcPlayerIsInteractingWith.isTalkingToPlayer = false
+      this._npcPlayerIsInteractingWith = null
+    }
+    this.scene.resume()
+  }
 
-  //   // 设置世界摄像头
-  //   this.cameras.main.ignore([
-  //     this._leftContainer,
-  //     this._rightContainer,
-  //     this._topContainer
-  //   ])
-  //   this.cameras.main.setBounds(0, 0, 1920, 1920)
-  //   this.cameras.main.setViewport(
-  //     this.scale.width / 4,
-  //     this.scale.height / 4,
-  //     this.scale.width / 2,
-  //     (this.scale.height * 3) / 4
-  //   )
-  //   this.cameras.main.startFollow(this._player.sprite, true)
-  // }
+  _afterMenuHide() {
+    this.scene.resume()
+  }
 
   _handlePlayerInteraction() {
-    if (this._dialogUI.isAnimationPlaying) return
-
-    if (
-      this._dialogUI.isVisible &&
-      !this._dialogUI.moreMessagesToShow
-    ) {
-      this._dialogUI.hideDialogModel()
-      if (this._npcPlayerIsInteractingWith) {
-        this._npcPlayerIsInteractingWith.isTalkingToPlayer = false
-        this._npcPlayerIsInteractingWith = null
-      }
-      return
-    }
-
-    if (
-      this._dialogUI.isVisible &&
-      this._dialogUI.moreMessagesToShow
-    ) {
-      this._dialogUI.showNextMessage()
-      return
-    }
-
     const { x, y } = this._player.sprite
     const targetPosition =
       getTargetPositionFromGameObjectPositionAndDirection(
@@ -351,7 +319,12 @@ export class WorldScene extends BaseScene {
       if (!usePlaceholderText) {
         textToShow = message || SAMPLE_TEXT
       }
-      this._dialogUI.showDialogModel([textToShow])
+      this.events.emit(
+        SCENE_COMMUNICATE_FLAGS.SHOW_DIALOG,
+        [textToShow],
+        this.scene.key
+      )
+      this.scene.pause()
       return
     }
 
@@ -365,7 +338,12 @@ export class WorldScene extends BaseScene {
       nearbyNPC.facePlayer(this._player.direction)
       nearbyNPC.isTalkingToPlayer = true
       this._npcPlayerIsInteractingWith = nearbyNPC
-      this._dialogUI.showDialogModel(nearbyNPC.messages)
+      this.events.emit(
+        SCENE_COMMUNICATE_FLAGS.SHOW_DIALOG,
+        nearbyNPC.messages,
+        this.scene.key
+      )
+      this.scene.pause()
     }
   }
 
@@ -406,8 +384,7 @@ export class WorldScene extends BaseScene {
   _isPlayerInputLocked() {
     return (
       this._controls.isInputLocked ||
-      this._dialogUI.isVisible ||
-      this._menu.isVisible
+      this._sceneManager.activeScene !== this.scene.key
     )
   }
 

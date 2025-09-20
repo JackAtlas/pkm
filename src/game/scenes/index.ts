@@ -1,5 +1,6 @@
 export * from './battle-scene'
 export * from './boot-scene'
+export * from './dialog-scene'
 export * from './options-scene'
 export * from './preloader-scene'
 export * from './title-scene'

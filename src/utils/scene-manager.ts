@@ -1,5 +1,12 @@
 import { SceneKeys } from '@/game/scenes/scene-keys'
 
+export const SCENE_COMMUNICATE_FLAGS = Object.freeze({
+  HIDE_DIALOG: 'HIDE_DIALOG',
+  HIDE_WORLD_MENU: 'HIDE_WORLD_MENU',
+  SHOW_DIALOG: 'SHOW_DIALOG',
+  SHOW_WORLD_MENU: 'SHOW_WORLD_MENU'
+})
+
 /**
  * 记录当前操作的场景
  */
