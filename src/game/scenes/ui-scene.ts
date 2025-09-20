@@ -8,6 +8,7 @@ import { Pokemon } from '@/types/typedef'
 import { PKM_ICON_KEYS } from '@/assets/asset-keys'
 import { Menu } from '@/world/menu/menu'
 import { DIRECTION } from '@/common/direction'
+import { SCENE_COMMUNICATE_FLAGS } from '@/utils/scene-manager'
 
 const sideRingPrefix = 'Side_Ring_'
 const strokeWidth = 2
@@ -66,7 +67,7 @@ export class WorldUIScene extends BaseScene {
 
     this.scene
       .get(SCENE_KEYS.WORLD_SCENE)
-      .events.on('showWorldMenu', () => {
+      .events.on(SCENE_COMMUNICATE_FLAGS.SHOW_WORLD_MENU, () => {
         this._showWorldMenu()
       })
   }
@@ -120,6 +121,7 @@ export class WorldUIScene extends BaseScene {
     this._isPartyOpen = false
     this._menu.hide()
     this._updatePartyLayout()
+    this.events.emit(SCENE_COMMUNICATE_FLAGS.HIDE_WORLD_MENU)
   }
 
   _createTopbar() {
