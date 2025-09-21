@@ -171,7 +171,7 @@ export class PreloaderScene extends BaseScene {
 
     this.load.spritesheet(
       CHARACTER_ASSET_KEYS.PLAYER,
-      `Graphics/Characters/Player 01.png`,
+      `Graphics/Characters/Player 01.webp`,
       {
         frameWidth: 32,
         frameHeight: 32
