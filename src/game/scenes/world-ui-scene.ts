@@ -5,10 +5,7 @@ import {
 import { BaseScene } from './base-scene'
 import { SCENE_KEYS, SceneKeys } from './scene-keys'
 import { Pokemon } from '@/types/typedef'
-import {
-  PKM_FRONT_ASSET_KEYS,
-  PKM_ICON_ASSET_KEYS
-} from '@/asset-keys'
+import { PKM_FRONT_ASSET_KEYS } from '@/asset-keys'
 import { Menu } from '@/world/menu/menu'
 import { DIRECTION } from '@/common/direction'
 import { SCENE_COMMUNICATE_FLAGS } from '@/utils/scene-manager'
@@ -52,12 +49,20 @@ export class WorldUIScene extends BaseScene {
     super.create()
 
     for (let i = 0; i < 6; i++) {
-      const canvas = this.textures.createCanvas(
-        `${sideRingPrefix}${i}`,
-        CLOSE_SIZE.WIDTH,
-        CLOSE_SIZE.HEIGHT
-      )
-      if (canvas) this._sideCanvasArray.push(canvas)
+      let canvas: Phaser.Textures.CanvasTexture | null
+      if (this.textures.exists(`${sideRingPrefix}${i}`)) {
+        canvas = this.textures.get(
+          `${sideRingPrefix}${i}`
+        ) as Phaser.Textures.CanvasTexture
+        if (canvas) this._sideCanvasArray.push(canvas)
+      } else {
+        canvas = this.textures.createCanvas(
+          `${sideRingPrefix}${i}`,
+          CLOSE_SIZE.WIDTH,
+          CLOSE_SIZE.HEIGHT
+        )
+        if (canvas) this._sideCanvasArray.push(canvas)
+      }
     }
 
     this._createTopbar()
@@ -95,10 +100,24 @@ export class WorldUIScene extends BaseScene {
           this._menu.handlePlayerInput('OK')
 
           if (this._menu.selectedMenuOption === 'PARTY') {
-            this.scene.start(SCENE_KEYS.PARTY_SCENE)
-          }
-
-          if (this._menu.selectedMenuOption === 'SAVE') {
+            if (!this.scene.isActive(SCENE_KEYS.PARTY_SCENE)) {
+              this.scene.pause()
+              this.scene.setVisible(false)
+              this.scene.launch(SCENE_KEYS.PARTY_SCENE)
+              this.scene.bringToTop(SCENE_KEYS.PARTY_SCENE)
+              this.scene
+                .get(SCENE_KEYS.PARTY_SCENE)
+                .events.once(
+                  SCENE_COMMUNICATE_FLAGS.BACK_FROM_PARTY_TO_UI,
+                  () => {
+                    this.scene.resume()
+                    this.scene.setVisible(true)
+                    this._sceneManager.activeScene = this.scene
+                      .key as SceneKeys
+                  }
+                )
+            }
+          } else if (this._menu.selectedMenuOption === 'SAVE') {
             dataManager.saveData()
             this._hideWorldMenu()
 

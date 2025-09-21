@@ -8,6 +8,9 @@ import {
 import { DataUtils } from '@/utils/data-utils'
 import { PKM_FRONT_ASSET_KEYS } from '@/asset-keys'
 import { DEBUG } from '@/config'
+import { Direction, DIRECTION } from '@/common/direction'
+import { SCENE_COMMUNICATE_FLAGS } from '@/utils/scene-manager'
+import { exhaustiveGuard } from '@/utils/guard'
 
 interface Layout {
   boxHeight: number
@@ -21,7 +24,7 @@ export class PartyScene extends BaseScene {
   protected _layout: Layout
   protected _selectedPKMIndex: number = 0
   protected _boxWaitingToSwapIndex: number | undefined
-  protected _boxList: Phaser.GameObjects.Container[] = []
+  protected _boxList: Phaser.GameObjects.Container[]
 
   constructor() {
     super({
@@ -59,6 +62,15 @@ export class PartyScene extends BaseScene {
 
     super.update(time)
 
+    this._boxList.forEach((b) => {
+      if (
+        b.list[0] &&
+        b.list[0] instanceof Phaser.GameObjects.Rectangle
+      ) {
+        b.list[0].fillColor = 0x0077b6
+      }
+    })
+
     if (this._boxWaitingToSwapIndex !== undefined) {
       const boxWaitingBg = this._boxList[this._boxWaitingToSwapIndex]
         .list[0] as Phaser.GameObjects.Rectangle
@@ -68,6 +80,29 @@ export class PartyScene extends BaseScene {
     const selectedBoxBg = this._boxList[this._selectedPKMIndex]
       .list[0] as Phaser.GameObjects.Rectangle
     selectedBoxBg.fillColor = 0x123456
+
+    if (this._controls.isInputLocked) return
+
+    if (this._controls.wasBackKeyPressed()) {
+      this.events.emit(SCENE_COMMUNICATE_FLAGS.BACK_FROM_PARTY_TO_UI)
+      this.scene.stop()
+      return
+    }
+
+    const wasSpaceKeyPressed = this._controls.wasSpaceKeyPressed()
+    const selectedDirectionPressedOne =
+      this._controls.getDirectionKeyJustPressed()
+
+    if (wasSpaceKeyPressed) {
+      // TODO
+      this.events.emit(SCENE_COMMUNICATE_FLAGS.BACK_FROM_PARTY_TO_UI)
+      this.scene.stop()
+      return
+    }
+
+    if (selectedDirectionPressedOne !== DIRECTION.NONE) {
+      this._movePlayerInputCursor(selectedDirectionPressedOne)
+    }
   }
 
   create() {
@@ -119,6 +154,8 @@ export class PartyScene extends BaseScene {
   }
 
   _createList() {
+    this._boxList = []
+
     this._party.forEach((pkm, idx) => {
       let x: number = 0
       if (idx % 3 === 0) {
@@ -212,5 +249,42 @@ export class PartyScene extends BaseScene {
     })
 
     return container
+  }
+
+  _movePlayerInputCursor(direction: Direction) {
+    switch (direction) {
+      case DIRECTION.UP:
+      case DIRECTION.DOWN:
+        if (this._selectedPKMIndex === 0) {
+          this._selectedPKMIndex = 3
+        } else if (this._selectedPKMIndex === 1) {
+          this._selectedPKMIndex = 4
+        } else if (this._selectedPKMIndex === 2) {
+          this._selectedPKMIndex = 5
+        } else if (this._selectedPKMIndex === 3) {
+          this._selectedPKMIndex = 0
+        } else if (this._selectedPKMIndex === 4) {
+          this._selectedPKMIndex = 1
+        } else if (this._selectedPKMIndex === 5) {
+          this._selectedPKMIndex = 2
+        }
+        break
+      case DIRECTION.LEFT:
+        this._selectedPKMIndex -= 1
+        if (this._selectedPKMIndex < 0) {
+          this._selectedPKMIndex = this._party.length - 1
+        }
+        break
+      case DIRECTION.RIGHT:
+        this._selectedPKMIndex += 1
+        if (this._selectedPKMIndex > this._party.length - 1) {
+          this._selectedPKMIndex = 0
+        }
+        break
+      case DIRECTION.NONE:
+        break
+      default:
+        exhaustiveGuard(direction)
+    }
   }
 }

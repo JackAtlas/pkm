@@ -1,6 +1,7 @@
 import { SceneKeys } from '@/game/scenes/scene-keys'
 
 export const SCENE_COMMUNICATE_FLAGS = Object.freeze({
+  BACK_FROM_PARTY_TO_UI: 'BACK_FROM_PARTY_TO_UI',
   HIDE_DIALOG: 'HIDE_DIALOG',
   HIDE_WORLD_MENU: 'HIDE_WORLD_MENU',
   SHOW_DIALOG: 'SHOW_DIALOG',
