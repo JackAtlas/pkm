@@ -68,7 +68,7 @@ const initialState: GlobalState = {
         maxHp: 100,
         currentHp: 100,
         baseAttack: 45,
-        moveIds: [2]
+        moveIds: [2, 2, 2, 2]
       },
       {
         id: 2,
