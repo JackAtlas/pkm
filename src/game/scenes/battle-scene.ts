@@ -1,8 +1,6 @@
 import { SCENE_KEYS } from '@/game/scenes/scene-keys'
 import {
   BATTLE_BACKGROUND_ASSET_KEYS,
-  POKEMON_FRONT_ASSET_KEYS,
-  PKM_NAME_KEYS,
   POKEMON_SHADOW_ASSET_KEYS
 } from '@/assets/asset-keys'
 import { BattleMenu } from '@/battle/ui/menu/battle-menu'
@@ -19,6 +17,7 @@ import {
 } from '@/utils/data-manager'
 import { BATTLE_SCENE_OPTIONS } from '@/common/options'
 import { BaseScene } from './base-scene'
+import { PKM_NAME_KEYS } from '@/asset-keys'
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',
@@ -90,8 +89,8 @@ export class BattleScene extends BaseScene {
       pkm: {
         id: 2,
         pkmId: 2,
-        name: PKM_NAME_KEYS.HERACROSS,
-        assetKey: POKEMON_FRONT_ASSET_KEYS.HERACROSS,
+        name: PKM_NAME_KEYS.FLETCHLING,
+        assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
         maxHp: 100,

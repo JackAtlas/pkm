@@ -1,10 +1,11 @@
+import { PKM_NAME_KEYS } from '@/asset-keys'
 import { MOVE_KEYS } from '@/battle/move/move-keys'
 
 export interface Pokemon {
   id: number
   pkmId: number
   name: string
-  assetKey: string
+  assetKey: (typeof PKM_NAME_KEYS)[keyof typeof PKM_NAME_KEYS]
   assetFrame: number
   currentLevel: number
   maxHp: number

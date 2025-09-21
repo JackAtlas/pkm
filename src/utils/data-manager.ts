@@ -10,10 +10,7 @@ import {
 import { TEXT_SPEED, TILE_SIZE } from '@/config'
 import { exhaustiveGuard } from './guard'
 import { Pokemon } from '@/types/typedef'
-import {
-  PKM_NAME_KEYS,
-  POKEMON_BACK_ASSET_KEYS
-} from '@/assets/asset-keys'
+import { PKM_NAME_KEYS } from '@/asset-keys'
 
 interface PKMData {
   inParty: Pokemon[]
@@ -38,6 +35,11 @@ interface GlobalState {
   pkm: PKMData
 }
 
+function formatPKMName(name: string): string {
+  const nameArr = [name[0], name.substring(1).toLowerCase()]
+  return nameArr.join('')
+}
+
 const initialState: GlobalState = {
   gameStarted: false,
   options: {
@@ -59,8 +61,8 @@ const initialState: GlobalState = {
       {
         id: 1,
         pkmId: 1,
-        name: PKM_NAME_KEYS.CHANDELURE,
-        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
         maxHp: 100,
@@ -71,8 +73,8 @@ const initialState: GlobalState = {
       {
         id: 2,
         pkmId: 1,
-        name: PKM_NAME_KEYS.CHANDELURE,
-        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
         maxHp: 100,
@@ -83,8 +85,44 @@ const initialState: GlobalState = {
       {
         id: 3,
         pkmId: 1,
-        name: PKM_NAME_KEYS.CHANDELURE,
-        assetKey: POKEMON_BACK_ASSET_KEYS.CHANDELURE,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        assetKey: PKM_NAME_KEYS.FLETCHLING,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 10,
+        baseAttack: 45,
+        moveIds: [2]
+      },
+      {
+        id: 4,
+        pkmId: 1,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        assetKey: PKM_NAME_KEYS.FLETCHINDER,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 10,
+        baseAttack: 45,
+        moveIds: [2]
+      },
+      {
+        id: 5,
+        pkmId: 1,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        assetKey: PKM_NAME_KEYS.FLETCHINDER,
+        assetFrame: 0,
+        currentLevel: 5,
+        maxHp: 100,
+        currentHp: 10,
+        baseAttack: 45,
+        moveIds: [2]
+      },
+      {
+        id: 6,
+        pkmId: 1,
+        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        assetKey: PKM_NAME_KEYS.FLETCHINDER,
         assetFrame: 0,
         currentLevel: 5,
         maxHp: 100,

@@ -4,11 +4,6 @@ export const BATTLE_BACKGROUND_ASSET_KEYS = Object.freeze({
   FOREST_BASE_FOE: 'FOREST_BASE_FOE'
 })
 
-export const PKM_NAME_KEYS = Object.freeze({
-  HERACROSS: 'HERACROSS',
-  CHANDELURE: 'CHANDELURE'
-})
-
 export const GENERAL_ASSET_KEYS = Object.freeze({
   PAUSE_ARROW: 'PAUSE_ARROW'
 })
@@ -18,14 +13,6 @@ export const DATABOX_ASSET_KEYS = Object.freeze({
   DATABOX_NORMAL_FOE: 'DATABOX_NORMAL_FOE',
   OVERLAY_HP: 'OVERLAY_HP',
   OVERLAY_EXP: 'OVERLAY_EXP'
-})
-
-export const POKEMON_FRONT_ASSET_KEYS = Object.freeze({
-  HERACROSS: 'HERACROSS'
-})
-
-export const POKEMON_BACK_ASSET_KEYS = Object.freeze({
-  CHANDELURE: 'CHANDELURE'
 })
 
 export const POKEMON_SHADOW_ASSET_KEYS = Object.freeze({
@@ -74,11 +61,4 @@ export const TITLE_ASSET_KEYS = Object.freeze({
 
 export const LAYER_KEYS = Object.freeze({
   SIGN_LAYER: 'SIGN'
-})
-
-export const pkmIconPrefix = 'PKM_ICON_'
-
-export const PKM_ICON_KEYS: Record<string, string> = Object.freeze({
-  '000': `${pkmIconPrefix}000`,
-  CHANDELURE: `${pkmIconPrefix}CHANDELURE`
 })

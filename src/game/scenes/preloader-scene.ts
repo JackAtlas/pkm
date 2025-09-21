@@ -6,10 +6,6 @@ import {
   DATABOX_ASSET_KEYS,
   GENERAL_ASSET_KEYS,
   MOVE_ASSET_KEYS,
-  PKM_ICON_KEYS,
-  PKM_NAME_KEYS,
-  POKEMON_BACK_ASSET_KEYS,
-  POKEMON_FRONT_ASSET_KEYS,
   POKEMON_SHADOW_ASSET_KEYS,
   TILE_ASSET_KEYS,
   TITLE_ASSET_KEYS,
@@ -20,6 +16,12 @@ import { Animation } from '@/types/typedef'
 import { dataManager } from '@/utils/data-manager'
 import { BaseScene } from './base-scene'
 import { SPEED_MULTIPLIER } from '@/config'
+import {
+  PKM_BACK_ASSET_KEYS,
+  PKM_FRONT_ASSET_KEYS,
+  PKM_ICON_ASSET_KEYS,
+  PKM_NAME_KEYS
+} from '@/asset-keys'
 
 const suffix = '@2x'
 
@@ -92,14 +94,25 @@ export class PreloaderScene extends BaseScene {
         frameHeight: 56
       }
     )
-    this.load.image(
-      POKEMON_FRONT_ASSET_KEYS.HERACROSS,
-      `Graphics/Pokemon/Front/HERACROSS${suffix}.png`
-    )
-    this.load.image(
-      POKEMON_BACK_ASSET_KEYS.CHANDELURE,
-      `Graphics/Pokemon/Back/CHANDELURE${suffix}.png`
-    )
+
+    /**
+     * 加载宝可梦图片
+     * TODO：改成在场景中加载
+     */
+    for (const [k, v] of Object.entries(PKM_FRONT_ASSET_KEYS)) {
+      this.load.image(v, `Graphics/Pokemon/Front/${k}.webp`)
+    }
+    for (const [k, v] of Object.entries(PKM_BACK_ASSET_KEYS)) {
+      this.load.image(v, `Graphics/Pokemon/Front/${k}.webp`)
+    }
+    // this.load.image(
+    //   PKM_FRONT_ASSET_KEYS.HERACROSS,
+    //   `Graphics/Pokemon/Front/HERACROSS${suffix}.png`
+    // )
+    // this.load.image(
+    //   PKM_BACK_ASSET_KEYS.CHANDELURE,
+    //   `Graphics/Pokemon/Back/CHANDELURE${suffix}.png`
+    // )
     this.load.image(
       POKEMON_SHADOW_ASSET_KEYS.SHADOW_SMALL,
       `Graphics/Pokemon/Shadow/1${suffix}.png`
@@ -207,15 +220,15 @@ export class PreloaderScene extends BaseScene {
     )
 
     this.load.spritesheet(
-      PKM_ICON_KEYS['000'],
+      'PKM_ICON_UNKNOWN',
       'Graphics/Pokemon/Icons/000.png',
       { frameWidth: 64, frameHeight: 64 }
     )
-    this.load.spritesheet(
-      PKM_ICON_KEYS.CHANDELURE,
-      `Graphics/Pokemon/Icons/${PKM_NAME_KEYS.CHANDELURE}.png`,
-      { frameWidth: 64, frameHeight: 64 }
-    )
+    // this.load.spritesheet(
+    //   PKM_ICON_ASSET_KEYS.CHANDELURE,
+    //   `Graphics/Pokemon/Icons/${PKM_NAME_KEYS.CHANDELURE}.png`,
+    //   { frameWidth: 64, frameHeight: 64 }
+    // )
 
     this.load.image(
       TITLE_ASSET_KEYS.BACKGROUND,

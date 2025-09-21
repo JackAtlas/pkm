@@ -5,7 +5,10 @@ import {
 import { BaseScene } from './base-scene'
 import { SCENE_KEYS, SceneKeys } from './scene-keys'
 import { Pokemon } from '@/types/typedef'
-import { PKM_ICON_KEYS } from '@/assets/asset-keys'
+import {
+  PKM_FRONT_ASSET_KEYS,
+  PKM_ICON_ASSET_KEYS
+} from '@/asset-keys'
 import { Menu } from '@/world/menu/menu'
 import { DIRECTION } from '@/common/direction'
 import { SCENE_COMMUNICATE_FLAGS } from '@/utils/scene-manager'
@@ -90,6 +93,10 @@ export class WorldUIScene extends BaseScene {
 
         if (wasSpaceKeyPressed) {
           this._menu.handlePlayerInput('OK')
+
+          if (this._menu.selectedMenuOption === 'PARTY') {
+            this.scene.start(SCENE_KEYS.PARTY_SCENE)
+          }
 
           if (this._menu.selectedMenuOption === 'SAVE') {
             dataManager.saveData()
@@ -238,7 +245,7 @@ export class WorldUIScene extends BaseScene {
       container: Phaser.GameObjects.Container
       graphic: Phaser.GameObjects.Graphics
       ring: Phaser.GameObjects.Image
-      avatar: Phaser.GameObjects.Sprite
+      avatar: Phaser.GameObjects.Image
       name: Phaser.GameObjects.Text
     }[] = []
     this._partyContainer.list.forEach((childContainer) => {
@@ -250,7 +257,7 @@ export class WorldUIScene extends BaseScene {
         if (
           childBg instanceof Phaser.GameObjects.Graphics &&
           childRing instanceof Phaser.GameObjects.Image &&
-          childAvatar instanceof Phaser.GameObjects.Sprite &&
+          childAvatar instanceof Phaser.GameObjects.Image &&
           childName instanceof Phaser.GameObjects.Text
         ) {
           childArray.push({
@@ -359,15 +366,18 @@ export class WorldUIScene extends BaseScene {
           )
         )
         this._updateTexture(index, pkm.currentHp / pkm.maxHp)
-        const sprite = this.add
-          .sprite(0, 0, PKM_ICON_KEYS[pkm.assetKey], 0)
-          .setOrigin(0)
-          .play(PKM_ICON_KEYS[pkm.assetKey])
-        sprite.setPosition(
-          CLOSE_SIZE.WIDTH / 2 - sprite.width / 2,
-          CLOSE_SIZE.HEIGHT / 2 - sprite.height / 2
+        const avatar = this.add.image(
+          0,
+          0,
+          PKM_FRONT_ASSET_KEYS[pkm.assetKey]
         )
-        child.add(sprite)
+        avatar
+          .setPosition(
+            CLOSE_SIZE.WIDTH / 2 - avatar.width / 2,
+            CLOSE_SIZE.HEIGHT / 2 - avatar.height / 2
+          )
+          .setOrigin(0)
+        child.add(avatar)
         const name = this.add
           .text(
             (CLOSE_SIZE.WIDTH * 3) / 4,
