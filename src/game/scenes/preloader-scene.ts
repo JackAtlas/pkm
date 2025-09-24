@@ -128,6 +128,7 @@ export class PreloaderScene extends BaseScene {
 
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'data/animations.json')
     this.load.json(DATA_ASSET_KEYS.MOVES, 'data/moves.json')
+    this.load.json(DATA_ASSET_KEYS.ITEMS, 'data/items.json')
 
     this.load.spritesheet(
       MOVE_ASSET_KEYS.ICE_SHARD,

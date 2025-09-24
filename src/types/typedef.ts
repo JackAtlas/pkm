@@ -43,3 +43,26 @@ export interface Animation {
   delay?: number
   yoyo?: boolean
 }
+
+const ITEM_EFFECT = Object.freeze({
+  HEAL_30: 'HEAL_30'
+})
+
+export interface Item {
+  id: number
+  name: string
+  description: string
+  effect: (typeof ITEM_EFFECT)[keyof typeof ITEM_EFFECT]
+}
+
+export interface BaseInventoryItem {
+  item: {
+    id: number
+  }
+  quantity: number
+}
+
+export interface InventoryItem {
+  item: Item
+  quantity: number
+}

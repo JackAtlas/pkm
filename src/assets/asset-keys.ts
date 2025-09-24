@@ -23,7 +23,8 @@ export const POKEMON_SHADOW_ASSET_KEYS = Object.freeze({
 
 export const DATA_ASSET_KEYS = Object.freeze({
   ANIMATIONS: 'ANIMATIONS',
-  MOVES: 'MOVES'
+  MOVES: 'MOVES',
+  ITEMS: 'ITEMS'
 })
 
 export const MOVE_ASSET_KEYS = Object.freeze({

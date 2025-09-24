@@ -9,8 +9,13 @@ import {
 } from '@/common/options'
 import { TEXT_SPEED, TILE_SIZE } from '@/config'
 import { exhaustiveGuard } from './guard'
-import { Pokemon } from '@/types/typedef'
+import {
+  BaseInventoryItem,
+  InventoryItem,
+  Pokemon
+} from '@/types/typedef'
 import { PKM_NAME_KEYS } from '@/asset-keys'
+import { DataUtils } from './data-utils'
 
 interface PKMData {
   inParty: Pokemon[]
@@ -33,6 +38,7 @@ interface GlobalState {
     }
   }
   pkm: PKMData
+  inventory: BaseInventoryItem[]
 }
 
 function formatPKMName(name: string): string {
@@ -131,7 +137,15 @@ const initialState: GlobalState = {
         moveIds: [2]
       }
     ]
-  }
+  },
+  inventory: [
+    {
+      item: {
+        id: 1
+      },
+      quantity: 1
+    }
+  ]
 }
 
 export const DATA_MANAGER_STORE_KEYS = Object.freeze({
@@ -143,7 +157,8 @@ export const DATA_MANAGER_STORE_KEYS = Object.freeze({
   OPTIONS_TEXT_SPEED: 'OPTIONS_TEXT_SPEED',
   PLAYER_DIRECTION: 'PLAYER_DIRECTION',
   PLAYER_POSITION: 'PLAYER_POSITION',
-  PKM_IN_PARTY: 'PKM_IN_PARTY'
+  PKM_IN_PARTY: 'PKM_IN_PARTY',
+  INVENTORY: 'INVENTORY'
 })
 
 const LOCAL_STORAGE_KEY = 'PKM_DATA'
@@ -206,6 +221,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     existingData.player.direction = initialState.player.direction
     existingData.player.position = { ...initialState.player.position }
     existingData.pkm = { inParty: [...initialState.pkm.inParty] }
+    existingData.inventory = [...initialState.inventory]
 
     this._store.reset()
     this._updateDataManager(existingData)
@@ -231,6 +247,33 @@ class DataManager extends Phaser.Events.EventEmitter {
     }
   }
 
+  getInventory(scene: Phaser.Scene): InventoryItem[] {
+    const items: InventoryItem[] = []
+    const inventory: BaseInventoryItem[] = this._store.get(
+      DATA_MANAGER_STORE_KEYS.INVENTORY
+    )
+    inventory.forEach((baseItem) => {
+      const item = DataUtils.getItem(scene, baseItem.item.id)
+      items.push({
+        item,
+        quantity: baseItem.quantity
+      })
+    })
+    return items
+  }
+
+  updateInventory(items: InventoryItem[]) {
+    const inventory = items.map((item) => {
+      return {
+        item: {
+          id: item.item.id
+        },
+        quantity: item.quantity
+      }
+    })
+    this._store.set(DATA_MANAGER_STORE_KEYS.INVENTORY, inventory)
+  }
+
   _updateDataManager(data: GlobalState) {
     this._store.set({
       [DATA_MANAGER_STORE_KEYS.GAME_STARTED]: data.gameStarted,
@@ -247,7 +290,8 @@ class DataManager extends Phaser.Events.EventEmitter {
       [DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION]:
         data.player.direction,
       [DATA_MANAGER_STORE_KEYS.PLAYER_POSITION]: data.player.position,
-      [DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY]: data.pkm.inParty
+      [DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY]: data.pkm.inParty,
+      [DATA_MANAGER_STORE_KEYS.INVENTORY]: data.inventory
     })
   }
 
@@ -286,7 +330,8 @@ class DataManager extends Phaser.Events.EventEmitter {
       },
       pkm: {
         inParty: this._store.get(DATA_MANAGER_STORE_KEYS.PKM_IN_PARTY)
-      }
+      },
+      inventory: this._store.get(DATA_MANAGER_STORE_KEYS.INVENTORY)
     } as GlobalState
   }
 }
