@@ -16,6 +16,7 @@ import {
 } from '@/types/typedef'
 import { PKM_NAME_KEYS } from '@/asset-keys'
 import { DataUtils } from './data-utils'
+import { capitalize } from './formatters'
 
 interface PKMData {
   inParty: Pokemon[]
@@ -41,11 +42,6 @@ interface GlobalState {
   inventory: BaseInventoryItem[]
 }
 
-function formatPKMName(name: string): string {
-  const nameArr = [name[0], name.substring(1).toLowerCase()]
-  return nameArr.join('')
-}
-
 const initialState: GlobalState = {
   gameStarted: false,
   options: {
@@ -67,7 +63,7 @@ const initialState: GlobalState = {
       {
         id: 1,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        name: capitalize(PKM_NAME_KEYS.FLETCHLING),
         assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
@@ -79,7 +75,7 @@ const initialState: GlobalState = {
       {
         id: 2,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        name: capitalize(PKM_NAME_KEYS.FLETCHLING),
         assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
@@ -91,7 +87,7 @@ const initialState: GlobalState = {
       {
         id: 3,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHLING),
+        name: capitalize(PKM_NAME_KEYS.FLETCHLING),
         assetKey: PKM_NAME_KEYS.FLETCHLING,
         assetFrame: 0,
         currentLevel: 5,
@@ -103,7 +99,7 @@ const initialState: GlobalState = {
       {
         id: 4,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        name: capitalize(PKM_NAME_KEYS.FLETCHINDER),
         assetKey: PKM_NAME_KEYS.FLETCHINDER,
         assetFrame: 0,
         currentLevel: 5,
@@ -115,7 +111,7 @@ const initialState: GlobalState = {
       {
         id: 5,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        name: capitalize(PKM_NAME_KEYS.FLETCHINDER),
         assetKey: PKM_NAME_KEYS.FLETCHINDER,
         assetFrame: 0,
         currentLevel: 5,
@@ -127,7 +123,7 @@ const initialState: GlobalState = {
       {
         id: 6,
         pkmId: 1,
-        name: formatPKMName(PKM_NAME_KEYS.FLETCHINDER),
+        name: capitalize(PKM_NAME_KEYS.FLETCHINDER),
         assetKey: PKM_NAME_KEYS.FLETCHINDER,
         assetFrame: 0,
         currentLevel: 5,
@@ -144,6 +140,12 @@ const initialState: GlobalState = {
         id: 1
       },
       quantity: 1
+    },
+    {
+      item: {
+        id: 2
+      },
+      quantity: 12
     }
   ]
 }

@@ -4,9 +4,11 @@ import { SCENE_KEYS } from './scene-keys'
 import { DEBUG } from '@/config'
 import { dataManager } from '@/utils/data-manager'
 import { InventoryItem } from '@/types/typedef'
+import { capitalize } from '@/utils/formatters'
 
 const itemTextStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-  color: '#000000'
+  color: '#000000',
+  fontFamily: 'Power Red and Green'
 }
 
 interface GameObjects {
@@ -24,6 +26,8 @@ export class InventoryScene extends BaseScene {
   protected _selectedItemIndex: number = 0
 
   protected _bagUIContainer: Phaser.GameObjects.Container
+
+  protected _bottomUIText: Phaser.GameObjects.Text
   protected _bottomUIContainer: Phaser.GameObjects.Container
 
   protected _cursor: Phaser.GameObjects.Image
@@ -108,7 +112,12 @@ export class InventoryScene extends BaseScene {
         .rectangle(0, 0, 282, 40, 0x22ffff, 0)
         .setOrigin(0)
       const itemText = this.add
-        .text(10, 20, inventoryItem.item.name, itemTextStyle)
+        .text(
+          10,
+          20,
+          capitalize(inventoryItem.item.name),
+          itemTextStyle
+        )
         .setOrigin(0, 0.5)
       const qtyText = this.add
         .text(
@@ -138,7 +147,9 @@ export class InventoryScene extends BaseScene {
 
     this._updateListLayout()
 
-    this._descriptionTextObject = this.add.text(100, 300, '')
+    this._descriptionTextObject = this.add.text(100, 300, '', {
+      fontFamily: 'Power Red and Green'
+    })
 
     this._updateDescriptionText()
 
@@ -160,6 +171,12 @@ export class InventoryScene extends BaseScene {
     this._setCameras()
   }
 
+  update(time: DOMHighResTimeStamp) {
+    console.log(this._sceneManager.activeScene)
+
+    super.update(time)
+  }
+
   _createBottomUI() {
     const UIBg = this.add
       .rectangle(
@@ -171,10 +188,22 @@ export class InventoryScene extends BaseScene {
         DEBUG ? 1 : 0
       )
       .setOrigin(0)
+    this._bottomUIText = this.add.text(
+      0,
+      0,
+      '方向键上下选择移动光标，左右翻页，L 和 R 切换口袋',
+      {
+        fontFamily: 'Power Green'
+      }
+    )
     this._bottomUIContainer = this.add.container(
       80,
       this.scale.height - 100,
-      [UIBg]
+      [UIBg, this._bottomUIText]
+    )
+    this._bottomUIText.setPosition(
+      (UIBg.width - this._bottomUIText.width) / 2,
+      UIBg.height / 2
     )
   }
 

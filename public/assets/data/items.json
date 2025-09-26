@@ -1,7 +1,13 @@
 [
   {
     "id": 1,
-    "name": "potion",
+    "name": "POTION",
+    "description": "回复宝可梦 20 点生命值",
+    "effect": "HEAL_20"
+  },
+  {
+    "id": 2,
+    "name": "SUPER POTION",
     "description": "回复宝可梦 20 点生命值",
     "effect": "HEAL_20"
   }
